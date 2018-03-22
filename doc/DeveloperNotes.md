@@ -1,4 +1,10 @@
-# The ORCID XSD files
+# References:
+
+* [The API reference in GitHub](https://github.com/ORCID/ORCID-Source/blob/master/orcid-model/src/main/resources/record_2.1/README.md)
+
+* [API Tutorials](https://members.orcid.org/api/tutorial)
+
+# Using JAXB to compile the XML Schemas
 
 * Most of the schema files came from [here](https://github.com/ORCID/ORCID-Source/tree/master/orcid-model/src/main/resources/record_2.0)
 
