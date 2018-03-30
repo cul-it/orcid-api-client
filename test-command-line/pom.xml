@@ -20,10 +20,22 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.vivoweb</groupId>
+			<artifactId>orcid-api-client</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>edu.cornell.libraries.orcidclient.testcommandline.TestCommandLineApp</mainClass>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>

@@ -33,6 +33,7 @@ import org.apache.http.client.utils.URIUtils;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.actions.OrcidApiClient;
+import edu.cornell.libraries.orcidclient.auth.DefaultOrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.context.OrcidPlatformUrls.CustomPlatformUrls;
 import edu.cornell.libraries.orcidclient.context.OrcidPlatformUrls.StandardPlatform;
@@ -148,7 +149,7 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	@Override
 	public OrcidAuthorizationClient getAuthorizationClient(
 			HttpServletRequest req) {
-		return new OrcidAuthorizationClient(this, req);
+		return new DefaultOrcidAuthorizationClient(this, req);
 	}
 
 	@Override

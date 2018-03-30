@@ -21,3 +21,15 @@ compiled into Java classes.
 
 
 		
+# Running the test webapp
+* Might need to set up a tunnel.
+	* If the credentials list a callback URL as "http://myhost", but the webapp runs at `htp://myhost:8080`, might need to set up a tunnel with something like this:
+
+	```
+	sudo ssh jeb228@localhost -L 80:loalhost:8080
+	```
+	
+* Start it with `mvn jetty:run`
+* Access log is found in `test-webapp/target` directory
+* Logging goes to the console
+

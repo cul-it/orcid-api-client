@@ -2,6 +2,8 @@
 
 package edu.cornell.libraries.orcidclient.auth;
 
+import javax.servlet.http.HttpServletRequest;
+
 import edu.cornell.libraries.orcidclient.actions.ApiScope;
 
 /**
@@ -43,6 +45,14 @@ public abstract class OrcidAuthorizationClient {
 	 * Undo any progress that was made for this scope during this session.
 	 */
 	public abstract void resetProgress(ApiScope scope);
+
+	/**
+	 * Update the authorization status to reflect this respons from our
+	 * authorization request.
+	 * 
+	 * Return the redirect URL for either success or failure, as appropriate.
+	 */
+	public abstract String processAuthorizationResponse(HttpServletRequest req);
 
 	/**
 	 * Find out where we stand for this scope.
