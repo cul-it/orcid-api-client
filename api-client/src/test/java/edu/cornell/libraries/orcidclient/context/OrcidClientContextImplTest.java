@@ -21,4 +21,19 @@ public class OrcidClientContextImplTest {
 		fail("fail not implemented");
 	}
 
+	/**
+	 * Test plan
+	 * 
+	 * <pre>
+	 * Missing setting throws exception
+	 * 
+	 * Invalid platform throws exception
+	 * 
+	 * Platform URL overrides supplied URL
+	 * 
+	 * Syntactically invalid callback/base combination  throws exception
+	 * 
+	 * Resolve  works  whether base endswith a slash or not.
+	 * </pre>
+	 */
 }

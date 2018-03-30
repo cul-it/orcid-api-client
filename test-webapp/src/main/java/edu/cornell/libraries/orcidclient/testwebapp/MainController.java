@@ -68,7 +68,6 @@ public class MainController extends HttpServlet {
 	}
 
 	private String dumpParameterMap(HttpServletRequest req) {
-		@SuppressWarnings("unchecked")
 		Map<String, String[]> raw = req.getParameterMap();
 		Map<String, List<String>> cooked = new HashMap<>();
 

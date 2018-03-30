@@ -2,104 +2,48 @@
 
 package edu.cornell.libraries.orcidclient.context;
 
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.AUTHORIZED_API_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.OAUTH_AUTHORIZE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.OAUTH_TOKEN_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.PUBLIC_API_BASE_URL;
+
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
+
+import edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting;
+
 /**
- * When an ORCID platform is specified, it must define these four URLs.
+ * When an ORCID platform is specified, it defines these four URLs.
+ * 
+ * A settings file can invoke one of these by name, with API_PLATFORM=SANDBOX,
+ * for example, and not need to specify the four URLs.
  */
-interface OrcidPlatformUrls {
+enum OrcidPlatformUrls {
+	//
+	SANDBOX("https://pub.sandbox.orcid.org/v2.1/",
+			"https://api.sandbox.orcid.org/v2.1/",
+			"https://sandbox.orcid.org/oauth/authorize",
+			"https://sandbox.orcid.org/oauth/token"),
+	//
+	PRODUCTION("https://pub.orcid.org/v2.1/", //
+			"https://api.orcid.org/v2.1/", //
+			"https://orcid.org/oauth/authorize",
+			"https://orcid.org/oauth/token");
 
-	String getPublicUrl();
-
-	String getMemberUrl();
-
-	String getOAuthUrl();
-
-	String getTokenUrl();
-
-	/**
-	 * The standard platforms are SANDBOX and PRODUCTION.
-	 */
-	enum StandardPlatform implements OrcidPlatformUrls {
-		//
-		SANDBOX("https://pub.sandbox.orcid.org/v2.1/",
-				"https://api.sandbox.orcid.org/v2.1/",
-				"https://sandbox.orcid.org/oauth/authorize",
-				"https://sandbox.orcid.org/oauth/token"),
-		//
-		PRODUCTION("https://pub.orcid.org/v2.1/", "https://api.orcid.org/v2.1/",
-				"https://orcid.org/oauth/authorize",
-				"https://orcid.org/oauth/token");
-
-		private StandardPlatform(String publicUrl, String memberUrl,
-				String oauthUrl, String tokenUrl) {
-			this.publicUrl = publicUrl;
-			this.memberUrl = memberUrl;
-			this.oauthUrl = oauthUrl;
-			this.tokenUrl = tokenUrl;
-		}
-
-		String publicUrl;
-		String memberUrl;
-		String oauthUrl;
-		String tokenUrl;
-
-		@Override
-		public String getPublicUrl() {
-			return publicUrl;
-		}
-
-		@Override
-		public String getMemberUrl() {
-			return memberUrl;
-		}
-
-		@Override
-		public String getOAuthUrl() {
-			return oauthUrl;
-		}
-
-		@Override
-		public String getTokenUrl() {
-			return tokenUrl;
-		}
+	private OrcidPlatformUrls(String publicUrl, String memberUrl,
+			String oauthUrl, String tokenUrl) {
+		Map<Setting, String> map = new EnumMap<>(Setting.class);
+		map.put(PUBLIC_API_BASE_URL, publicUrl);
+		map.put(AUTHORIZED_API_BASE_URL, memberUrl);
+		map.put(OAUTH_AUTHORIZE_URL, oauthUrl);
+		map.put(OAUTH_TOKEN_URL, tokenUrl);
+		this.urls = Collections.unmodifiableMap(map);
 	}
 
-	/**
-	 * If you want a custom platform, you will need to provide the four URLs.
-	 */
-	static class CustomPlatformUrls implements OrcidPlatformUrls {
-		private final String publicUrl;
-		private final String memberUrl;
-		private final String oAuthUrl;
-		private final String tokenUrl;
+	Map<Setting, String> urls;
 
-		public CustomPlatformUrls(String publicUrl, String memberUrl,
-				String oAuthUrl, String tokenUrl) {
-			this.publicUrl = publicUrl;
-			this.memberUrl = memberUrl;
-			this.oAuthUrl = oAuthUrl;
-			this.tokenUrl = tokenUrl;
-		}
-
-		@Override
-		public String getPublicUrl() {
-			return publicUrl;
-		}
-
-		@Override
-		public String getMemberUrl() {
-			return memberUrl;
-		}
-
-		@Override
-		public String getOAuthUrl() {
-			return oAuthUrl;
-		}
-
-		@Override
-		public String getTokenUrl() {
-			return tokenUrl;
-		}
-
+	public Map<Setting, String> getUrls() {
+		return urls;
 	}
-
 }

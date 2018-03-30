@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
 
 /**
@@ -41,15 +40,6 @@ public class CallbackController extends HttpServlet {
 		}
 		if (AuthenticationRequester.CALLBACK_STATE.equals(req.getParameter("state"))) {
 			new AuthenticationCallback(req, resp).exec();
-		}
-
-		OrcidAuthorizationClient authManager = occ.getAuthorizationClient(req);
-		try {
-			String redirectUrl = authManager.processAuthorizationResponse(req);
-			resp.sendRedirect(redirectUrl);
-		} catch (Exception e) {
-			log.error("Invalid authorization response", e);
-			fail(resp, "Invalid authorization response: " + e);
 		}
 	}
 

@@ -5,24 +5,19 @@ package edu.cornell.libraries.orcidclient.auth;
 import javax.servlet.http.HttpServletRequest;
 
 import edu.cornell.libraries.orcidclient.actions.ApiScope;
-import edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl;
+import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
 
 /**
  * TODO
  */
 public class DefaultOrcidAuthorizationClient extends OrcidAuthorizationClient {
-	static {
-		if (true)
-			throw new RuntimeException(
-					"DefaultOrcidAuthorizationClient not implemented.");
-	}
+	private final OrcidClientContext occ;
+	private final HttpServletRequest req;
 
-	public DefaultOrcidAuthorizationClient(
-			OrcidClientContextImpl orcidClientContextImpl,
+	public DefaultOrcidAuthorizationClient(OrcidClientContext occ,
 			HttpServletRequest req) {
-		// TODO Auto-generated constructor stub
-		throw new RuntimeException(
-				"DefaultOrcidAuthorizationClient Constructor not implemented.");
+		this.occ = occ;
+		this.req = req;
 	}
 
 	/*
@@ -106,14 +101,18 @@ public class DefaultOrcidAuthorizationClient extends OrcidAuthorizationClient {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient#processAuthorizationResponse(javax.servlet.http.HttpServletRequest)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient#
+	 * processAuthorizationResponse(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
 	public String processAuthorizationResponse(HttpServletRequest req) {
 		// TODO Auto-generated method stub
-		throw new RuntimeException("OrcidAuthorizationClient.processAuthorizationResponse() not implemented.");
-		
+		throw new RuntimeException(
+				"OrcidAuthorizationClient.processAuthorizationResponse() not implemented.");
+
 	}
 
 }

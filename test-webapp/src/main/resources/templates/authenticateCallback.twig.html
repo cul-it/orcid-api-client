@@ -1,0 +1,46 @@
+<html>
+<head>
+  <title>ORCID API Client test webapp</title>
+</head>
+<body>
+  <H1>Raw Authentication Callback</H1>
+
+  <p> This is what we got from  ORCID: </p>
+  <p> callback URL:  </p>
+  <pre>{{callbackUrl}}</pre>
+  <p> code: {{code}}
+
+  <p>Exchange URL:</p>
+  <pre>{{exchangeUrl}}</pre>
+
+  <form action="{{occ.accessTokenRequestUrl}}" method="post">
+    <div> 
+      <label for="name">client_id:</label>
+      <input type="text" name="client_id" value="{{client_id}}" >
+    </div>
+  
+    <div> 
+      <label for="name">client_secret:</label>
+      <input type="text" name="client_secret" value="{{client_secret}}" >
+    </div>
+  
+    <div> 
+      <label for="name">grant_type:</label>
+      <input type="text" name="grant_type" value="authorization_code" >
+    </div>
+  
+    <div> 
+      <label for="name">code:</label>
+      <input type="text" name="code" value="{{code}}" >
+    </div>
+  
+    <div> 
+      <label for="name">redirect_uri:</label>
+      <input type="text" name="redirect_uri" value="{{occ.callbackUrl}}" >
+    </div>
+  
+    <div>
+      <button type="submit">Do it.</button>
+    </div>
+  </form> 
+</body>

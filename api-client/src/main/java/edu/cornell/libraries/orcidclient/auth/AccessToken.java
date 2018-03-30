@@ -111,7 +111,7 @@ public class AccessToken {
 	}
 
 	public boolean isShortTerm() {
-		throw new RuntimeException("AccessToken.isShortTerm not implemented.");
+		return expiresIn < 10000;
 	}
 
 	@Override

@@ -10,8 +10,6 @@ import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setti
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.PUBLIC_API_BASE_URL;
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -19,13 +17,6 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,75 +26,67 @@ import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.actions.OrcidApiClient;
 import edu.cornell.libraries.orcidclient.auth.DefaultOrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
-import edu.cornell.libraries.orcidclient.context.OrcidPlatformUrls.CustomPlatformUrls;
-import edu.cornell.libraries.orcidclient.context.OrcidPlatformUrls.StandardPlatform;
-import edu.cornell.libraries.orcidclient.responses.OrcidMessage;
 
 /**
- * TODO
+ * Read the supplied settings, validate them, adjust them as appropriate, and be
+ * prepared to provide them when asked.
  */
 public class OrcidClientContextImpl extends OrcidClientContext {
 	private static final Log log = LogFactory
 			.getLog(OrcidClientContextImpl.class);
 
 	private final Map<Setting, String> settings;
-	private final JAXBContext jaxbContext;
 
-	private final String callbackUrl;
-	private final OrcidPlatformUrls platform;
+	private String callbackUrl;
 
 	public OrcidClientContextImpl(Map<Setting, String> settings)
 			throws OrcidClientException {
-		for (Setting s : Setting.values()) {
-			if (s.isRequired() && !settings.containsKey(s)) {
-				throw new MissingSettingException(s);
-			}
-		}
 		this.settings = new EnumMap<>(settings);
 
-		try {
-			log.warn(
-					"Do we still need the 'marshall' and 'unmarshall' methods?");
-			String packageName = "edu.cornell.libraries.orcidclient.orcid_message_2_1.record";
-			jaxbContext = JAXBContext.newInstance(packageName);
+		adjustSettingsForPlatform();
+		complainAboutMissingSettings();
+		ensureWebappBaseEndsWithSlash();
+		figureCallbackUrl();
+	}
 
-			callbackUrl = resolvePathWithWebapp(
-					getRequiredSetting(CALLBACK_PATH));
-
-			String platformSetting = getRequiredSetting(API_PLATFORM)
-					.toUpperCase();
-			if (platformSetting.equals("CUSTOM")) {
-				try {
-					platform = new CustomPlatformUrls(
-							getRequiredSetting(PUBLIC_API_BASE_URL),
-							getRequiredSetting(AUTHORIZED_API_BASE_URL),
-							getRequiredSetting(OAUTH_AUTHORIZE_URL),
-							getRequiredSetting(OAUTH_TOKEN_URL));
-				} catch (MissingSettingException e) {
-					throw new OrcidClientException("If " + API_PLATFORM
-							+ " is 'CUSTOM', you must provide a value for '"
-							+ e.getMissingSetting() + "'");
-				}
-			} else {
-				platform = StandardPlatform.valueOf(
-						getRequiredSetting(API_PLATFORM).toUpperCase());
+	private void adjustSettingsForPlatform() throws OrcidClientException {
+		if (settings.containsKey(API_PLATFORM)) {
+			try {
+				String platformKey = settings.get(API_PLATFORM).toUpperCase();
+				OrcidPlatformUrls platform = OrcidPlatformUrls
+						.valueOf(platformKey);
+				settings.putAll(platform.getUrls());
+			} catch (IllegalArgumentException e) {
+				throw new OrcidClientException(
+						API_PLATFORM + " must be one of: "
+								+ Arrays.toString(OrcidPlatformUrls.values()));
 			}
-		} catch (IllegalArgumentException e) {
-			throw new OrcidClientException(
-					API_PLATFORM + " must be 'CUSTOM', or one of: "
-							+ Arrays.toString(StandardPlatform.values()));
-		} catch (JAXBException | URISyntaxException e) {
-			throw new OrcidClientException(
-					"Failed to create the OrcidClientContext", e);
 		}
 	}
 
-	private String getRequiredSetting(Setting key)
-			throws MissingSettingException {
-		if (settings.containsKey(key)) {
-			return settings.get(key);
-		} else {
-			throw new MissingSettingException(key);
+	private void complainAboutMissingSettings() throws MissingSettingException {
+		for (Setting s : Setting.values()) {
+			if (!settings.containsKey(s)) {
+				throw new MissingSettingException(s);
+			}
+		}
+	}
+
+	private void ensureWebappBaseEndsWithSlash() {
+		String base = getSetting(WEBAPP_BASE_URL);
+		if (!base.endsWith("/")) {
+			settings.put(WEBAPP_BASE_URL, base + "/");
+		}
+	}
+
+	private void figureCallbackUrl() throws OrcidClientException {
+		try {
+			callbackUrl = resolvePathWithWebapp(getSetting(CALLBACK_PATH));
+		} catch (URISyntaxException e) {
+			throw new OrcidClientException(String.format(
+					"Failed to resolve the callback path: `%s` is `%s`, `%s` is `%s`",
+					WEBAPP_BASE_URL, getSetting(WEBAPP_BASE_URL), CALLBACK_PATH,
+					getSetting(CALLBACK_PATH)), e);
 		}
 	}
 
@@ -123,22 +106,22 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 
 	@Override
 	public String getAuthCodeRequestUrl() {
-		return platform.getOAuthUrl();
+		return getSetting(OAUTH_AUTHORIZE_URL);
 	}
 
 	@Override
 	public String getAccessTokenRequestUrl() {
-		return platform.getTokenUrl();
+		return getSetting(OAUTH_TOKEN_URL);
 	}
 
 	@Override
 	public String getApiPublicUrl() {
-		return platform.getPublicUrl();
+		return getSetting(PUBLIC_API_BASE_URL);
 	}
 
 	@Override
 	public String getApiMemberUrl() {
-		return platform.getMemberUrl();
+		return getSetting(AUTHORIZED_API_BASE_URL);
 	}
 
 	@Override
@@ -153,76 +136,24 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	}
 
 	@Override
-	public String marshall(OrcidMessage message) throws OrcidClientException {
-		try {
-			Marshaller m = jaxbContext.createMarshaller();
-			m.setProperty("jaxb.formatted.output", Boolean.TRUE);
-
-			StringWriter sw = new StringWriter();
-			m.marshal(message, sw);
-			log.debug("marshall message=" + message + "\n, string=" + sw);
-			return sw.toString();
-		} catch (PropertyException e) {
-			throw new OrcidClientException("Failed to create the Marshaller",
-					e);
-		} catch (JAXBException e) {
-			throw new OrcidClientException(
-					"Failed to marshall the message '" + message + "'", e);
-		}
-	}
-
-	@Override
-	public OrcidMessage unmarshall(String xml) throws OrcidClientException {
-		try {
-			Unmarshaller u = jaxbContext.createUnmarshaller();
-
-			StreamSource source = new StreamSource(new StringReader(xml));
-			JAXBElement<OrcidMessage> doc = u.unmarshal(source,
-					OrcidMessage.class);
-			log.debug("unmarshall string=" + xml + "\n, message="
-					+ doc.getValue());
-			return doc.getValue();
-		} catch (JAXBException e) {
-			throw new OrcidClientException(
-					"Failed to unmarshall the message '" + xml + "'", e);
-		}
-	}
-
-	@Override
 	public String resolvePathWithWebapp(String path) throws URISyntaxException {
-		URI baseUri = new URI(getSetting(WEBAPP_BASE_URL));
-		return URIUtils.resolve(baseUri, path).toString();
+		return URIUtils.resolve(new URI(getSetting(WEBAPP_BASE_URL)), path)
+				.toString();
 	}
 
 	@Override
 	public String toString() {
 		return "OrcidClientContextImpl[settings=" + settings + ", callbackUrl="
-				+ callbackUrl + ", authCodeRequestUrl="
-				+ getAuthCodeRequestUrl() + ", accessTokenRequestUrl="
-				+ getAccessTokenRequestUrl() + "]";
+				+ callbackUrl + "]";
 	}
 
 	private static class MissingSettingException extends OrcidClientException {
-		private final Setting missingSetting;
-
 		public MissingSettingException(Setting missingSetting) {
 			super(toMessage(missingSetting));
-			this.missingSetting = missingSetting;
-		}
-
-		public MissingSettingException(Setting missingSetting,
-				Throwable cause) {
-			super(toMessage(missingSetting), cause);
-			this.missingSetting = missingSetting;
 		}
 
 		private static String toMessage(Setting ms) {
 			return "You must provide a value for '" + ms + "'";
 		}
-
-		public Setting getMissingSetting() {
-			return missingSetting;
-		}
-
 	}
 }
