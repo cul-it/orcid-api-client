@@ -22,6 +22,8 @@ import org.apache.commons.logging.LogFactory;
 import org.jtwig.JtwigModel;
 
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientOffer;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
 
 /**
  * TODO
@@ -44,10 +46,10 @@ public class MainController extends HttpServlet {
 			log.debug("Request parameters: " + dumpParameterMap(req));
 		}
 
-		if (req.getParameter("Authenticate") != null) {
-			new AuthenticationRequester(req, resp).exec();
-			// } else if (req.getParameter("ReadPublic") != null) {
-			// new PublicBioReader(req, resp).exec();
+		if (req.getParameter("RawAuthentication") != null) {
+			new AuthenticationRawOffer(req, resp).exec();
+			 } else if (req.getParameter("ClientAuthentication") != null) {
+			new AuthenticationClientOffer(req, resp).exec();
 			// } else if (req.getParameter("ReadProfile") != null) {
 			// new ProfileReader(req, resp).exec();
 			// } else if (req.getParameter("AddExternalId") != null) {

@@ -7,11 +7,15 @@
 	
   <form action="request">
     <div>
-      <input type="submit" name="Authenticate" value="Authenticate"><br>
+      <input type="submit" name="RawAuthentication" value="Raw Authentication"><br>
       <p>Do a "raw" request for authorization, bypassing almost all of the driver classes.</p>
     </div>
 	
-      <input type="submit" name="ReadPublic" value="Read Public Profile"><br>
+	<div>
+      <input type="submit" name="ClientAuthentication" value="Client Authentication"><br>
+      <p>Get the ORCID client to request authorization, handling the 3-legged dance internally.</p>
+	</div>
+	
       <input type="submit" name="ReadProfile" value="Read Profile"><br>
       <input type="submit" name="AddExternalId" value="Add External ID"><br>
       <input type="submit" name="RestrictExternalIds" value="Restrict External IDs"><br>

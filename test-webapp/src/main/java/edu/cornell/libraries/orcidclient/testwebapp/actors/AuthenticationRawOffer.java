@@ -1,6 +1,6 @@
 /* $This file is distributed under the terms of the license in /doc/license.txt$ */
 
-package edu.cornell.libraries.orcidclient.testwebapp;
+package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
 import static org.jtwig.JtwigTemplate.classpathTemplate;
@@ -22,12 +22,12 @@ import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
 /**
  * TODO
  */
-public class AuthenticationRequester {
-	public static final String CALLBACK_STATE = "RawAuthenticationCallback";
+public class AuthenticationRawOffer {
+	public static final String CALLBACK_STATE = "AuthenticationRawCallback";
 	private final HttpServletRequest req;
 	private final HttpServletResponse resp;
 
-	public AuthenticationRequester(HttpServletRequest req,
+	public AuthenticationRawOffer(HttpServletRequest req,
 			HttpServletResponse resp) {
 		this.req = req;
 		this.resp = resp;
@@ -46,7 +46,7 @@ public class AuthenticationRequester {
 			JtwigModel model = JtwigModel.newModel().with("authRequestUrl",
 					requestUri.toString());
 
-			String path = "/templates/authenticate.twig.html";
+			String path = "/templates/authenticateRaw.twig.html";
 			ServletOutputStream outputStream = resp.getOutputStream();
 			classpathTemplate(path).render(model, outputStream);
 		} catch (URISyntaxException e) {

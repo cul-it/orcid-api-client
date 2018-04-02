@@ -1,6 +1,6 @@
 /* $This file is distributed under the terms of the license in /doc/license.txt$ */
 
-package edu.cornell.libraries.orcidclient.testwebapp;
+package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_SECRET;
@@ -20,12 +20,12 @@ import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
 /**
  * TODO
  */
-public class AuthenticationCallback {
+public class AuthenticationRawCallback {
 	public static final String CALLBACK_STATE = "RawAuthenticationToken";
 	private final HttpServletRequest req;
 	private final HttpServletResponse resp;
 
-	public AuthenticationCallback(HttpServletRequest req,
+	public AuthenticationRawCallback(HttpServletRequest req,
 			HttpServletResponse resp) {
 		this.req = req;
 		this.resp = resp;
@@ -41,7 +41,7 @@ public class AuthenticationCallback {
 				.with("client_id", occ.getSetting(CLIENT_ID)) //
 				.with("client_secret", occ.getSetting(CLIENT_SECRET));
 
-		String path = "/templates/authenticateCallback.twig.html";
+		String path = "/templates/authenticateRawCallback.twig.html";
 		ServletOutputStream outputStream = resp.getOutputStream();
 		classpathTemplate(path).render(model, outputStream);
 	}

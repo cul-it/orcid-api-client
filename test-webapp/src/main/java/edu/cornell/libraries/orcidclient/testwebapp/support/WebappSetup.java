@@ -1,6 +1,6 @@
 /* $This file is distributed under the terms of the license in /doc/license.txt$ */
 
-package edu.cornell.libraries.orcidclient.testwebapp;
+package edu.cornell.libraries.orcidclient.testwebapp.support;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -23,20 +23,28 @@ import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting;
 
 /**
- * TODO
+ * Read the settings file, store the webapp properties for later use, and
+ * initialize the OrcidContext.
  */
 @WebListener
-public class OrcidContextSetup implements ServletContextListener {
-	private static final Log log = LogFactory.getLog(OrcidContextSetup.class);
+public class WebappSetup implements ServletContextListener {
+	private static final Log log = LogFactory.getLog(WebappSetup.class);
 
 	private static final String ORCID_SETTINGS_PROPERTY = "orcid.settings";
 	private static final String DEFAULT_SETTINGS_FILE = "settings.properties";
+
+	public static final String WEBAPP_CACHE_FILE_KEY = "WEBAPP_CACHE_FILE";
+	public static final String[] WEBAPP_SETTINGS_KEYS = {
+			WEBAPP_CACHE_FILE_KEY };
+
+	private static Map<String, String> webappProperties;
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		String path = locatePropertiesFile(sce);
 		Properties properties = loadProperties(path);
-		Map<Setting, String> settings = convertToSettings(properties);
+		webappProperties = extractWebappProperties(properties);
+		Map<Setting, String> settings = convertToOrcidSettings(properties);
 		initializeOrcidContext(settings);
 	}
 
@@ -65,7 +73,18 @@ public class OrcidContextSetup implements ServletContextListener {
 		return settings;
 	}
 
-	private Map<Setting, String> convertToSettings(Properties settings) {
+	private Map<String, String> extractWebappProperties(Properties properties) {
+		Map<String, String> webappProps = new HashMap<>();
+		for (String key : WEBAPP_SETTINGS_KEYS) {
+			if (properties.containsKey(key)) {
+				webappProps.put(key, properties.getProperty(key));
+				properties.remove(key);
+			}
+		}
+		return webappProps;
+	}
+
+	private Map<Setting, String> convertToOrcidSettings(Properties settings) {
 		Map<Setting, String> settingsMap = new HashMap<>();
 		for (String name : settings.stringPropertyNames()) {
 			try {
@@ -87,6 +106,10 @@ public class OrcidContextSetup implements ServletContextListener {
 		} catch (OrcidClientException e) {
 			log.error("Failed to initialize OrcidClientContent", e);
 		}
+	}
+
+	public Map<String, String> getWebappProperties() {
+		return new HashMap<>(webappProperties);
 	}
 
 	@Override

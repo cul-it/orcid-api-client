@@ -18,6 +18,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawCallback;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
 
 /**
  * TODO
@@ -38,8 +40,8 @@ public class CallbackController extends HttpServlet {
 		if (log.isDebugEnabled()) {
 			log.debug("Request parameters: " + dumpParameterMap(req));
 		}
-		if (AuthenticationRequester.CALLBACK_STATE.equals(req.getParameter("state"))) {
-			new AuthenticationCallback(req, resp).exec();
+		if (AuthenticationRawOffer.CALLBACK_STATE.equals(req.getParameter("state"))) {
+			new AuthenticationRawCallback(req, resp).exec();
 		}
 	}
 
