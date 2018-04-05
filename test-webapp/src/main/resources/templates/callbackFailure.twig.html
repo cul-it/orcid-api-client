@@ -1,15 +1,8 @@
-<html>
-<head>
-  <title>ORCID API Client test webapp</title>
-</head>
-<body>
-  <H1>Callback Failure</H1>
-  
+{% extends "parent.twig.html" %}
+{% set title = "Callback Failure" %}
+
+{% block body %}
   <p>{{message}}</p>
   <p>state={{state}}</p>
+{% endblock body %}
 
-  <p>
-    <a href="{{mainPageUrl}}">cancel</a>
-  </p>
-
-</body>

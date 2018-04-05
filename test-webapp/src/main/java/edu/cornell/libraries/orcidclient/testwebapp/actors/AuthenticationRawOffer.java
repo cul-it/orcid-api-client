@@ -3,14 +3,12 @@
 package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
-import static org.jtwig.JtwigTemplate.classpathTemplate;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,7 +18,7 @@ import org.jtwig.JtwigModel;
 import edu.cornell.libraries.orcidclient.OrcidClientException;
 
 /**
- * TODO
+ * Offer the user a chance to do a "raw" authentication.
  */
 public class AuthenticationRawOffer extends AbstractActor {
 	public static final String CALLBACK_STATE = "AuthenticationRawCallback";
@@ -40,16 +38,12 @@ public class AuthenticationRawOffer extends AbstractActor {
 					.addParameter("response_type", "code")
 					.addParameter("redirect_uri", occ.getCallbackUrl())
 					.addParameter("state", CALLBACK_STATE).build();
-
-			JtwigModel model = JtwigModel.newModel().with("authRequestUrl",
-					requestUri.toString());
-
-			String path = "/templates/authenticateRaw.twig.html";
-			ServletOutputStream outputStream = resp.getOutputStream();
-			classpathTemplate(path).render(model, outputStream);
+			
+			render("/templates/authenticateRaw.twig.html", //
+					JtwigModel.newModel() //
+							.with("authRequestUrl", requestUri.toString()));
 		} catch (URISyntaxException e) {
 			throw new ServletException(e);
 		}
 	}
-
 }

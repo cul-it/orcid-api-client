@@ -1,10 +1,7 @@
-<html>
-<head>
-  <title>ORCID API Client test webapp</title>
-</head>
-<body>
-  <h1>ORCID API Client test webapp</h1>
-	
+{% extends "parent.twig.html" %}
+{% set title = "Index" %}
+
+{% block body %}
   <form action="request">
     <div>
       <input type="submit" name="RawAuthentication" value="Raw Authentication"><br>
@@ -20,5 +17,8 @@
       <input type="submit" name="AddExternalId" value="Add External ID"><br>
       <input type="submit" name="RestrictExternalIds" value="Restrict External IDs"><br>
   </form>
-</body>
-</html>
+{% endblock body %}
+
+{% block mainPageLink %}
+<!-- Already at the main page -->
+{% endblock mainPageLink %}

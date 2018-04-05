@@ -1,0 +1,27 @@
+<html>
+<head>
+  <title>ORCID API Client test webapp: {{title}}</title>
+  <style>
+    form {
+      border: thin solid gray;
+      padding: 5px;
+      margin: 5px;
+      width: 50%;
+    }
+  </style>
+</head>
+<body>
+  <h1>{{title}}</h1>
+
+  {% block body %}
+  <h1>SPECIFY A BODY BLOCK</h1>
+  {% endblock body %}  
+
+  {% block mainPageLink %}
+  <p>
+    <a href="{{mainPageUrl}}">Main index</a>
+  </p>
+  {% endblock mainPageLink %}
+
+</body>
+</html>

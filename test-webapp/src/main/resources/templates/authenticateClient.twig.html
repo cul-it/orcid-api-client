@@ -1,10 +1,7 @@
-<html>
-<head>
-  <title>ORCID API Client test webapp</title>
-</head>
-<body>
-  <H1>Client-based Authentication Callback</H1>
-  
+{% extends "parent.twig.html" %}
+{% set title = "Client-based Authentication" %}
+
+{% block body %}
   <p>
     This will direct the ORCID client to walk through the Authentication process.
   </p>
@@ -27,9 +24,5 @@
       <input type="submit" name="ClientAuthenticationRequest" value="Do it."><br>
     </div>
   </form> 
-
-  <p>
-    <a href=".">cancel</a>
-  </p>
-
 </body>
+{% endblock body %}

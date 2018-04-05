@@ -14,11 +14,9 @@ import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress;
 import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 
 /**
- * TODO
+ * The user has asked for client-based authentication. Start the dance.
  */
 public class AuthenticationClientRequest extends AbstractActor {
-	public static final String CALLBACK_PATH_INFO = "AuthenticationClientCallback";
-
 	private final OrcidAuthorizationClient authClient;
 
 	public AuthenticationClientRequest(HttpServletRequest req,
@@ -30,10 +28,11 @@ public class AuthenticationClientRequest extends AbstractActor {
 	@Override
 	public void exec()
 			throws IOException, ServletException, OrcidClientException {
+		ApiScope scope = getScopeFromRequest();
 		AuthorizationStateProgress progress = authClient
-				.createProgressObject(getScopeFromRequest(), callbackUrl());
-		String authUrl = authClient.buildAuthorizationCall(progress);
-		resp.sendRedirect(authUrl);
+				.createProgressObject(scope, callbackUrl());
+
+		resp.sendRedirect(authClient.buildAuthorizationCall(progress));
 	}
 
 	private ApiScope getScopeFromRequest() {
