@@ -1,0 +1,35 @@
+<html>
+<head>
+  <title>ORCID API Client test webapp</title>
+</head>
+<body>
+  <H1>Client-based Authentication Callback</H1>
+  
+  <p>
+    This will direct the ORCID client to walk through the Authentication process.
+  </p>
+  <p>
+    Select a scope, click the link, and you will be sent to the ORCID page, which will ask you to log in, and authorize the authentication.
+    Then you will be sent back here, where you will see the resulting token, which can also be stored in the cache.
+  </p>
+ 
+  <form action="request" method="get">
+    <div> 
+      Select an authentication scope: 
+      <select name="scope">
+      {% for scope in scopes %}
+        <option value="{{scope}}">{{scope}}</option>
+      {% endfor %}
+      </select>
+    </div>
+  
+    <div>
+      <input type="submit" name="ClientAuthenticationRequest" value="Do it."><br>
+    </div>
+  </form> 
+
+  <p>
+    <a href=".">cancel</a>
+  </p>
+
+</body>

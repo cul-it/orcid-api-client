@@ -2,61 +2,37 @@
 
 package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
 import static org.jtwig.JtwigTemplate.classpathTemplate;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.jtwig.JtwigModel;
 
-import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
+import edu.cornell.libraries.orcidclient.actions.ApiScope;
 
 /**
- * TODO
+ * Offer to do a client-based Authentication. Provide a list of available
+ * scopes.
  */
-public class AuthenticationClientOffer {
-	static {
-		if (true)
-			throw new RuntimeException(
-					"ClientAuthenticationRequester not implemented.");
-	}
-	public static final String CALLBACK_STATE = "ClientAuthenticationCallback";
-	private final HttpServletRequest req;
-	private final HttpServletResponse resp;
-
+public class AuthenticationClientOffer extends AbstractActor {
 	public AuthenticationClientOffer(HttpServletRequest req,
 			HttpServletResponse resp) {
-		this.req = req;
-		this.resp = resp;
+		super(req, resp);
 	}
 
+	@Override
 	public void exec() throws IOException, ServletException {
-		OrcidClientContext occ = OrcidClientContext.getInstance();
-		try {
-			URI requestUri = new URIBuilder(occ.getAuthCodeRequestUrl())
-					.addParameter("client_id", occ.getSetting(CLIENT_ID))
-					.addParameter("scope", "/authenticate")
-					.addParameter("response_type", "code")
-					.addParameter("redirect_uri", occ.getCallbackUrl())
-					.addParameter("state", CALLBACK_STATE).build();
+		JtwigModel model = JtwigModel.newModel() //
+				.with("scopes", ApiScope.values());
 
-			JtwigModel model = JtwigModel.newModel().with("authRequestUrl",
-					requestUri.toString());
-
-			String path = "/templates/authenticateClient.twig.html";
-			ServletOutputStream outputStream = resp.getOutputStream();
-			classpathTemplate(path).render(model, outputStream);
-		} catch (URISyntaxException e) {
-			throw new ServletException(e);
-		}
+		String path = "/templates/authenticateClient.twig.html";
+		ServletOutputStream outputStream = resp.getOutputStream();
+		classpathTemplate(path).render(model, outputStream);
 	}
 
 }

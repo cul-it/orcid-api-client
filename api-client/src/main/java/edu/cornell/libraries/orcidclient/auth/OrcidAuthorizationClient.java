@@ -2,8 +2,11 @@
 
 package edu.cornell.libraries.orcidclient.auth;
 
+import java.net.URI;
+
 import javax.servlet.http.HttpServletRequest;
 
+import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.actions.ApiScope;
 
 /**
@@ -51,8 +54,10 @@ public abstract class OrcidAuthorizationClient {
 	 * authorization request.
 	 * 
 	 * Return the redirect URL for either success or failure, as appropriate.
+	 * @throws OrcidClientException
 	 */
-	public abstract String processAuthorizationResponse(HttpServletRequest req);
+	public abstract String processAuthorizationResponse(HttpServletRequest req)
+			throws OrcidClientException;
 
 	/**
 	 * Find out where we stand for this scope.
@@ -61,33 +66,44 @@ public abstract class OrcidAuthorizationClient {
 			ApiScope scope);
 
 	/**
-	 * Create a URL with appropriate parameters to seek authorization for this
-	 * scope.
-	 * 
-	 * The URL can be sent to the browser as a re-direct to kick off the OAuth
-	 * negotiation.
+	 * Create a progress object to use in seeking authorization for this scope.
+	 * Add it to the cache, so it can be used to track the progress of the
+	 * authorization proceess.
 	 * 
 	 * @param returnUrl
 	 *            When the negotiation is complete, redirect the browser to this
 	 *            URL.
+	 * @throws OrcidClientException
 	 */
-	public abstract String buildAuthorizationCall(ApiScope scope,
-			String returnUrl);
+	public abstract AuthorizationStateProgress createProgressObject(
+			ApiScope scope, URI returnUrl) throws OrcidClientException;
 
 	/**
-	 * Create a URL with appropriate parameters to seek authorization for this
-	 * scope.
-	 * 
-	 * The URL can be sent to the browser as a re-direct to kick off the OAuth
-	 * negotiation.
+	 * Create a progress object to use in seeking authorization for this scope.
+	 * Add it to the cache, so it can be used to track the progress of the
+	 * authorization proceess.
 	 * 
 	 * @param successUrl
 	 *            If the negotiation succeeds, redirect the browser to this URL.
 	 * @param failureUrl
 	 *            If the negotiation fails, redirect the browser to this URL.
+	 * @throws OrcidClientException
 	 */
-	public abstract String buildAuthorizationCall(ApiScope scope,
-			String successUrl, String failureUrl);
+	public abstract AuthorizationStateProgress createProgressObject(
+			ApiScope scope, URI successUrl, URI failureUrl)
+			throws OrcidClientException;
+
+	/**
+	 * Create a URL with appropriate parameters to seek authorization for this
+	 * authorization process.
+	 * 
+	 * The URL can be sent to the browser as a re-direct to kick off the OAuth
+	 * negotiation.
+	 * 
+	 * @throws OrcidClientException
+	 */
+	public abstract String buildAuthorizationCall(
+			AuthorizationStateProgress progress) throws OrcidClientException;
 
 	/**
 	 * Get the AccessToken for this scope. It might have been obtained during
@@ -98,4 +114,11 @@ public abstract class OrcidAuthorizationClient {
 	 */
 	public abstract AccessToken getAccessToken(ApiScope scope)
 			throws IllegalStateException;
+
+	/**
+	 * Look in the cache for a progress indicator with this ID.
+	 * 
+	 * @returns the requested progress indicator, or null.
+	 */
+	public abstract AuthorizationStateProgress getProgressById(String id);
 }

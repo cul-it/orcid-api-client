@@ -81,7 +81,8 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 
 	private void figureCallbackUrl() throws OrcidClientException {
 		try {
-			callbackUrl = resolvePathWithWebapp(getSetting(CALLBACK_PATH));
+			callbackUrl = resolvePathWithWebapp(getSetting(CALLBACK_PATH))
+					.toString();
 		} catch (URISyntaxException e) {
 			throw new OrcidClientException(String.format(
 					"Failed to resolve the callback path: `%s` is `%s`, `%s` is `%s`",
@@ -136,9 +137,8 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	}
 
 	@Override
-	public String resolvePathWithWebapp(String path) throws URISyntaxException {
-		return URIUtils.resolve(new URI(getSetting(WEBAPP_BASE_URL)), path)
-				.toString();
+	public URI resolvePathWithWebapp(String path) throws URISyntaxException {
+		return URIUtils.resolve(new URI(getSetting(WEBAPP_BASE_URL)), path);
 	}
 
 	@Override

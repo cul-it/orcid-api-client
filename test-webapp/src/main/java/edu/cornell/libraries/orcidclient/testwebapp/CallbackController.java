@@ -2,22 +2,29 @@
 
 package edu.cornell.libraries.orcidclient.testwebapp;
 
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
+import static org.jtwig.JtwigTemplate.classpathTemplate;
+
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jtwig.JtwigModel;
 
+import edu.cornell.libraries.orcidclient.OrcidClientException;
+import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientCallback;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawCallback;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
 
@@ -40,19 +47,34 @@ public class CallbackController extends HttpServlet {
 		if (log.isDebugEnabled()) {
 			log.debug("Request parameters: " + dumpParameterMap(req));
 		}
-		if (AuthenticationRawOffer.CALLBACK_STATE.equals(req.getParameter("state"))) {
-			new AuthenticationRawCallback(req, resp).exec();
+
+		OrcidAuthorizationClient auth = occ.getAuthorizationClient(req);
+
+		try {
+			String state = req.getParameter("state");
+			if (AuthenticationRawOffer.CALLBACK_STATE.equals(state)) {
+				new AuthenticationRawCallback(req, resp).exec();
+			} else if (auth.getProgressById(state) != null) {
+				new AuthenticationClientCallback(req, resp).exec();
+			} else {
+				fail(resp, state, "Didn't recognize the callback");
+			}
+
+		} catch (OrcidClientException e) {
+			throw new ServletException(e);
 		}
 	}
 
-	private void fail(HttpServletResponse resp, String message)
+	private void fail(HttpServletResponse resp, String state, String message)
 			throws IOException {
-		resp.setContentType("text/html");
-		PrintWriter out = resp.getWriter();
-		out.println("<html><head></head><body>");
-		out.println("<h1>Callback Failure</h1>");
-		out.println("<h2>" + message + "</h2>");
-		out.println("</body></html");
+		JtwigModel model = JtwigModel.newModel() //
+				.with("message", message) //
+				.with("state", state) //
+				.with("mainPageUrl", occ.getSetting(WEBAPP_BASE_URL));
+
+		String path = "/templates/callbackFailure.twig.html";
+		ServletOutputStream outputStream = resp.getOutputStream();
+		classpathTemplate(path).render(model, outputStream);
 	}
 
 	private String dumpParameterMap(HttpServletRequest req) {

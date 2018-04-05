@@ -2,6 +2,7 @@
 
 package edu.cornell.libraries.orcidclient.context;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
@@ -105,19 +106,11 @@ public abstract class OrcidClientContext implements OrcidAuthorizationClientCont
 	public abstract OrcidAuthorizationClient getAuthorizationClient(
 			HttpServletRequest req);
 
-	public abstract String getSetting(Setting setting);
-
-	public abstract String getCallbackUrl();
-
-	public abstract String getAuthCodeRequestUrl();
-
-	public abstract String getAccessTokenRequestUrl();
-
 	public abstract String getApiPublicUrl();
 
 	public abstract String getApiMemberUrl();
 
-	public abstract String resolvePathWithWebapp(String path)
+	public abstract URI resolvePathWithWebapp(String path)
 			throws URISyntaxException;
 
 	// ----------------------------------------------------------------------
@@ -170,7 +163,7 @@ public abstract class OrcidClientContext implements OrcidAuthorizationClientCont
 		}
 
 		@Override
-		public String resolvePathWithWebapp(String path) {
+		public URI resolvePathWithWebapp(String path) {
 			throw new IllegalStateException(MESSAGE);
 		}
 

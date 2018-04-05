@@ -33,6 +33,12 @@ import edu.cornell.libraries.orcidclient.actions.ApiScope;
  * </pre>
  */
 public class AccessToken {
+	public static final AccessToken NO_TOKEN = new AccessToken();
+
+	// ----------------------------------------------------------------------
+	// The factory
+	// ----------------------------------------------------------------------
+
 	static AccessToken parse(String jsonString) throws OrcidClientException {
 		try {
 			return new AccessToken(jsonString);
@@ -40,6 +46,10 @@ public class AccessToken {
 			throw new OrcidClientException("Failed to parse AccessToken", e);
 		}
 	}
+
+	// ----------------------------------------------------------------------
+	// The instance
+	// ----------------------------------------------------------------------
 
 	private final String jsonString;
 	private final String token;
@@ -76,6 +86,17 @@ public class AccessToken {
 		} else {
 			return (T) map.get(key);
 		}
+	}
+
+	private AccessToken() {
+		this.jsonString = "\"NO_JSON_STRING\"";
+		this.token = "NO_TOKEN";
+		this.type = "NO_TYPE";
+		this.refreshToken = "NO_REFRESH_TOKEN";
+		this.expiresIn = -1;
+		this.scope = null;
+		this.name = "NO_NAME";
+		this.orcid = "NO_ORCID";
 	}
 
 	public String getJsonString() {
@@ -116,8 +137,8 @@ public class AccessToken {
 
 	@Override
 	public String toString() {
-		return String.format(
-				"AccessToken[jsonString=%s, token=%s, type=%s, refreshToken=%s, expiresIn=%s, scope=%s, name=%s, orcid=%s]",
+		return String.format("AccessToken[jsonString=%s, token=%s, type=%s, "
+				+ "refreshToken=%s, expiresIn=%s, scope=%s, name=%s, orcid=%s]",
 				jsonString, token, type, refreshToken, expiresIn, scope, name,
 				orcid);
 	}

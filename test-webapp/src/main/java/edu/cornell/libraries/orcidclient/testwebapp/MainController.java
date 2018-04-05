@@ -21,8 +21,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jtwig.JtwigModel;
 
+import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientOffer;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientRequest;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
 
 /**
@@ -46,18 +48,20 @@ public class MainController extends HttpServlet {
 			log.debug("Request parameters: " + dumpParameterMap(req));
 		}
 
-		if (req.getParameter("RawAuthentication") != null) {
-			new AuthenticationRawOffer(req, resp).exec();
-			 } else if (req.getParameter("ClientAuthentication") != null) {
-			new AuthenticationClientOffer(req, resp).exec();
-			// } else if (req.getParameter("ReadProfile") != null) {
-			// new ProfileReader(req, resp).exec();
-			// } else if (req.getParameter("AddExternalId") != null) {
-			// new ExternalIdAdder(req, resp).exec();
-			// } else if (req.getParameter("RestrictExternalIds") != null) {
-			// new ExternalIdRestrictor(req, resp).exec();
-		} else {
-			doFrontPage(req, resp);
+		try {
+			if (req.getParameter("RawAuthentication") != null) {
+				new AuthenticationRawOffer(req, resp).exec();
+			} else if (req.getParameter("ClientAuthentication") != null) {
+				new AuthenticationClientOffer(req, resp).exec();
+			} else if (req
+					.getParameter("ClientAuthenticationRequest") != null) {
+				new AuthenticationClientRequest(req, resp).exec();
+			} else {
+				doFrontPage(req, resp);
+			}
+		} catch (OrcidClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

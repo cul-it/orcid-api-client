@@ -17,24 +17,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.client.utils.URIBuilder;
 import org.jtwig.JtwigModel;
 
-import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
+import edu.cornell.libraries.orcidclient.OrcidClientException;
 
 /**
  * TODO
  */
-public class AuthenticationRawOffer {
+public class AuthenticationRawOffer extends AbstractActor {
 	public static final String CALLBACK_STATE = "AuthenticationRawCallback";
-	private final HttpServletRequest req;
-	private final HttpServletResponse resp;
 
 	public AuthenticationRawOffer(HttpServletRequest req,
 			HttpServletResponse resp) {
-		this.req = req;
-		this.resp = resp;
+		super(req, resp);
 	}
 
-	public void exec() throws IOException, ServletException {
-		OrcidClientContext occ = OrcidClientContext.getInstance();
+	@Override
+	public void exec()
+			throws IOException, ServletException, OrcidClientException {
 		try {
 			URI requestUri = new URIBuilder(occ.getAuthCodeRequestUrl())
 					.addParameter("client_id", occ.getSetting(CLIENT_ID))

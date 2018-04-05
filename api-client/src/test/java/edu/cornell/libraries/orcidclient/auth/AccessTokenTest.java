@@ -3,7 +3,7 @@
 package edu.cornell.libraries.orcidclient.auth;
 
 import static edu.cornell.libraries.orcidclient.actions.ApiScope.ACTIVITIES_UPDATE;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
