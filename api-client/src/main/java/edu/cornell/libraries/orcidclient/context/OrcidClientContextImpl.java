@@ -24,8 +24,6 @@ import org.apache.http.client.utils.URIUtils;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.actions.OrcidApiClient;
-import edu.cornell.libraries.orcidclient.auth.DefaultOrcidAuthorizationClient;
-import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 
 /**
  * Read the supplied settings, validate them, adjust them as appropriate, and be
@@ -128,12 +126,6 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	@Override
 	public OrcidApiClient getApiClient(HttpServletRequest req) {
 		return new OrcidApiClient(this, req);
-	}
-
-	@Override
-	public OrcidAuthorizationClient getAuthorizationClient(
-			HttpServletRequest req) {
-		return new DefaultOrcidAuthorizationClient(this, req);
 	}
 
 	@Override

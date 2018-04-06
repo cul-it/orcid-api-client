@@ -9,8 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
+import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgressCache;
 import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
+import edu.cornell.libraries.orcidclient.http.BaseHttpPostRequester;
+import edu.cornell.libraries.orcidclient.http.HttpPostRequester;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientCallback;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawCallback;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
@@ -22,16 +25,18 @@ import edu.cornell.libraries.orcidclient.testwebapp.actors.CallbackFailed;
  */
 public class CallbackController extends AbstractController {
 	private OrcidClientContext occ;
+	private HttpPostRequester httpPoster;
 
 	@Override
 	public void init() throws ServletException {
 		occ = OrcidClientContext.getInstance();
+		httpPoster = new BaseHttpPostRequester();
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		OrcidAuthorizationClient auth = occ.getAuthorizationClient(req);
+		OrcidAuthorizationClient auth = getAuthorizationClient();
 
 		try {
 			String state = req.getParameter("state");
@@ -45,5 +50,10 @@ public class CallbackController extends AbstractController {
 		} catch (OrcidClientException e) {
 			throw new ServletException(e);
 		}
+	}
+
+	private OrcidAuthorizationClient getAuthorizationClient() {
+		return new OrcidAuthorizationClient(occ,
+				AuthorizationStateProgressCache.getCache(occ), httpPoster);
 	}
 }

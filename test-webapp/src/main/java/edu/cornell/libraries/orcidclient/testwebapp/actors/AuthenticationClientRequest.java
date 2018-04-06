@@ -22,7 +22,7 @@ public class AuthenticationClientRequest extends AbstractActor {
 	public AuthenticationClientRequest(HttpServletRequest req,
 			HttpServletResponse resp) {
 		super(req, resp);
-		this.authClient = occ.getAuthorizationClient(req);
+		this.authClient = getAuthorizationClient(); 
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class AuthenticationClientRequest extends AbstractActor {
 			throws IOException, ServletException, OrcidClientException {
 		ApiScope scope = getScopeFromRequest();
 		AuthorizationStateProgress progress = authClient
-				.createProgressObject(scope, callbackUrl());
+				.createProgressObject(scope, callbackUrl(), callbackUrl());
 
 		resp.sendRedirect(authClient.buildAuthorizationCall(progress));
 	}

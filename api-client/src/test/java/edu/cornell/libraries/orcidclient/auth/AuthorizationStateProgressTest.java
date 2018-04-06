@@ -23,4 +23,16 @@ public class AuthorizationStateProgressTest extends AbstractTestClass {
 		fail("failure not implemented");
 	}
 
+	/**
+	 * Test plan:
+	 * <pre>
+	 * addFailure sets both state and details
+	 * 
+	 * addState just sets state
+	 * 
+	 * addCode sets state and details
+	 * 
+	 * addAccessToken sets state and details
+	 * </pre>
+	 */
 }

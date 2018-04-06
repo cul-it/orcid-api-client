@@ -5,12 +5,14 @@ package edu.cornell.libraries.orcidclient.auth;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.cornell.libraries.orcidclient.actions.ApiScope;
+
 /**
  * TODO
  * 
  * THIS SHOULD BE AN INTERFACE, WITH A SESSION-BASED IMPLEMENTATION.
  */
-class AuthorizationStateProgressCache {
+public class AuthorizationStateProgressCache {
 	
 	// ----------------------------------------------------------------------
 	// The factory
@@ -34,7 +36,7 @@ class AuthorizationStateProgressCache {
 	private final Map<String, AuthorizationStateProgress> progressMap = new HashMap<>();
 	
 
-	public AuthorizationStateProgressCache(
+	private AuthorizationStateProgressCache(
 			OrcidAuthorizationClientContext context) {
 		this.context = context;
 	}
@@ -48,6 +50,23 @@ class AuthorizationStateProgressCache {
 	 */
 	public AuthorizationStateProgress getByID(String id) {
 		return progressMap.get(id);
+	}
+
+	/**
+	 * @param scope
+	 * @return
+	 */
+	public AuthorizationStateProgress getByScope(ApiScope scope) {
+		throw new RuntimeException(
+				"AuthorizationStateProgressCache.getByScope not implemented.");
+	}
+
+	/**
+	 * @param scope
+	 */
+	public void clearScopeProgress(ApiScope scope) {
+		throw new RuntimeException(
+				"AuthorizationStateProgressCache.clearScopeProgress not implemented.");
 	}
 
 }

@@ -16,6 +16,7 @@ import org.jtwig.JtwigModel;
 import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress;
 import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
+import edu.cornell.libraries.orcidclient.util.ParameterMap;
 
 /**
  * When the client-based authentication is complete, show them the results.
@@ -32,11 +33,11 @@ public class AuthenticationClientCallback extends AbstractActor {
 	@Override
 	public void exec()
 			throws ServletException, IOException, OrcidClientException {
-		OrcidAuthorizationClient auth = occ.getAuthorizationClient(req);
+		OrcidAuthorizationClient auth = getAuthorizationClient();
 		String state = req.getParameter("state");
 
 		progressBefore = copy(auth.getProgressById(state));
-		auth.processAuthorizationResponse(req);
+		auth.processAuthorizationResponse(new ParameterMap(req));
 		progressAfter = copy(auth.getProgressById(state));
 
 		render("/templates/authenticateClientCallback.twig.html", //

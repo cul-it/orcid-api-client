@@ -13,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.actions.OrcidApiClient;
-import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClientContext;
 
 /**
@@ -103,9 +102,6 @@ public abstract class OrcidClientContext implements OrcidAuthorizationClientCont
 
 	public abstract OrcidApiClient getApiClient(HttpServletRequest req);
 
-	public abstract OrcidAuthorizationClient getAuthorizationClient(
-			HttpServletRequest req);
-
 	public abstract String getApiPublicUrl();
 
 	public abstract String getApiMemberUrl();
@@ -123,12 +119,6 @@ public abstract class OrcidClientContext implements OrcidAuthorizationClientCont
 
 		@Override
 		public OrcidApiClient getApiClient(HttpServletRequest req) {
-			throw new IllegalStateException(MESSAGE);
-		}
-
-		@Override
-		public OrcidAuthorizationClient getAuthorizationClient(
-				HttpServletRequest req) {
 			throw new IllegalStateException(MESSAGE);
 		}
 

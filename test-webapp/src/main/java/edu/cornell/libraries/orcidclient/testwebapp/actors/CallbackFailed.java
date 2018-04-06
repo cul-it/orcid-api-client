@@ -3,7 +3,6 @@
 package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
-import static org.jtwig.JtwigTemplate.classpathTemplate;
 
 import java.io.IOException;
 

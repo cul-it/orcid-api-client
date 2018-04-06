@@ -16,7 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.jtwig.JtwigModel;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
+import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgressCache;
+import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
+import edu.cornell.libraries.orcidclient.http.BaseHttpPostRequester;
 
 /**
  * TODO
@@ -49,4 +52,10 @@ public abstract class AbstractActor {
 		}
 	}
 
+	/** Could be in the constructor, but not every Actor wants one. */
+	protected OrcidAuthorizationClient getAuthorizationClient() {
+		return new OrcidAuthorizationClient(occ,
+				AuthorizationStateProgressCache.getCache(occ),
+				new BaseHttpPostRequester());
+	}
 }
