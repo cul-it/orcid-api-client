@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,11 +40,12 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 
 	public OrcidClientContextImpl(Map<Setting, String> settings)
 			throws OrcidClientException {
+		Objects.requireNonNull(settings, "'settings' may not be null.");
 		this.settings = new EnumMap<>(settings);
 
 		adjustSettingsForPlatform();
 		complainAboutMissingSettings();
-		ensureWebappBaseEndsWithSlash();
+		ensureBaseUrlsEndWithSlash();
 		figureCallbackUrl();
 	}
 
@@ -64,16 +66,22 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 
 	private void complainAboutMissingSettings() throws MissingSettingException {
 		for (Setting s : Setting.values()) {
-			if (!settings.containsKey(s)) {
+			if (s.isRequired() && !settings.containsKey(s)) {
 				throw new MissingSettingException(s);
 			}
 		}
 	}
 
-	private void ensureWebappBaseEndsWithSlash() {
-		String base = getSetting(WEBAPP_BASE_URL);
+	private void ensureBaseUrlsEndWithSlash() {
+		ensureSettingEndsWithSlash(PUBLIC_API_BASE_URL);
+		ensureSettingEndsWithSlash(AUTHORIZED_API_BASE_URL);
+		ensureSettingEndsWithSlash(WEBAPP_BASE_URL);
+	}
+
+	private void ensureSettingEndsWithSlash(Setting key) {
+		String base = getSetting(key);
 		if (!base.endsWith("/")) {
-			settings.put(WEBAPP_BASE_URL, base + "/");
+			settings.put(key, base + "/");
 		}
 	}
 
@@ -139,7 +147,7 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 				+ callbackUrl + "]";
 	}
 
-	private static class MissingSettingException extends OrcidClientException {
+	static class MissingSettingException extends OrcidClientException {
 		public MissingSettingException(Setting missingSetting) {
 			super(toMessage(missingSetting));
 		}

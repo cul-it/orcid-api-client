@@ -133,7 +133,8 @@ public class OrcidAuthorizationClient {
 	/**
 	 * Find out where we stand for this scope.
 	 */
-	public AuthProcessResolution getAuthProcessResolution(ApiScope scope) {
+	public AuthProcessResolution getAuthProcessResolution(ApiScope scope)
+			throws OrcidClientException {
 		switch (cache.getByScope(scope).getState()) {
 		case DENIED:
 			return AuthProcessResolution.DENIED;
@@ -154,7 +155,7 @@ public class OrcidAuthorizationClient {
 	 *             If the resolution for this scope is not SUCCESS.
 	 */
 	public AccessToken getAccessToken(ApiScope scope)
-			throws IllegalStateException {
+			throws IllegalStateException, OrcidClientException {
 		AuthorizationStateProgress progress = cache.getByScope(scope);
 		if (progress.getState() != State.SUCCESS) {
 			throw new IllegalStateException(
@@ -169,7 +170,8 @@ public class OrcidAuthorizationClient {
 	 * 
 	 * @returns the requested progress indicator, or null.
 	 */
-	public AuthorizationStateProgress getProgressById(String id) {
+	public AuthorizationStateProgress getProgressById(String id)
+			throws OrcidClientException {
 		return cache.getByID(id);
 	}
 
@@ -209,7 +211,7 @@ public class OrcidAuthorizationClient {
 		if (State.SUCCESS != progress.getState()) {
 			return progress.getFailureUrl().toString();
 		}
-		
+
 		return progress.getSuccessUrl().toString();
 	}
 
@@ -257,13 +259,14 @@ public class OrcidAuthorizationClient {
 	}
 
 	private String fail(AuthorizationStateProgress progress,
-			FailureDetails details) {
+			FailureDetails details) throws OrcidClientException {
 		log.warn(details.describe() + " : " + progress);
 		storeProgressById(progress.addFailure(details));
 		return progress.getFailureUrl().toString();
 	}
 
-	private void storeProgressById(AuthorizationStateProgress progress) {
+	private void storeProgressById(AuthorizationStateProgress progress)
+			throws OrcidClientException {
 		cache.store(progress);
 	}
 

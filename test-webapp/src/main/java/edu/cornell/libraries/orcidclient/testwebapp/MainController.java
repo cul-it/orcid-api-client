@@ -13,6 +13,7 @@ import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientOffer;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientRequest;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.CacheManagement;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.IndexPage;
 
 /**
@@ -37,6 +38,9 @@ public class MainController extends AbstractController {
 			} else if (req
 					.getParameter("ClientAuthenticationRequest") != null) {
 				new AuthenticationClientRequest(req, resp).exec();
+			} else if (req
+					.getParameter("CacheManagement") != null) {
+				new CacheManagement(req, resp).exec();
 			} else {
 				new IndexPage(req, resp).exec();
 			}

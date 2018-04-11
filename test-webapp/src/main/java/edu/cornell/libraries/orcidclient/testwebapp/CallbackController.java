@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
-import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgressCache;
 import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
 import edu.cornell.libraries.orcidclient.http.BaseHttpPostRequester;
@@ -18,6 +17,7 @@ import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientC
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawCallback;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.CallbackFailed;
+import edu.cornell.libraries.orcidclient.testwebapp.support.WebappCache;
 
 /**
  * ORCID has issued a redirect to here. Read the "state" parameter to figure out
@@ -36,9 +36,9 @@ public class CallbackController extends AbstractController {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		OrcidAuthorizationClient auth = getAuthorizationClient();
-
 		try {
+			OrcidAuthorizationClient auth = getAuthorizationClient();
+			
 			String state = req.getParameter("state");
 			if (AuthenticationRawOffer.CALLBACK_STATE.equals(state)) {
 				new AuthenticationRawCallback(req, resp).exec();
@@ -52,8 +52,9 @@ public class CallbackController extends AbstractController {
 		}
 	}
 
-	private OrcidAuthorizationClient getAuthorizationClient() {
-		return new OrcidAuthorizationClient(occ,
-				AuthorizationStateProgressCache.getCache(occ), httpPoster);
+	private OrcidAuthorizationClient getAuthorizationClient()
+			throws OrcidClientException {
+		return new OrcidAuthorizationClient(occ, WebappCache.getCache(),
+				httpPoster);
 	}
 }

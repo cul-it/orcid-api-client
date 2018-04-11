@@ -39,7 +39,7 @@ public class AccessToken {
 	// The factory
 	// ----------------------------------------------------------------------
 
-	static AccessToken parse(String jsonString) throws OrcidClientException {
+	public static AccessToken parse(String jsonString) throws OrcidClientException {
 		try {
 			return new AccessToken(jsonString);
 		} catch (IOException e) {

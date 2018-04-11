@@ -2,6 +2,9 @@
 
 package edu.cornell.libraries.orcidclient.context;
 
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.SettingConstraint.OPTIONAL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.SettingConstraint.REQUIRED;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -21,58 +24,70 @@ import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClientContext;
 public abstract class OrcidClientContext implements OrcidAuthorizationClientContext {
 	private static final Log log = LogFactory.getLog(OrcidClientContext.class);
 
+	public enum SettingConstraint {REQUIRED, OPTIONAL}
+	
 	public enum Setting {
 		/**
 		 * ID assigned by ORCID to the application.
 		 */
-		CLIENT_ID,
+		CLIENT_ID(REQUIRED),
 		
 		/**
 		 * Secret code assigned by ORCID to the application.
 		 */
-		CLIENT_SECRET,
+		CLIENT_SECRET(REQUIRED),
 
 		/**
 		 * Environment - "public" or "sandbox".
 		 */
-		API_PLATFORM,
+		API_PLATFORM(OPTIONAL),
 
 		/**
 		 * Root of the public API (requires no authorization). If API_PLATFORM
 		 * is "custom", this is required.
 		 */
-		PUBLIC_API_BASE_URL,
+		PUBLIC_API_BASE_URL(REQUIRED),
 
 		/**
 		 * Root of the restricted API (requires authorization). If API_PLATFORM
 		 * is "custom", this is required.
 		 */
-		AUTHORIZED_API_BASE_URL,
+		AUTHORIZED_API_BASE_URL(REQUIRED),
 
 		/**
 		 * URL to obtain an authorization code. This is sent to the browser as a
 		 * redirect, so the user can log in at the ORCID site. If API_PLATFORM
 		 * is "custom", this is required.
 		 */
-		OAUTH_AUTHORIZE_URL,
+		OAUTH_AUTHORIZE_URL(REQUIRED),
 
 		/**
 		 * URL to exchange the authorization code for an OAuth access token. If
 		 * API_PLATFORM is "custom", this is required.
 		 */
-		OAUTH_TOKEN_URL,
+		OAUTH_TOKEN_URL(REQUIRED),
 
 		/**
 		 * The base URL for contacting this webapp (including context path. Used
 		 * when building the redirect URL for the browser.
 		 */
-		WEBAPP_BASE_URL,
+		WEBAPP_BASE_URL(REQUIRED),
 
 		/**
 		 * Where should ORCID call back to during the auth dance? Path within
 		 * this webapp.
 		 */
-		CALLBACK_PATH;
+		CALLBACK_PATH(REQUIRED);
+		
+		private final SettingConstraint constraint;
+		
+		Setting(SettingConstraint constraint) {
+			this.constraint = constraint;
+		}
+		
+		public boolean isRequired() {
+			return REQUIRED == constraint;
+		}
 	}
 
 	// ----------------------------------------------------------------------

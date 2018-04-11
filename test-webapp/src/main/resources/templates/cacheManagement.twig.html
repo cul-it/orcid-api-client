@@ -1,0 +1,22 @@
+{% extends "parent.twig.html" %}
+{% set title = "Cache Management" %}
+
+{% block body %}
+  <H1>{{message}}</H1>
+  <p>
+    This what the cache looks like.
+  </p>
+  <pre>{{cache}}</pre>
+ 
+  <form action="request" method="get">
+    <div>
+      Want to clear the cache? 
+    </div>
+  
+    <div>
+      <input type="hidden" name="CacheManagement" value="CacheManagement"><br>
+      <input type="submit" name="clear" value="Do it."><br>
+    </div>
+  </form> 
+</body>
+{% endblock body %}

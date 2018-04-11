@@ -2,71 +2,40 @@
 
 package edu.cornell.libraries.orcidclient.auth;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.actions.ApiScope;
 
 /**
- * TODO
+ * Hold that progress of the authentication dance(s).
  * 
- * THIS SHOULD BE AN INTERFACE, WITH A SESSION-BASED IMPLEMENTATION.
+ * Implementations: a session-based cache for VIVO integration, a
+ * session-plus-database cache for Scholars integration, a session-plus-flatfile
+ * cache for the test-webapp, a stub for unit tests.
  */
-public class AuthorizationStateProgressCache {
-	
-	// ----------------------------------------------------------------------
-	// The factory
-	// ----------------------------------------------------------------------
-
-	private static volatile AuthorizationStateProgressCache instance;
-	
-	public static synchronized AuthorizationStateProgressCache getCache(
-			OrcidAuthorizationClientContext context) {
-		if (instance == null) {
-			instance = new AuthorizationStateProgressCache(context);
-		}
-		return instance;
-	}
-
-	// ----------------------------------------------------------------------
-	// The instance
-	// ----------------------------------------------------------------------
-
-	private final OrcidAuthorizationClientContext context;
-	private final Map<String, AuthorizationStateProgress> progressMap = new HashMap<>();
-	
-
-	private AuthorizationStateProgressCache(
-			OrcidAuthorizationClientContext context) {
-		this.context = context;
-	}
-
-	public void store(AuthorizationStateProgress progress) {
-		progressMap.put(progress.getId(), progress);
-	}
+public interface AuthorizationStateProgressCache {
+	/**
+	 * Store this progress in the cache.
+	 * 
+	 * Replace any previous progress for the same scope, or with the same ID.
+	 */
+	void store(AuthorizationStateProgress progress) throws OrcidClientException;
 
 	/**
-	 * Get the requests progress value, or null.
+	 * Fetch the AuthorizationStateProgree that has this ID.
+	 * 
+	 * @return The status, or null
 	 */
-	public AuthorizationStateProgress getByID(String id) {
-		return progressMap.get(id);
-	}
+	AuthorizationStateProgress getByID(String id) throws OrcidClientException;
 
 	/**
-	 * @param scope
-	 * @return
+	 * Fetch the AuthorizationStateProgree that has this scope.
+	 * 
+	 * @return The status, or null
 	 */
-	public AuthorizationStateProgress getByScope(ApiScope scope) {
-		throw new RuntimeException(
-				"AuthorizationStateProgressCache.getByScope not implemented.");
-	}
+	AuthorizationStateProgress getByScope(ApiScope scope) throws OrcidClientException;
 
 	/**
-	 * @param scope
+	 * Remove any AuthorizationStateProgree that has this scope.
 	 */
-	public void clearScopeProgress(ApiScope scope) {
-		throw new RuntimeException(
-				"AuthorizationStateProgressCache.clearScopeProgress not implemented.");
-	}
-
+	void clearScopeProgress(ApiScope scope) throws OrcidClientException;
 }

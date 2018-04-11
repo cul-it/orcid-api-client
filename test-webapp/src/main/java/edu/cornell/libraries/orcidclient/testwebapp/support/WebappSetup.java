@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -37,7 +38,8 @@ public class WebappSetup implements ServletContextListener {
 	public static final String[] WEBAPP_SETTINGS_KEYS = {
 			WEBAPP_CACHE_FILE_KEY };
 
-	private static Map<String, String> webappProperties;
+	private static volatile Map<String, String> webappProperties = Collections
+			.emptyMap();
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
@@ -81,7 +83,7 @@ public class WebappSetup implements ServletContextListener {
 				properties.remove(key);
 			}
 		}
-		return webappProps;
+		return Collections.unmodifiableMap(webappProps);
 	}
 
 	private Map<Setting, String> convertToOrcidSettings(Properties settings) {
@@ -108,7 +110,7 @@ public class WebappSetup implements ServletContextListener {
 		}
 	}
 
-	public Map<String, String> getWebappProperties() {
+	public static Map<String, String> getWebappProperties() {
 		return new HashMap<>(webappProperties);
 	}
 

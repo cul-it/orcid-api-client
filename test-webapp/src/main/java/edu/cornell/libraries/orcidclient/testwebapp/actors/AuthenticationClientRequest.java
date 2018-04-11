@@ -20,9 +20,9 @@ public class AuthenticationClientRequest extends AbstractActor {
 	private final OrcidAuthorizationClient authClient;
 
 	public AuthenticationClientRequest(HttpServletRequest req,
-			HttpServletResponse resp) {
+			HttpServletResponse resp) throws OrcidClientException {
 		super(req, resp);
-		this.authClient = getAuthorizationClient(); 
+		this.authClient = getAuthorizationClient();
 	}
 
 	@Override

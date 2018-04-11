@@ -3,6 +3,7 @@
 package edu.cornell.libraries.orcidclient.auth;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import edu.cornell.libraries.orcidclient.actions.ApiScope;
 
@@ -13,6 +14,15 @@ import edu.cornell.libraries.orcidclient.actions.ApiScope;
  * new object. Be sure to treat it that way.
  */
 public class AuthorizationStateProgress {
+	public static final URI NO_URI = assignNoUri();
+
+	private static URI assignNoUri() {
+		try {
+			return new URI("http://no.uri");
+		} catch (URISyntaxException e) {
+			throw new RuntimeException("Failed to create NO_URI", e);
+		}
+	}
 
 	/**
 	 * Where do we stand in the dance?
