@@ -9,7 +9,7 @@ import org.apache.http.client.fluent.Response;
 import edu.cornell.libraries.orcidclient.http.HttpPostRequester.PostResponse;
 
 /**
- * Use the Fluent library of HttpComponents to implement HttpPostRequester. 
+ * Use the Fluent library of HttpComponents to implement HttpPostRequester.
  */
 public class BasePostResponse implements PostResponse {
 	private final Response response;
@@ -21,6 +21,11 @@ public class BasePostResponse implements PostResponse {
 	@Override
 	public String getContentString() throws IOException {
 		return response.returnContent().asString();
+	}
+
+	@Override
+	public int getStatusCode() throws IOException {
+		return response.returnResponse().getStatusLine().getStatusCode();
 	}
 
 }

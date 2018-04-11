@@ -35,7 +35,7 @@ public class AuthorizationStateProgress {
 	 * If State is FAILURE, what is the reason for failure?
 	 */
 	public enum FailureCause {
-		NONE, INVALID_STATE, ERROR_STATUS, NO_AUTH_CODE, BAD_ACCESS_TOKEN
+		NONE, INVALID_STATE, ERROR_STATUS, NO_AUTH_CODE, BAD_ACCESS_TOKEN, UNKNOWN
 	}
 
 	/**
@@ -166,13 +166,13 @@ public class AuthorizationStateProgress {
 		return authorizationCode;
 	}
 
+	public AuthorizationStateProgress addState(State newState) {
+		return new AuthorizationStateProgress(this, newState, null, null, null);
+	}
+	
 	public AuthorizationStateProgress addFailure(FailureDetails details) {
 		return new AuthorizationStateProgress(this, State.FAILURE, details,
 				null, null);
-	}
-
-	public AuthorizationStateProgress addState(State newState) {
-		return new AuthorizationStateProgress(this, newState, null, null, null);
 	}
 
 	public AuthorizationStateProgress addCode(String code) {

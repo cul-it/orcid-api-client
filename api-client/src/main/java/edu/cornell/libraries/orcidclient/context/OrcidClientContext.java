@@ -138,7 +138,7 @@ public abstract class OrcidClientContext implements OrcidAuthorizationClientCont
 		}
 
 		@Override
-		public String getSetting(Setting setting) {
+		public String getSetting(Setting key) {
 			throw new IllegalStateException(MESSAGE);
 		}
 

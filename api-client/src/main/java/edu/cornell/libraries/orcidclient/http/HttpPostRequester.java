@@ -12,14 +12,16 @@ public interface HttpPostRequester {
 
 	interface PostRequest {
 		PostRequest addFormField(String key, String value);
-		
+
 		PostRequest addHeader(String key, String value);
-		
+
 		PostResponse execute() throws IOException;
 	}
 
 	interface PostResponse {
 		String getContentString() throws IOException;
+
+		int getStatusCode() throws IOException;
 	}
 
 }

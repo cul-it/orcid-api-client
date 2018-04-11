@@ -21,21 +21,27 @@ public interface AuthorizationStateProgressCache {
 	void store(AuthorizationStateProgress progress) throws OrcidClientException;
 
 	/**
-	 * Fetch the AuthorizationStateProgree that has this ID.
+	 * Fetch the AuthorizationStateProgress that has this ID.
 	 * 
 	 * @return The status, or null
 	 */
 	AuthorizationStateProgress getByID(String id) throws OrcidClientException;
 
 	/**
-	 * Fetch the AuthorizationStateProgree that has this scope.
+	 * Fetch the AuthorizationStateProgress that has this scope.
 	 * 
 	 * @return The status, or null
 	 */
-	AuthorizationStateProgress getByScope(ApiScope scope) throws OrcidClientException;
+	AuthorizationStateProgress getByScope(ApiScope scope)
+			throws OrcidClientException;
 
 	/**
-	 * Remove any AuthorizationStateProgree that has this scope.
+	 * Remove any transient AuthorizationStateProgress objects with this scope
+	 * from the cache.
+	 * 
+	 * This does not guarantee that the next corresponding call to getByScope()
+	 * will return null, since persistent state may be revealed that had been
+	 * masked by the transient objects.
 	 */
 	void clearScopeProgress(ApiScope scope) throws OrcidClientException;
 }

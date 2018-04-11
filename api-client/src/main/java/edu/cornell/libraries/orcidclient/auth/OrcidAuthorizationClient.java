@@ -6,6 +6,7 @@ import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.
 import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.FailureCause.ERROR_STATUS;
 import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.FailureCause.INVALID_STATE;
 import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.FailureCause.NO_AUTH_CODE;
+import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.FailureCause.UNKNOWN;
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_SECRET;
 
@@ -24,6 +25,7 @@ import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.Failure
 import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.State;
 import edu.cornell.libraries.orcidclient.http.HttpPostRequester;
 import edu.cornell.libraries.orcidclient.http.HttpPostRequester.PostRequest;
+import edu.cornell.libraries.orcidclient.http.HttpPostRequester.PostResponse;
 import edu.cornell.libraries.orcidclient.util.ParameterMap;
 
 /**
@@ -193,6 +195,10 @@ public class OrcidAuthorizationClient {
 
 		String error = parameters.getParameter("error");
 		String errorDescription = parameters.getParameter("error_description");
+		if ("access_denied".equals(error)) {
+			return deny(progress, error, errorDescription);
+		}
+
 		if (error != null) {
 			return fail(progress,
 					new ErrorFailureDetails(error, errorDescription));
@@ -225,14 +231,14 @@ public class OrcidAuthorizationClient {
 		AuthorizationStateProgress progress = getProgressById(state);
 		if (progress == null) {
 			throw new OrcidClientException(
-					"Not seeking authorization for this action: " + progress);
+					"Not seeking authorization for this state: " + state);
 		}
 
 		return progress;
 	}
 
 	private AuthorizationStateProgress getAccessTokenFromAuthCode(
-			AuthorizationStateProgress progress) throws OrcidClientException {
+			AuthorizationStateProgress progress) {
 		PostRequest postRequest = httpPoster
 				.createPostRequest(context.getAccessTokenRequestUrl())
 				.addFormField("client_id", context.getSetting(CLIENT_ID))
@@ -243,26 +249,51 @@ public class OrcidAuthorizationClient {
 				.addFormField("redirect_uri", context.getCallbackUrl())
 				.addHeader("Accept", "application/json");
 
-		String string = null;
 		try {
-			// TODO test bad response code: 400
-			string = postRequest.execute().getContentString();
-			log.debug("Json response: '" + string + "'");
-			AccessToken accessToken = AccessToken.parse(string);
-			return progress.addAccessToken(accessToken);
+			PostResponse response = postRequest.execute();
+			int code = response.getStatusCode();
+			if (code >= 400) {
+				FailureDetails details = new UnknownFailureDetails(
+						"Bad response code: " + code);
+				log.warn(details.describe() + " : " + progress);
+				return progress.addFailure(details);
+			}
+
+			String string = response.getContentString();
+			try {
+				log.debug("Json response: '" + string + "'");
+				AccessToken accessToken = AccessToken.parse(string);
+				return progress.addAccessToken(accessToken);
+			} catch (OrcidClientException e) {
+				BadAccessTokenFailureDetails details = new BadAccessTokenFailureDetails(
+						string);
+				log.warn(details.describe() + " : " + progress, e);
+				return progress.addFailure(details);
+			}
 		} catch (IOException e) {
-			BadAccessTokenFailureDetails details = new BadAccessTokenFailureDetails(
-					string);
-			log.warn(details.describe() + " : " + progress, e);
+			FailureDetails details = new UnknownFailureDetails(
+					"Unknown failure: " + e);
+			log.warn(details.describe() + " : " + progress);
 			return progress.addFailure(details);
 		}
+
+	}
+
+	private String deny(AuthorizationStateProgress progress, String error,
+			String errorDescription) throws OrcidClientException {
+		AuthorizationStateProgress denied = progress.addState(State.DENIED);
+		log.warn("User denied access, error='" + error + "', description='"
+				+ errorDescription + "': " + denied);
+		storeProgressById(denied);
+		return denied.getFailureUrl().toString();
 	}
 
 	private String fail(AuthorizationStateProgress progress,
 			FailureDetails details) throws OrcidClientException {
-		log.warn(details.describe() + " : " + progress);
-		storeProgressById(progress.addFailure(details));
-		return progress.getFailureUrl().toString();
+		AuthorizationStateProgress failed = progress.addFailure(details);
+		log.warn(details.describe() + " : " + failed);
+		storeProgressById(failed);
+		return failed.getFailureUrl().toString();
 	}
 
 	private void storeProgressById(AuthorizationStateProgress progress)
@@ -330,4 +361,17 @@ public class OrcidAuthorizationClient {
 		}
 	}
 
+	private static class UnknownFailureDetails extends FailureDetails {
+		private final String message;
+
+		public UnknownFailureDetails(String message) {
+			super(UNKNOWN);
+			this.message = message;
+		}
+
+		@Override
+		public String describe() {
+			return ("Bad authorization response: " + message);
+		}
+	}
 }

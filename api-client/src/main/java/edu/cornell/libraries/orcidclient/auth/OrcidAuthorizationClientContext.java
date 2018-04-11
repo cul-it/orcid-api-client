@@ -22,6 +22,6 @@ public interface OrcidAuthorizationClientContext {
 	 * CLIENT_SECRET, OAUTH_AUTHORIZE_URL, OAUTH_TOKEN_URL, WEBAPP_BASE_URL,
 	 * CALLBACK_PATH.
 	 */
-	String getSetting(Setting setting);
+	String getSetting(Setting key);
 
 }
