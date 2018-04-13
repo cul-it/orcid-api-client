@@ -29,7 +29,7 @@ import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.Failure
 import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.FailureDetails;
 import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.State;
 import edu.cornell.libraries.orcidclient.testing.AbstractTestClass;
-import edu.cornell.libraries.orcidclient.util.PrettyPrinter;
+import edu.cornell.libraries.orcidclient.util.PrettyToStringPrinter;
 
 /**
  * If I were more rigorous, these methods would be more restricted.
