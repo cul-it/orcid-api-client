@@ -24,15 +24,23 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xs:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
     jxb:version="2.0">
-    
-    <jxb:bindings schemaLocation = "../common_2.1/common-2.1.xsd">
-	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.common"></jxb:package>
-	        <jxb:nameXmlTransform>
-	          <jxb:elementName suffix="Element"/>
-	        </jxb:nameXmlTransform>
-	    </jxb:schemaBindings> 
-    </jxb:bindings>
+
+	<jxb:bindings schemaLocation="../common_2.1/common-2.1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.common"></jxb:package>
+			<jxb:nameXmlTransform>
+				<jxb:elementName suffix="Element" />
+			</jxb:nameXmlTransform>
+		</jxb:schemaBindings>
+		
+		<!-- 
+		  The name "path" is used twice within the orcid-id structure. JAXB works poorly unless one 
+		  of the 'path's is given a different property name 
+		-->
+		<jxb:bindings node="//xs:complexType[@name='orcid-id']/xs:sequence/xs:choice/xs:element[@name='path']">
+			<jxb:property name="PathWithoutUri" />
+		</jxb:bindings>
+	</jxb:bindings>
     
     <jxb:bindings schemaLocation = "../record_2.1/activities-2.1.xsd">
 	    <jxb:schemaBindings>

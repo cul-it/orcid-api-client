@@ -14,7 +14,10 @@ import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientO
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientRequest;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.CacheManagement;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.ErrorPage;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.IndexPage;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.ReadRecordOffer;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.ReadRecordRequest;
 
 /**
  * Present the index page, or react to selections from it.
@@ -41,11 +44,17 @@ public class MainController extends AbstractController {
 			} else if (req
 					.getParameter("CacheManagement") != null) {
 				new CacheManagement(req, resp).exec();
+			} else if (req
+					.getParameter("ReadRecord") != null) {
+				new ReadRecordOffer(req, resp).exec();
+			} else if (req
+					.getParameter("ReadRecordRequest") != null) {
+				new ReadRecordRequest(req, resp).exec();
 			} else {
 				new IndexPage(req, resp).exec();
 			}
 		} catch (OrcidClientException e) {
-			e.printStackTrace();
+			new ErrorPage(req, resp, e).exec();
 		}
 	}
 }

@@ -3,20 +3,27 @@
 
 {% block body %}
   <form action="request">
-    <div>
-      <input type="submit" name="RawAuthentication" value="Raw Authentication"><br>
-      <p>Do a "raw" request for authorization, bypassing almost all of the driver classes.</p>
-    </div>
+    <table>
+    <tr>
+      <td><input type="submit" name="RawAuthentication" value="Raw Authentication"><br></td>
+      <td><p>Do a "raw" request for authorization, bypassing almost all of the driver classes.</p></td>
+    </tr>
 	
-	<div>
-      <input type="submit" name="ClientAuthentication" value="Client Authentication"><br>
-      <p>Get the ORCID client to request authorization, handling the 3-legged dance internally.</p>
-	</div>
+	<tr>
+      <td><input type="submit" name="ClientAuthentication" value="Client Authentication"><br></td>
+      <td><p>Get the ORCID client to request authorization, handling the 3-legged dance internally.</p></td>
+    </tr>
 	
-	<div>
-      <input type="submit" name="CacheManagement" value="CacheManagement"><br>
-      <p>Show the cache of authenticated access tokens.</p>
-	</div>
+	<tr>
+      <td><input type="submit" name="CacheManagement" value="CacheManagement"><br></td>
+      <td><p>Show the cache of authenticated access tokens.</p></td>
+    </tr>
+	
+	<tr>
+      <td><input type="submit" name="ReadRecord" value="ReadRecord"><br></td>
+      <td><p>Read an ORCID record summary.</p></td>
+    </tr>
+    </table>
   </form>
 {% endblock body %}
 

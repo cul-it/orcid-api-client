@@ -1,0 +1,10 @@
+{% extends "parent.twig.html" %}
+{% set title = "Error" %}
+
+{% block body %}
+  <p>Exception:</p>
+  <pre>{{exception}}</pre>
+  <p>Stack trace:</p>
+  <pre>{{stackTrace}}</pre>
+{% endblock body %}
+

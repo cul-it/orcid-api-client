@@ -61,7 +61,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 			+ "}";
 
 	private OrcidAuthorizationClient client;
-	private StubHttpPostRequester httpClient;
+	private StubHttpWrapper httpClient;
 	private StubOrcidAuthorizationClientContext context;
 	private StubAuthorizationStateProgressCache cache;
 
@@ -75,7 +75,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 		context = new StubOrcidAuthorizationClientContext();
 		context.setAccessTokenRequestUrl("http://test/access_token");
 
-		httpClient = new StubHttpPostRequester();
+		httpClient = new StubHttpWrapper();
 
 		cache = new StubAuthorizationStateProgressCache();
 		client = new OrcidAuthorizationClient(context, cache, httpClient);

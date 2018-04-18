@@ -4,6 +4,12 @@
 
 * [API Tutorials](https://members.orcid.org/api/tutorial)
 
+Sources JAXB binding techniques:
+
+* [JAXB bindings by example](https://coderleaf.wordpress.com/2016/11/15/jaxb-bindings-by-example/)
+* [Customizing JAXB Bindings](https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/doc/JAXBUsing4.html#wp148590)
+* [Using JAXB Data Binding](https://docs.oracle.com/middleware/11119/wls/WSGET/data_types.htm)
+
 # Using JAXB to compile the XML Schemas
 
 * Most of the schema files came from [here](https://github.com/ORCID/ORCID-Source/tree/master/orcid-model/src/main/resources/record_2.0)
@@ -18,7 +24,9 @@
 
 * The JAXB bindings file `jaxb_bindings_customization.xjb` helps to control the way that the XSD is 
 compiled into Java classes.
-
+	* A package name is assigned for each schema file.
+	* Generated element types are given the `Element` suffix, in order to avoid name collisions.
+	* Property names on the `OrcidId` type are modified to remove a collision.
 
 		
 # Running the test webapp

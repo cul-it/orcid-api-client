@@ -9,6 +9,7 @@ import static org.apache.commons.io.FileUtils.readLines;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -207,5 +208,13 @@ public class WebappCache implements AuthorizationStateProgressCache {
 	public String toString() {
 		return String.format("WebappCache[cacheFilePath=%s, progressMap=%s]",
 				cacheFilePath, progressMap);
+	}
+	
+	// ----------------------------------------------------------------------
+	// Extra functions
+	// ----------------------------------------------------------------------
+
+	public List<AuthorizationStateProgress> getProgressList() {
+		return new ArrayList<>(progressMap.values());
 	}
 }

@@ -8,14 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.cornell.libraries.orcidclient.http.HttpPostRequester;
+import edu.cornell.libraries.orcidclient.http.HttpWrapper;
 
 /**
  * TODO
  */
-public class StubHttpPostRequester implements HttpPostRequester {
+public class StubHttpWrapper implements HttpWrapper {
 	private int statusCode;
+
 	private String contentString;
+	private String url;
 
 	public void setResponse(int statusCode, String contentString) {
 		this.statusCode = statusCode;
@@ -23,13 +25,51 @@ public class StubHttpPostRequester implements HttpPostRequester {
 	}
 
 	@Override
-	public StubPostRequest createPostRequest(String accessTokenRequestUrl) {
+	public StubGetRequest createGetRequest(String url) {
+		this.url = url;
+		return new StubGetRequest();
+	}
+
+	@Override
+	public StubPostRequest createPostRequest(String url) {
+		this.url = url;
 		return new StubPostRequest();
+	}
+
+	public class StubGetRequest implements GetRequest {
+		private MultiMap headers = new MultiMap();
+
+		@Override
+		public String getUrl() {
+			return url;
+		}
+
+		@Override
+		public StubGetRequest addHeader(String key, String value) {
+			headers.add(key, value);
+			return this;
+		}
+
+		@Override
+		public HttpResponse execute()
+				throws IOException, HttpStatusCodeException {
+			if (statusCode != 0 && statusCode >= 300) {
+				throw new HttpStatusCodeException("Bad status code",
+						statusCode);
+			}
+			return new StubHttpResponse();
+		}
+
 	}
 
 	public class StubPostRequest implements PostRequest {
 		private MultiMap formFields = new MultiMap();
 		private MultiMap headers = new MultiMap();
+
+		@Override
+		public String getUrl() {
+			return url;
+		}
 
 		@Override
 		public StubPostRequest addFormField(String key, String value) {
@@ -44,20 +84,20 @@ public class StubHttpPostRequester implements HttpPostRequester {
 		}
 
 		@Override
-		public StubPostResponse execute() throws IOException {
-			return new StubPostResponse();
+		public StubHttpResponse execute()
+				throws IOException, HttpStatusCodeException {
+			if (statusCode != 0 && statusCode != 200) {
+				throw new HttpStatusCodeException("Bad status code",
+						statusCode);
+			}
+			return new StubHttpResponse();
 		}
 	}
 
-	public class StubPostResponse implements PostResponse {
+	public class StubHttpResponse implements HttpResponse {
 		@Override
 		public String getContentString() throws IOException {
 			return contentString;
-		}
-
-		@Override
-		public int getStatusCode() throws IOException {
-			return statusCode;
 		}
 	}
 
@@ -71,4 +111,5 @@ public class StubHttpPostRequester implements HttpPostRequester {
 			map.get(key).add(value);
 		}
 	}
+
 }

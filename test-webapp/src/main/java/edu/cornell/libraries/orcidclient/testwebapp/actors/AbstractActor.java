@@ -8,6 +8,8 @@ import static org.jtwig.JtwigTemplate.classpathTemplate;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,13 +18,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.jtwig.JtwigModel;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
+import edu.cornell.libraries.orcidclient.actions.OrcidActionClient;
+import edu.cornell.libraries.orcidclient.auth.AccessToken;
 import edu.cornell.libraries.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
-import edu.cornell.libraries.orcidclient.http.BaseHttpPostRequester;
+import edu.cornell.libraries.orcidclient.http.BaseHttpWrapper;
 import edu.cornell.libraries.orcidclient.testwebapp.support.WebappCache;
 
 /**
- * TODO
+ * Methods that are in common among some or all Actors.
  */
 public abstract class AbstractActor {
 	protected final HttpServletRequest req;
@@ -52,12 +56,24 @@ public abstract class AbstractActor {
 		}
 	}
 
-	/**
-	 * Could be in the constructor, but not every Actor wants one.
-	 */
 	protected OrcidAuthorizationClient getAuthorizationClient()
 			throws OrcidClientException {
 		return new OrcidAuthorizationClient(occ, WebappCache.getCache(),
-				new BaseHttpPostRequester());
+				new BaseHttpWrapper());
 	}
+
+	protected OrcidActionClient getActionClient() {
+		return new OrcidActionClient(occ, new BaseHttpWrapper());
+	}
+
+	protected List<AccessToken> getTokensFromCache() {
+		try {
+			return WebappCache.getCache().getProgressList().stream() //
+					.map(p -> p.getAccessToken()) //
+					.collect(Collectors.toList());
+		} catch (OrcidClientException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

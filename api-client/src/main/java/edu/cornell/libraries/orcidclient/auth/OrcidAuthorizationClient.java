@@ -23,9 +23,9 @@ import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.actions.ApiScope;
 import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.FailureDetails;
 import edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.State;
-import edu.cornell.libraries.orcidclient.http.HttpPostRequester;
-import edu.cornell.libraries.orcidclient.http.HttpPostRequester.PostRequest;
-import edu.cornell.libraries.orcidclient.http.HttpPostRequester.PostResponse;
+import edu.cornell.libraries.orcidclient.http.HttpWrapper;
+import edu.cornell.libraries.orcidclient.http.HttpWrapper.HttpStatusCodeException;
+import edu.cornell.libraries.orcidclient.http.HttpWrapper.PostRequest;
 import edu.cornell.libraries.orcidclient.util.ParameterMap;
 
 /**
@@ -72,14 +72,14 @@ public class OrcidAuthorizationClient {
 
 	private final OrcidAuthorizationClientContext context;
 	private final AuthorizationStateProgressCache cache;
-	private final HttpPostRequester httpPoster;
+	private final HttpWrapper httpWrapper;
 
 	public OrcidAuthorizationClient(OrcidAuthorizationClientContext context,
 			AuthorizationStateProgressCache cache,
-			HttpPostRequester httpPoster) {
+			HttpWrapper httpWrapper) {
 		this.context = context;
 		this.cache = cache;
-		this.httpPoster = httpPoster;
+		this.httpWrapper = httpWrapper;
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class OrcidAuthorizationClient {
 
 	private AuthorizationStateProgress getAccessTokenFromAuthCode(
 			AuthorizationStateProgress progress) {
-		PostRequest postRequest = httpPoster
+		PostRequest postRequest = httpWrapper
 				.createPostRequest(context.getAccessTokenRequestUrl())
 				.addFormField("client_id", context.getSetting(CLIENT_ID))
 				.addFormField("client_secret",
@@ -250,16 +250,8 @@ public class OrcidAuthorizationClient {
 				.addHeader("Accept", "application/json");
 
 		try {
-			PostResponse response = postRequest.execute();
-			int code = response.getStatusCode();
-			if (code >= 400) {
-				FailureDetails details = new UnknownFailureDetails(
-						"Bad response code: " + code);
-				log.warn(details.describe() + " : " + progress);
-				return progress.addFailure(details);
-			}
-
-			String string = response.getContentString();
+			String string = postRequest.execute().getContentString();
+			
 			try {
 				log.debug("Json response: '" + string + "'");
 				AccessToken accessToken = AccessToken.parse(string);
@@ -270,6 +262,11 @@ public class OrcidAuthorizationClient {
 				log.warn(details.describe() + " : " + progress, e);
 				return progress.addFailure(details);
 			}
+		} catch (HttpStatusCodeException e) {
+			FailureDetails details = new UnknownFailureDetails(
+					"Bad response code: " + e.getStatusCode());
+			log.warn(details.describe() + " : " + progress);
+			return progress.addFailure(details);
 		} catch (IOException e) {
 			FailureDetails details = new UnknownFailureDetails(
 					"Unknown failure: " + e);

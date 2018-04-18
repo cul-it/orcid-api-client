@@ -1,0 +1,9 @@
+{% extends "parent.twig.html" %}
+{% set title = "Read Record Result" %}
+
+{% block body %}
+  <p>
+    This is what we got back from the <pre>/record</pre> call.
+  </p>
+  <pre>{{recordString}}</pre>
+{% endblock body %}
