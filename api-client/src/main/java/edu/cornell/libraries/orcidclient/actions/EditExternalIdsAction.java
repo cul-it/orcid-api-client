@@ -1,5 +1,3 @@
-/* $This file is distributed under the terms of the license in /doc/license.txt$ */
-
 package edu.cornell.libraries.orcidclient.actions;
 
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.AUTHORIZED_API_BASE_URL;

@@ -1,5 +1,3 @@
-/* $This file is distributed under the terms of the license in /doc/license.txt$ */
-
 package edu.cornell.libraries.orcidclient.util;
 
 import static edu.cornell.libraries.orcidclient.util.PrettyToStringPrinter.Scan.ScanState.IN_BRACES;
