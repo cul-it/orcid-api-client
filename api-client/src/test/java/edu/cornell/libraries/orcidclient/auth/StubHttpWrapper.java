@@ -4,11 +4,13 @@ package edu.cornell.libraries.orcidclient.auth;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.cornell.libraries.orcidclient.http.HttpWrapper;
+import edu.cornell.libraries.orcidclient.http.HttpWrapper.PostRequest;
 
 /**
  * TODO
@@ -65,6 +67,7 @@ public class StubHttpWrapper implements HttpWrapper {
 	public class StubPostRequest implements PostRequest {
 		private MultiMap formFields = new MultiMap();
 		private MultiMap headers = new MultiMap();
+		private String bodyString;
 
 		@Override
 		public String getUrl() {
@@ -84,6 +87,12 @@ public class StubHttpWrapper implements HttpWrapper {
 		}
 
 		@Override
+		public StubPostRequest setBodyString(String body) {
+			bodyString = body;
+			return this;
+		}
+
+		@Override
 		public StubHttpResponse execute()
 				throws IOException, HttpStatusCodeException {
 			if (statusCode != 0 && statusCode != 200) {
@@ -98,6 +107,12 @@ public class StubHttpWrapper implements HttpWrapper {
 		@Override
 		public String getContentString() throws IOException {
 			return contentString;
+		}
+
+		@Override
+		public List<String> getHeaderValues(String key) throws IOException {
+			// Not implemented
+			return Collections.emptyList();
 		}
 	}
 

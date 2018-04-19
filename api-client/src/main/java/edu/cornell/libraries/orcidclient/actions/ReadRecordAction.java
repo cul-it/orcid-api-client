@@ -43,17 +43,16 @@ public class ReadRecordAction {
 	 *      -L -i
 	 * </pre>
 	 */
-	public RecordElement read(AccessToken accessToken) throws OrcidClientException {
+	public RecordElement read(AccessToken accessToken)
+			throws OrcidClientException {
 		try {
 			URI baseUri = new URI(context.getApiPublicUrl());
 			String requestUrl = URIUtils
 					.resolve(baseUri, accessToken.getOrcid() + "/record")
 					.toString();
-			GetRequest request = httpWrapper.createGetRequest(requestUrl);
-
-			request.addHeader("Accept", "application/vnd.orcid+xml");
-			request.addHeader("Authorization",
-					accessToken.getType() + " " + accessToken.getToken());
+			GetRequest request = httpWrapper.createGetRequest(requestUrl)
+					.addHeader("Accept", "application/vnd.orcid+xml")
+					.addHeader("Authorization", accessToken.toAuthHeader());
 
 			HttpResponse response = request.execute();
 			String xml = response.getContentString();

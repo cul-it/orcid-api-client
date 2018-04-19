@@ -21,5 +21,9 @@ public class OrcidActionClient {
 	public ReadRecordAction createReadRecordAction() {
 		return new ReadRecordAction(context, httpWrapper);
 	}
+	
+	public EditExternalIdsAction createEditExiternalIdsAction() {
+		return new EditExternalIdsAction(context, httpWrapper);
+	}
 
 }

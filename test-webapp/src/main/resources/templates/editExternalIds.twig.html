@@ -1,0 +1,36 @@
+{% extends "parent.twig.html" %}
+{% set title = "Edit External Ids" %}
+
+{% block body %}
+  <p>
+    Use an existing access token to read and modify the External IDs on a ORCID record.
+  </p>
+  <p>
+    Select an access token, click the button to get the list of External IDs, then choose an operation.
+  </p>
+ 
+  <form action="request" method="get" style="width:100%">
+    <div> 
+      Select an access token:
+      {% if (tokens.size == 0) %}
+        <p><b>No tokens available. Go and create one.</b></p>
+      {% else %}
+        <table>
+        {% for token in tokens %}
+          <tr>
+            <td><input type="radio" value="{{token.token}}" name="token" /></td>
+            <td>{{token.scope}}</td>
+            <td>{{token.expiresIn}}</td>
+            <td>{{token.name}}</td>
+            <td>{{token.token}}</td>
+          </tr>
+        {% endfor %}
+        </table>
+      {% endif %}
+    </div>
+  
+    <div>
+      <input type="submit" name="EditExternalIdsGetList" value="Read them."><br>
+    </div>
+  </form> 
+{% endblock body %}

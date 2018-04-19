@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.ContentType;
 
 import edu.cornell.libraries.orcidclient.http.HttpWrapper.HttpStatusCodeException;
 import edu.cornell.libraries.orcidclient.http.HttpWrapper.PostRequest;
@@ -19,6 +20,7 @@ public class BasePostRequest implements PostRequest {
 	private final String url;
 	private final Map<String, String> formFields = new HashMap<>();
 	private final Map<String, String> headers = new HashMap<>();
+	private String bodyString;
 
 	public BasePostRequest(String url) {
 		this.url = url;
@@ -42,6 +44,12 @@ public class BasePostRequest implements PostRequest {
 	}
 
 	@Override
+	public BasePostRequest setBodyString(String body) {
+		this.bodyString = body;
+		return this;
+	}
+
+	@Override
 	public BaseHttpResponse execute()
 			throws IOException, HttpStatusCodeException {
 		Request request = Request.Post(url);
@@ -53,8 +61,12 @@ public class BasePostRequest implements PostRequest {
 		for (String fieldName : formFields.keySet()) {
 			form = form.add(fieldName, formFields.get(fieldName));
 		}
-
 		request = request.bodyForm(form.build());
+
+		if (bodyString != null) {
+			request.bodyString(bodyString,
+					ContentType.APPLICATION_FORM_URLENCODED);
+		}
 
 		return new BaseHttpResponse(request.execute());
 	}

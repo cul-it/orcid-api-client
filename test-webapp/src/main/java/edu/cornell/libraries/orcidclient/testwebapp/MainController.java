@@ -14,6 +14,9 @@ import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientO
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientRequest;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.CacheManagement;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.EditExternalIdsOffer;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.EditExternalIdsReader;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.EditExternalIdsRequest;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.ErrorPage;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.IndexPage;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.ReadRecordOffer;
@@ -50,6 +53,15 @@ public class MainController extends AbstractController {
 			} else if (req
 					.getParameter("ReadRecordRequest") != null) {
 				new ReadRecordRequest(req, resp).exec();
+			} else if (req
+					.getParameter("EditExternalIds") != null) {
+				new EditExternalIdsOffer(req, resp).exec();
+			} else if (req
+					.getParameter("EditExternalIdsGetList") != null) {
+				new EditExternalIdsReader(req, resp).exec();
+			} else if (req
+					.getParameter("EditExternalIdsRequest") != null) {
+				new EditExternalIdsRequest(req, resp).exec();
 			} else {
 				new IndexPage(req, resp).exec();
 			}

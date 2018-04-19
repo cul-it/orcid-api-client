@@ -1,0 +1,64 @@
+{% extends "parent.twig.html" %}
+{% set title = "Edit External IDs from List" %}
+
+{% block body %}
+  <p>
+    Use an existing access token to read an ORCID record.
+  </p>
+  <p>
+    Select an access token, click the submit button, and you will see the result.
+  </p>
+ 
+  <!-- .......... ADD .......... -->
+  
+  <form action="request" method="get" style="width:100%">
+    <input type="hidden" name="token" value="{{token.token}}"
+    
+    <div> URL: <input type="text" name="url"> </div>
+    <div> Type: <input type="text" name="type"> </div>
+    <div> Relationship: <input type="text" name="relationship"> </div>
+    <div> Value: <input type="text" name="value"> </div>
+  
+    <div>
+      <input type="submit" name="EditExternalIdsRequest" value="Add"><br>
+    </div>
+  </form>
+  
+  {% if (externalIds.size > 0) %}
+
+  <!-- .......... UPDATE .......... -->
+  
+  <form action="request" method="get" style="width:100%">
+    <input type="hidden" name="token" value="{{token.token}}"
+    <div> 
+      Select an external ID:
+        <table>
+        {% for externalId in externalIDs %}
+          <tr>
+            <td><input type="radio" value="{{externalId.putCode}}" name="token" /></td>
+            <td>{{externalId.externalIdUrl}}</td>
+            <td>{{externalId.externalIdType}}</td>
+            <td>{{externalId.externalIdRelationship}}</td>
+            <td>{{externalId.externalIdValue}}</td>
+          </tr>
+        {% endfor %}
+        </table>
+    </div>
+
+    <div>
+      <input type="submit" name="EditExternalIdsRequest" value="Update"><br>
+    </div>
+  </form>
+   
+  <!-- .......... REMOVE .......... -->
+  
+  <form action="request" method="get" style="width:100%">
+    <input type="hidden" name="token" value="{{token.token}}"
+
+    <div>
+      <input type="submit" name="EditExternalIdsRequest" value="Remove"><br>
+    </div>
+  </form>
+   
+  {% endif %}
+{% endblock body %}

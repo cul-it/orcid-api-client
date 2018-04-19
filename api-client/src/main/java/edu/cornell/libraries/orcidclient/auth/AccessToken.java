@@ -134,6 +134,10 @@ public class AccessToken {
 	public boolean isShortTerm() {
 		return expiresIn < 10000;
 	}
+	
+	public String toAuthHeader() {
+		return type + " " + token;
+	}
 
 	@Override
 	public String toString() {

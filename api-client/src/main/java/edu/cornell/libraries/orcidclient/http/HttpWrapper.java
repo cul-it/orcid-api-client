@@ -3,6 +3,7 @@
 package edu.cornell.libraries.orcidclient.http;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A simple abstraction of HTTP GET and POST requests and responses.
@@ -26,12 +27,15 @@ public interface HttpWrapper {
 		PostRequest addFormField(String key, String value);
 
 		PostRequest addHeader(String key, String value);
+		
+		PostRequest setBodyString(String body);
 
 		HttpResponse execute() throws IOException, HttpStatusCodeException;
 	}
 
 	interface HttpResponse {
 		String getContentString() throws IOException;
+		List<String> getHeaderValues(String key) throws IOException;
 	}
 
 	public static class HttpWrapperException extends Exception {
