@@ -12,7 +12,7 @@
   <!-- .......... ADD .......... -->
   
   <form action="request" method="get" style="width:100%">
-    <input type="hidden" name="token" value="{{token.token}}"
+    <input type="hidden" name="token" value="{{token.token}}">
     
     <div> URL: <input type="text" name="url"> </div>
     <div> Type: <input type="text" name="type"> </div>
@@ -20,7 +20,7 @@
     <div> Value: <input type="text" name="value"> </div>
   
     <div>
-      <input type="submit" name="EditExternalIdsRequest" value="Add"><br>
+      <input type="submit" name="EditExternalIdsAdd" value="Add"><br>
     </div>
   </form>
   
@@ -29,34 +29,57 @@
   <!-- .......... UPDATE .......... -->
   
   <form action="request" method="get" style="width:100%">
-    <input type="hidden" name="token" value="{{token.token}}"
+    <input type="hidden" name="token" value="{{token.token}}">
     <div> 
       Select an external ID:
         <table>
-        {% for externalId in externalIDs %}
+        {% for externalId in externalIds %}
           <tr>
-            <td><input type="radio" value="{{externalId.putCode}}" name="token" /></td>
+            <td><input type="radio" value="{{externalId.putCode}}" name="putCode" /></td>
             <td>{{externalId.externalIdUrl}}</td>
             <td>{{externalId.externalIdType}}</td>
             <td>{{externalId.externalIdRelationship}}</td>
             <td>{{externalId.externalIdValue}}</td>
+            <td>{{externalId.putCode}}</td>
           </tr>
         {% endfor %}
         </table>
     </div>
+     
+    Enter new values:
+    <div> URL: <input type="text" name="url"> </div>
+    <div> Type: <input type="text" name="type"> </div>
+    <div> Relationship: <input type="text" name="relationship"> </div>
+    <div> Value: <input type="text" name="value"> </div>
 
     <div>
-      <input type="submit" name="EditExternalIdsRequest" value="Update"><br>
+      <input type="submit" name="EditExternalIdsUpdate" value="Update"><br>
     </div>
   </form>
    
   <!-- .......... REMOVE .......... -->
   
   <form action="request" method="get" style="width:100%">
-    <input type="hidden" name="token" value="{{token.token}}"
+    <input type="hidden" name="token" value="{{token.token}}">
+
+    <div> 
+      Select an external ID:
+        <table>
+        {% for externalId in externalIds %}
+          <tr>
+            <td><input type="radio" value="{{externalId.putCode}}" name="putCode" /></td>
+            <td>{{externalId.externalIdUrl}}</td>
+            <td>{{externalId.externalIdType}}</td>
+            <td>{{externalId.externalIdRelationship}}</td>
+            <td>{{externalId.externalIdValue}}</td>
+            <td>{{externalId.putCode}}</td>
+          </tr>
+        {% endfor %}
+        </table>
+    </div>
 
     <div>
-      <input type="submit" name="EditExternalIdsRequest" value="Remove"><br>
+      <input type="submit" name="EditExternalIdsRemove" value="Remove"><br>
     </div>
   </form>
    

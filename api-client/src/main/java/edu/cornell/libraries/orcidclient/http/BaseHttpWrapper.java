@@ -15,4 +15,9 @@ public class BaseHttpWrapper implements HttpWrapper {
 		return new BasePostRequest(url);
 	}
 
+	@Override
+	public PutRequest createPutRequest(String url) {
+		return  new BasePutRequest(url);
+	}
+
 }

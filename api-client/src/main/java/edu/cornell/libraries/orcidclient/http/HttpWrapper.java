@@ -11,6 +11,8 @@ public interface HttpWrapper {
 
 	PostRequest createPostRequest(String url);
 
+	PutRequest createPutRequest(String url);
+
 	interface GetRequest {
 		String getUrl();
 
@@ -27,6 +29,16 @@ public interface HttpWrapper {
 		PostRequest addHeader(String key, String value);
 		
 		PostRequest setBodyString(String body);
+
+		HttpResponse execute() throws IOException, HttpStatusCodeException;
+	}
+	
+	interface PutRequest {
+		String getUrl();
+		
+		PutRequest addHeader(String key, String value);
+
+		PutRequest setBodyString(String body);
 
 		HttpResponse execute() throws IOException, HttpStatusCodeException;
 	}
@@ -62,4 +74,5 @@ public interface HttpWrapper {
 			return statusCode;
 		}
 	}
+
 }

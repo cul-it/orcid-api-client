@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.jtwig.JtwigModel;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
-import edu.cornell.libraries.orcidclient.testwebapp.actors.AbstractActor;
 
 /**
  * Show the choices to the user.
@@ -19,9 +18,7 @@ public class IndexPage extends AbstractActor {
 		super(req, resp);
 	}
 
-	@Override
-	public void exec()
-			throws ServletException, IOException, OrcidClientException {
+	public void exec() throws IOException, OrcidClientException {
 		render("/templates/index.twig.html", //
 				JtwigModel.newModel() //
 						.with("var", "World"));

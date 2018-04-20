@@ -2,7 +2,6 @@ package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,53 +19,61 @@ import edu.cornell.libraries.orcidclient.orcid_message_2_1.personexternalidentif
  */
 public class EditExternalIdsRequest extends AbstractActor {
 	private OrcidActionClient actions;
+	private AccessToken token;
 
 	public EditExternalIdsRequest(HttpServletRequest req,
 			HttpServletResponse resp) {
 		super(req, resp);
 		actions = getActionClient();
+		token = getTokenByTokenId(req.getParameter("token"));
 	}
 
-	@Override
-	public void exec()
-			throws ServletException, IOException, OrcidClientException {
-		AccessToken token = getTokenByTokenId(req.getParameter("token"));
-		ExternalIdentifierElement extId = populateExternalId();		
-
-		String putCode = actions.createEditExiternalIdsAction().add(token, extId);
+	public void add() throws IOException, OrcidClientException {
+		String putCode = actions.createEditExiternalIdsAction().add(token,
+				populateExternalId());
 
 		render("/templates/editExternalIdsResult.twig.html", //
 				JtwigModel.newModel() //
 						.with("putCode", putCode));
 	}
 
+	public void update() throws IOException, OrcidClientException {
+		String putCode = req.getParameter("putCode");
+		actions.createEditExiternalIdsAction().update(token,
+				populateExternalId(), putCode);
+
+		render("/templates/editExternalIdsResult.twig.html", //
+				JtwigModel.newModel() //
+						.with("putCode", "No problems with update"));
+	}
+
+	public void remove() throws IOException {
+		String putCode = req.getParameter("putCode");
+		actions.createEditExiternalIdsAction().remove(token, putCode);
+
+		render("/templates/editExternalIdsResult.twig.html", //
+				JtwigModel.newModel() //
+						.with("putCode", "No problems with remove"));
+	}
+
 	private ExternalIdentifierElement populateExternalId() {
 		ExternalIdentifierElement extId = new ExternalIdentifierElement();
-		
+
 		extId.setExternalIdType(req.getParameter("type"));
 		extId.setExternalIdValue(req.getParameter("value"));
-		
+
 		String url = req.getParameter("url");
 		if (StringUtils.isNotEmpty(url)) {
 			extId.setExternalIdUrl(url);
 		}
-		
-		String relationship = req.getParameter("relationship");
-		if (StringUtils.isNotEmpty(relationship)) {
-			RelationshipType rel = (relationship.equalsIgnoreCase("self"))
-					? RelationshipType.SELF
-					: RelationshipType.PART_OF;
-			extId.setExternalIdRelationship(rel);
-		}
-		return extId;
-	}
 
-	private AccessToken getTokenByTokenId(String tokenId) {
-		for (AccessToken t : getTokensFromCache()) {
-			if (t.getToken().equals(tokenId)) {
-				return t;
-			}
+		String relationship = req.getParameter("relationship");
+		if (relationship.equalsIgnoreCase("part-of")) {
+			extId.setExternalIdRelationship(RelationshipType.PART_OF);
+		} else {
+			extId.setExternalIdRelationship(RelationshipType.SELF);
 		}
-		return null;
+
+		return extId;
 	}
 }

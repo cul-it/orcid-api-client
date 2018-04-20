@@ -2,7 +2,6 @@ package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,9 +22,7 @@ public class AuthenticationClientRequest extends AbstractActor {
 		this.authClient = getAuthorizationClient();
 	}
 
-	@Override
-	public void exec()
-			throws IOException, ServletException, OrcidClientException {
+	public void exec() throws IOException, OrcidClientException {
 		ApiScope scope = getScopeFromRequest();
 		AuthorizationStateProgress progress = authClient
 				.createProgressObject(scope, callbackUrl(), callbackUrl());

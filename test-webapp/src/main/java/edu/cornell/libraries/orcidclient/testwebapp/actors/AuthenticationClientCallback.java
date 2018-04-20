@@ -5,7 +5,6 @@ import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setti
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,9 +27,7 @@ public class AuthenticationClientCallback extends AbstractActor {
 		super(req, resp);
 	}
 
-	@Override
-	public void exec()
-			throws ServletException, IOException, OrcidClientException {
+	public void exec() throws IOException, OrcidClientException {
 		OrcidAuthorizationClient auth = getAuthorizationClient();
 		String state = req.getParameter("state");
 

@@ -4,7 +4,6 @@ import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setti
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,14 +17,13 @@ import edu.cornell.libraries.orcidclient.OrcidClientException;
 public class CallbackFailed extends AbstractActor {
 	private final String state;
 
-	public CallbackFailed(HttpServletRequest req, HttpServletResponse resp, String state) {
+	public CallbackFailed(HttpServletRequest req, HttpServletResponse resp,
+			String state) {
 		super(req, resp);
 		this.state = state;
 	}
 
-	@Override
-	public void exec()
-			throws ServletException, IOException, OrcidClientException {
+	public void exec() throws IOException, OrcidClientException {
 		render("/templates/callbackFailure.twig.html", JtwigModel.newModel() //
 				.with("message", "Didn't recognize the callback") //
 				.with("state", state) //

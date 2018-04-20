@@ -67,8 +67,6 @@ public class BaseHttpResponse implements HttpResponse {
 			headerValues = headers;
 
 			contentString = EntityUtils.toString(innerResponse.getEntity());
-			System.out.println("CONTENT: " + contentString);
-			
 			return "";
 		}
 	}

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import edu.cornell.libraries.orcidclient.http.HttpWrapper;
-import edu.cornell.libraries.orcidclient.http.HttpWrapper.PostRequest;
 
 /**
  * TODO
@@ -25,15 +24,21 @@ public class StubHttpWrapper implements HttpWrapper {
 	}
 
 	@Override
-	public StubGetRequest createGetRequest(String url) {
-		this.url = url;
+	public StubGetRequest createGetRequest(String requestUrl) {
+		this.url = requestUrl;
 		return new StubGetRequest();
 	}
 
 	@Override
-	public StubPostRequest createPostRequest(String url) {
-		this.url = url;
+	public StubPostRequest createPostRequest(String requestUrl) {
+		this.url = requestUrl;
 		return new StubPostRequest();
+	}
+
+	@Override
+	public StubPutRequest createPutRequest(String requestUrl) {
+		this.url = requestUrl;
+		return new StubPutRequest();
 	}
 
 	public class StubGetRequest implements GetRequest {
@@ -99,6 +104,38 @@ public class StubHttpWrapper implements HttpWrapper {
 			}
 			return new StubHttpResponse();
 		}
+	}
+
+	public class StubPutRequest implements PutRequest {
+		private MultiMap headers = new MultiMap();
+		private String bodyString;
+
+		@Override
+		public String getUrl() {
+			return url;
+		}
+
+		@Override
+		public StubPutRequest addHeader(String key, String value) {
+			headers.add(key, value);
+			return this;
+		}
+
+		@Override
+		public StubPutRequest setBodyString(String body) {
+			bodyString = body;
+			return this;
+		}
+
+		@Override
+		public HttpResponse execute() throws HttpStatusCodeException {
+			if (statusCode != 0 && statusCode != 200) {
+				throw new HttpStatusCodeException("Bad status code",
+						statusCode);
+			}
+			return new StubHttpResponse();
+		}
+
 	}
 
 	public class StubHttpResponse implements HttpResponse {

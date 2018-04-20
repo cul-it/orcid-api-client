@@ -3,6 +3,7 @@ package edu.cornell.libraries.orcidclient.actions;
 import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.AUTHORIZED_API_BASE_URL;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -17,6 +18,7 @@ import edu.cornell.libraries.orcidclient.http.HttpWrapper;
 import edu.cornell.libraries.orcidclient.http.HttpWrapper.HttpResponse;
 import edu.cornell.libraries.orcidclient.http.HttpWrapper.HttpStatusCodeException;
 import edu.cornell.libraries.orcidclient.http.HttpWrapper.PostRequest;
+import edu.cornell.libraries.orcidclient.http.HttpWrapper.PutRequest;
 import edu.cornell.libraries.orcidclient.orcid_message_2_1.common.ExternalId;
 import edu.cornell.libraries.orcidclient.orcid_message_2_1.personexternalidentifier.ExternalIdentifierElement;
 import edu.cornell.libraries.orcidclient.util.OrcidXmlUtil;
@@ -88,10 +90,42 @@ public class EditExternalIdsAction {
 		}
 	}
 
+	/**
+	 * <pre>
+	 * curl -i -H 'Content-type: application/vnd.orcid+xml' 
+	 *   -H 'Authorization: Bearer dd91868d-d29a-475e-9acb-bd3fdf2f43f4' 
+	 *   -d '@[FILE-PATH]/external_identifier.xml' 
+	 *   -X PUT 'https://api.sandbox.orcid.org/v2.0/0000-0002-9227-8514/external-identifiers/[PUT-CODE]
+	 * </pre>
+	 */
 	public void update(AccessToken accessToken, ExternalId externalId,
-			String putCode) {
-		throw new RuntimeException(
-				"EditExternalIdsAction.update not implemented.");
+			String putCode) throws OrcidClientException {
+		externalId.setPutCode(new BigInteger(putCode));
+		String xml = OrcidXmlUtil.marshall(externalId);
+		try {
+			URI baseUri = new URI(context.getApiMemberUrl());
+			String requestUrl = URIUtils.resolve(baseUri,
+					accessToken.getOrcid() + "/external-identifiers/" + putCode)
+					.toString();
+
+			PutRequest request = httpWrapper.createPutRequest(requestUrl)
+					.addHeader("Content-Type", "application/vnd.orcid+xml")
+					.addHeader("Authorization", accessToken.toAuthHeader())
+					.setBodyString(xml);
+			request.execute();
+		} catch (URISyntaxException e) {
+			throw new OrcidClientException(
+					AUTHORIZED_API_BASE_URL + " is not syntactically valid.",
+					e);
+		} catch (HttpStatusCodeException e) {
+			log.error("HttpResponse status code: " + e.getStatusCode());
+			throw new OrcidClientException(
+					"Failed to add external ID. HTTP status code="
+							+ e.getStatusCode() + ", xml='" + xml + "'",
+					e);
+		} catch (IOException e) {
+			throw new OrcidClientException("Failed to update external ID", e);
+		}
 	}
 
 	public void remove(AccessToken accessToken, String putCode) {

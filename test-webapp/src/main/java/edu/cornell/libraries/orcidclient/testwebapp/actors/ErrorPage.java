@@ -25,7 +25,6 @@ public class ErrorPage extends AbstractActor {
 		this.exception = e;
 	}
 
-	@Override
 	public void exec() {
 		try {
 			StringWriter sw = new StringWriter();

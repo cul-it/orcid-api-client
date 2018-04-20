@@ -37,9 +37,6 @@ public abstract class AbstractActor {
 		this.occ = OrcidClientContext.getInstance();
 	}
 
-	public abstract void exec()
-			throws ServletException, IOException, OrcidClientException;
-
 	protected void render(String path, JtwigModel model) throws IOException {
 		classpathTemplate(path).render(
 				model.with("mainPageUrl", occ.getSetting(WEBAPP_BASE_URL)),
@@ -74,4 +71,12 @@ public abstract class AbstractActor {
 		}
 	}
 
+	protected AccessToken getTokenByTokenId(String tokenId) {
+		for (AccessToken t : getTokensFromCache()) {
+			if (t.getToken().equals(tokenId)) {
+				return t;
+			}
+		}
+		return null;
+	}
 }

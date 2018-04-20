@@ -1,8 +1,8 @@
 package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
 import java.io.IOException;
+import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,6 +11,7 @@ import org.jtwig.JtwigModel;
 import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.actions.OrcidActionClient;
 import edu.cornell.libraries.orcidclient.auth.AccessToken;
+import edu.cornell.libraries.orcidclient.orcid_message_2_1.common.ExternalId;
 import edu.cornell.libraries.orcidclient.orcid_message_2_1.record.RecordElement;
 
 /**
@@ -25,26 +26,15 @@ public class EditExternalIdsReader extends AbstractActor {
 		actions = getActionClient();
 	}
 
-	@Override
-	public void exec()
-			throws ServletException, IOException, OrcidClientException {
+	public void exec() throws IOException, OrcidClientException {
 		AccessToken token = getTokenByTokenId(req.getParameter("token"));
 		RecordElement record = actions.createReadRecordAction().read(token);
+		List<ExternalId> externalIds = record.getPerson()
+				.getExternalIdentifiers().getExternalIdentifier();
 
 		render("/templates/editExternalIdsList.twig.html", //
 				JtwigModel.newModel() //
 						.with("token", token) //
-						.with("externalIds",
-								(record.getPerson().getExternalIdentifiers()
-										.getExternalIdentifier())));
-	}
-
-	private AccessToken getTokenByTokenId(String tokenId) {
-		for (AccessToken t : getTokensFromCache()) {
-			if (t.getToken().equals(tokenId)) {
-				return t;
-			}
-		}
-		return null;
+						.with("externalIds", externalIds));
 	}
 }

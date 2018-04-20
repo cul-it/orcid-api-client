@@ -58,12 +58,18 @@ public class MainController extends AbstractController {
 					.getParameter("EditExternalIdsGetList") != null) {
 				new EditExternalIdsReader(req, resp).exec();
 			} else if (req
-					.getParameter("EditExternalIdsRequest") != null) {
-				new EditExternalIdsRequest(req, resp).exec();
+					.getParameter("EditExternalIdsAdd") != null) {
+				new EditExternalIdsRequest(req, resp).add();
+			} else if (req
+					.getParameter("EditExternalIdsUpdate") != null) {
+				new EditExternalIdsRequest(req, resp).update();
+			} else if (req
+					.getParameter("EditExternalIdsRemove") != null) {
+				new EditExternalIdsRequest(req, resp).remove();
 			} else {
 				new IndexPage(req, resp).exec();
 			}
-		} catch (OrcidClientException e) {
+		} catch (Exception e) {
 			new ErrorPage(req, resp, e).exec();
 		}
 	}

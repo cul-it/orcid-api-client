@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.client.utils.URIBuilder;
 import org.jtwig.JtwigModel;
 
-import edu.cornell.libraries.orcidclient.OrcidClientException;
-
 /**
  * Offer the user a chance to do a "raw" authentication.
  */
@@ -26,9 +24,8 @@ public class AuthenticationRawOffer extends AbstractActor {
 		super(req, resp);
 	}
 
-	@Override
 	public void exec()
-			throws IOException, ServletException, OrcidClientException {
+			throws IOException, ServletException {
 		try {
 			URI requestUri = new URIBuilder(occ.getAuthCodeRequestUrl())
 					.addParameter("client_id", occ.getSetting(CLIENT_ID))

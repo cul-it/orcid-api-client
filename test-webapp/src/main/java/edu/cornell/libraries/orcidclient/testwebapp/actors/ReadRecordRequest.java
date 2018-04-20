@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,24 +27,13 @@ public class ReadRecordRequest extends AbstractActor {
 		actions = getActionClient();
 	}
 
-	@Override
-	public void exec()
-			throws ServletException, IOException, OrcidClientException {
+	public void exec() throws IOException, OrcidClientException {
 		AccessToken token = getTokenByTokenId(req.getParameter("token"));
 		RecordElement record = actions.createReadRecordAction().read(token);
 
 		render("/templates/readRecordResult.twig.html", //
 				JtwigModel.newModel() //
 						.with("recordString", (recordToString(record))));
-	}
-
-	private AccessToken getTokenByTokenId(String tokenId) {
-		for (AccessToken t : getTokensFromCache()) {
-			if (t.getToken().equals(tokenId)) {
-				return t;
-			}
-		}
-		return null;
 	}
 
 	private Object recordToString(RecordElement record) {

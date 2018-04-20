@@ -41,9 +41,11 @@ public class OrcidXmlUtil {
 		}
 	}
 
-	public static String marshall(Object xmlObject) throws OrcidClientException {
+	public static String marshall(Object xmlObject)
+			throws OrcidClientException {
 		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(xmlObject.getClass());
+			JAXBContext jaxbContext = JAXBContext
+					.newInstance(xmlObject.getClass());
 			Marshaller m = jaxbContext.createMarshaller();
 			m.setProperty("jaxb.formatted.output", Boolean.TRUE);
 
@@ -63,4 +65,5 @@ public class OrcidXmlUtil {
 	private OrcidXmlUtil() {
 		// No reason to instantiate.
 	}
+
 }
