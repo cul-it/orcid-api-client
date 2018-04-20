@@ -73,8 +73,7 @@ public class OrcidAuthorizationClient {
 	private final HttpWrapper httpWrapper;
 
 	public OrcidAuthorizationClient(OrcidAuthorizationClientContext context,
-			AuthorizationStateProgressCache cache,
-			HttpWrapper httpWrapper) {
+			AuthorizationStateProgressCache cache, HttpWrapper httpWrapper) {
 		this.context = context;
 		this.cache = cache;
 		this.httpWrapper = httpWrapper;
@@ -100,6 +99,16 @@ public class OrcidAuthorizationClient {
 
 		cache.store(authProgress);
 		return authProgress;
+	}
+
+	/**
+	 * Remove any unresolved progress for this scope.
+	 * 
+	 * Depending on the cache implementation, this could leave no progress for
+	 * this scope, or could revert to the previously committed progress.
+	 */
+	public void resetProgress(ApiScope scope) throws OrcidClientException {
+		cache.clearScopeProgress(scope);
 	}
 
 	/**
@@ -249,7 +258,7 @@ public class OrcidAuthorizationClient {
 
 		try {
 			String string = postRequest.execute().getContentString();
-			
+
 			try {
 				log.debug("Json response: '" + string + "'");
 				AccessToken accessToken = AccessToken.parse(string);
