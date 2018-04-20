@@ -41,6 +41,12 @@ public class StubHttpWrapper implements HttpWrapper {
 		return new StubPutRequest();
 	}
 
+	@Override
+	public StubDeleteRequest createDeleteRequest(String requestUrl) {
+		this.url = requestUrl;
+		return new StubDeleteRequest();
+	}
+	
 	public class StubGetRequest implements GetRequest {
 		private MultiMap headers = new MultiMap();
 
@@ -138,6 +144,30 @@ public class StubHttpWrapper implements HttpWrapper {
 
 	}
 
+	public class StubDeleteRequest implements DeleteRequest {
+		private MultiMap headers = new MultiMap();
+		
+		@Override
+		public String getUrl() {
+			return url;
+		}
+		
+		@Override
+		public StubDeleteRequest addHeader(String key, String value) {
+			headers.add(key, value);
+			return this;
+		}
+		
+		@Override
+		public HttpResponse execute() throws HttpStatusCodeException {
+			if (statusCode != 0 && statusCode != 200) {
+				throw new HttpStatusCodeException("Bad status code",
+						statusCode);
+			}
+			return new StubHttpResponse();
+		}
+	}
+	
 	public class StubHttpResponse implements HttpResponse {
 		@Override
 		public String getContentString() throws IOException {

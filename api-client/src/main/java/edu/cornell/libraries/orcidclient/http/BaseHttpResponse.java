@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -66,7 +67,12 @@ public class BaseHttpResponse implements HttpResponse {
 			}
 			headerValues = headers;
 
-			contentString = EntityUtils.toString(innerResponse.getEntity());
+			HttpEntity entity = innerResponse.getEntity();
+			if (entity == null) {
+				contentString = "";
+			} else {
+				contentString = EntityUtils.toString(entity);
+			}
 			return "";
 		}
 	}

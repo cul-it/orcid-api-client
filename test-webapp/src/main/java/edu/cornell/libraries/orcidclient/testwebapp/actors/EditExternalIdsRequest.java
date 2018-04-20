@@ -47,7 +47,7 @@ public class EditExternalIdsRequest extends AbstractActor {
 						.with("putCode", "No problems with update"));
 	}
 
-	public void remove() throws IOException {
+	public void remove() throws IOException, OrcidClientException {
 		String putCode = req.getParameter("putCode");
 		actions.createEditExiternalIdsAction().remove(token, putCode);
 

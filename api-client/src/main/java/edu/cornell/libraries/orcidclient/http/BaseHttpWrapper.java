@@ -20,4 +20,9 @@ public class BaseHttpWrapper implements HttpWrapper {
 		return  new BasePutRequest(url);
 	}
 
+	@Override
+	public DeleteRequest createDeleteRequest(String url) {
+		return  new BaseDeleteRequest(url);
+	}
+	
 }

@@ -13,6 +13,8 @@ public interface HttpWrapper {
 
 	PutRequest createPutRequest(String url);
 
+	DeleteRequest createDeleteRequest(String url);
+	
 	interface GetRequest {
 		String getUrl();
 
@@ -43,6 +45,14 @@ public interface HttpWrapper {
 		HttpResponse execute() throws IOException, HttpStatusCodeException;
 	}
 
+	interface DeleteRequest {
+		String getUrl();
+		
+		DeleteRequest addHeader(String key, String value);
+		
+		HttpResponse execute() throws IOException, HttpStatusCodeException;
+	}
+	
 	interface HttpResponse {
 		String getContentString() throws IOException;
 		List<String> getHeaderValues(String key) throws IOException;
