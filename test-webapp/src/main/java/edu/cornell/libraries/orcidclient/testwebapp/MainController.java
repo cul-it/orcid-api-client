@@ -7,7 +7,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientOffer;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationClientRequest;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.AuthenticationRawOffer;
@@ -15,6 +14,9 @@ import edu.cornell.libraries.orcidclient.testwebapp.actors.CacheManagement;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.EditExternalIdsOffer;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.EditExternalIdsReader;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.EditExternalIdsRequest;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.EditWorksOffer;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.EditWorksReader;
+import edu.cornell.libraries.orcidclient.testwebapp.actors.EditWorksRequest;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.ErrorPage;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.IndexPage;
 import edu.cornell.libraries.orcidclient.testwebapp.actors.ReadRecordOffer;
@@ -66,6 +68,21 @@ public class MainController extends AbstractController {
 			} else if (req
 					.getParameter("EditExternalIdsRemove") != null) {
 				new EditExternalIdsRequest(req, resp).remove();
+			} else if (req
+					.getParameter("EditWorks") != null) {
+				new EditWorksOffer(req, resp).exec();
+			} else if (req
+					.getParameter("EditWorksGetList") != null) {
+				new EditWorksReader(req, resp).exec();
+			} else if (req
+					.getParameter("EditWorksAdd") != null) {
+				new EditWorksRequest(req, resp).add();
+			} else if (req
+					.getParameter("EditWorksUpdate") != null) {
+				new EditWorksRequest(req, resp).update();
+			} else if (req
+					.getParameter("EditWorksRemove") != null) {
+				new EditWorksRequest(req, resp).remove();
 			} else {
 				new IndexPage(req, resp).exec();
 			}

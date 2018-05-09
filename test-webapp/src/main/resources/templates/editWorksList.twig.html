@@ -1,0 +1,85 @@
+{% extends "parent.twig.html" %}
+{% set title = "Edit Works from List" %}
+
+{% block body %}
+  <p>
+    Use an existing access token to edit the Works on an ORCID record.
+  </p>
+  <p>
+    Click on a button to add, update, or remove (populating the fields as appropriate).
+  </p>
+ 
+  <!-- .......... ADD .......... -->
+  
+  <form action="request" method="get" style="width:100%">
+    <input type="hidden" name="token" value="{{token.token}}">
+    
+    <div> Title: <input type="text" name="title"> </div>
+    <div> Publication date (yyyy-mm-dd): <input type="text" name="publicationDate"> </div>
+    <div> External ID suffix: <input type="text" name="externalId"> </div>
+  
+    <div>
+      <input type="submit" name="EditWorksAdd" value="Add"><br>
+    </div>
+  </form>
+  
+  {% if (works.size > 0) %}
+
+  <!-- .......... UPDATE .......... -->
+  
+  <form action="request" method="get" style="width:100%">
+    <input type="hidden" name="token" value="{{token.token}}">
+    <div> 
+      Select an external ID:
+        <table>
+        {% for work in works %}
+          <tr>
+            <td><input type="radio" value="{{work.putCode}}" name="putCode" /></td>
+            <td>{{work.title.title}}</td>
+            <td>{{work.type}}</td>
+            <td>{{work.publicationDate.year.value}}-{{work.publicationDate.month.value}}-{{work.publicationDate.day.value}}</td>
+            <td>{{work.externalIds.externalId[0].externalIdUrl}}</td>
+            <td>{{work.putCode}}</td>
+          </tr>
+        {% endfor %}
+        </table>
+    </div>
+     
+    Enter new values:
+    <div> Title: <input type="text" name="title"> </div>
+    <div> Publication date (yyyy-mm-dd): <input type="text" name="publicationDate"> </div>
+    <div> External ID suffix: <input type="text" name="externalId"> </div>
+
+    <div>
+      <input type="submit" name="EditWorksUpdate" value="Update"><br>
+    </div>
+  </form>
+   
+  <!-- .......... REMOVE .......... -->
+  
+  <form action="request" method="get" style="width:100%">
+    <input type="hidden" name="token" value="{{token.token}}">
+
+    <div> 
+      Select an external ID:
+        <table>
+        {% for work in works %}
+          <tr>
+            <td><input type="radio" value="{{work.putCode}}" name="putCode" /></td>
+            <td>{{work.title.title}}</td>
+            <td>{{work.type}}</td>
+            <td>{{work.publicationDate.year.value}}-{{work.publicationDate.month.value}}-{{work.publicationDate.day.value}}</td>
+            <td>{{work.externalIds.externalId[0].externalIdUrl}}</td>
+            <td>{{work.putCode}}</td>
+          </tr>
+        {% endfor %}
+        </table>
+    </div>
+
+    <div>
+      <input type="submit" name="EditWorksRemove" value="Remove"><br>
+    </div>
+  </form>
+   
+  {% endif %}
+{% endblock body %}

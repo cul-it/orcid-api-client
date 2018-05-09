@@ -34,10 +34,13 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
 		</jxb:schemaBindings>
 		
 		<!-- 
-		  The name "path" is used twice within the orcid-id structure. JAXB works poorly unless one 
+		  The name "path" is used twice within the ID structures. JAXB works poorly unless one 
 		  of the 'path's is given a different property name 
 		-->
 		<jxb:bindings node="//xs:complexType[@name='orcid-id']/xs:sequence/xs:choice/xs:element[@name='path']">
+			<jxb:property name="PathWithoutUri" />
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='client-id']/xs:sequence/xs:choice/xs:element[@name='path']">
 			<jxb:property name="PathWithoutUri" />
 		</jxb:bindings>
 	</jxb:bindings>

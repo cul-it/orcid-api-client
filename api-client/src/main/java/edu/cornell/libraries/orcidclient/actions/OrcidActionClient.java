@@ -24,4 +24,8 @@ public class OrcidActionClient {
 		return new ExternalIdsEditAction(context, httpWrapper);
 	}
 
+	public WorksEditAction createEditWorksAction() {
+		return new WorksEditAction(context, httpWrapper);
+	}
+	
 }
