@@ -19,7 +19,8 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContext;
-import edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting;
+import edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl;
+import edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting;
 
 /**
  * Read the settings file, store the webapp properties for later use, and
@@ -101,7 +102,7 @@ public class WebappSetup implements ServletContextListener {
 
 	private void initializeOrcidContext(Map<Setting, String> settings) {
 		try {
-			OrcidClientContext.initialize(settings);
+			OrcidClientContext.initialize(new OrcidClientContextImpl(settings));
 			log.info("Context is: " + OrcidClientContext.getInstance());
 		} catch (OrcidClientException e) {
 			log.error("Failed to initialize OrcidClientContent", e);

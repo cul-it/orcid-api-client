@@ -5,8 +5,6 @@ import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.
 import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.FailureCause.INVALID_STATE;
 import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.FailureCause.NO_AUTH_CODE;
 import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.FailureCause.UNKNOWN;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_SECRET;
 
 import java.io.IOException;
 import java.net.URI;
@@ -124,7 +122,7 @@ public class OrcidAuthorizationClient {
 			throws OrcidClientException {
 		try {
 			URI fullUri = new URIBuilder(context.getAuthCodeRequestUrl())
-					.addParameter("client_id", context.getSetting(CLIENT_ID))
+					.addParameter("client_id", context.getClientId())
 					.addParameter("scope", progress.getScope().getScope())
 					.addParameter("response_type", "code")
 					.addParameter("redirect_uri", context.getCallbackUrl())
@@ -248,9 +246,8 @@ public class OrcidAuthorizationClient {
 			AuthorizationStateProgress progress) {
 		PostRequest postRequest = httpWrapper
 				.createPostRequest(context.getAccessTokenRequestUrl())
-				.addFormField("client_id", context.getSetting(CLIENT_ID))
-				.addFormField("client_secret",
-						context.getSetting(CLIENT_SECRET))
+				.addFormField("client_id", context.getClientId())
+				.addFormField("client_secret", context.getClientSecret())
 				.addFormField("grant_type", "authorization_code")
 				.addFormField("code", progress.getAuthorizationCode())
 				.addFormField("redirect_uri", context.getCallbackUrl())

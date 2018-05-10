@@ -1,12 +1,16 @@
 package edu.cornell.libraries.orcidclient.context;
 
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.API_PLATFORM;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.AUTHORIZED_API_BASE_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CALLBACK_PATH;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.OAUTH_AUTHORIZE_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.OAUTH_TOKEN_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.PUBLIC_API_BASE_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.API_PLATFORM;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.AUTHORIZED_API_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.CALLBACK_PATH;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.CLIENT_ID;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.CLIENT_SECRET;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_AUTHORIZE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_TOKEN_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.PUBLIC_API_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.WEBAPP_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.SettingConstraint.OPTIONAL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.SettingConstraint.REQUIRED;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,6 +35,74 @@ import edu.cornell.libraries.orcidclient.actions.OrcidApiClient;
 public class OrcidClientContextImpl extends OrcidClientContext {
 	private static final Log log = LogFactory
 			.getLog(OrcidClientContextImpl.class);
+
+	public enum SettingConstraint {
+		REQUIRED, OPTIONAL
+	}
+
+	public enum Setting {
+		/**
+		 * ID assigned by ORCID to the application.
+		 */
+		CLIENT_ID(REQUIRED),
+
+		/**
+		 * Secret code assigned by ORCID to the application.
+		 */
+		CLIENT_SECRET(REQUIRED),
+
+		/**
+		 * Environment - "public" or "sandbox".
+		 */
+		API_PLATFORM(OPTIONAL),
+
+		/**
+		 * Root of the public API (requires no authorization). If API_PLATFORM
+		 * is "custom", this is required.
+		 */
+		PUBLIC_API_BASE_URL(REQUIRED),
+
+		/**
+		 * Root of the restricted API (requires authorization). If API_PLATFORM
+		 * is "custom", this is required.
+		 */
+		AUTHORIZED_API_BASE_URL(REQUIRED),
+
+		/**
+		 * URL to obtain an authorization code. This is sent to the browser as a
+		 * redirect, so the user can log in at the ORCID site. If API_PLATFORM
+		 * is "custom", this is required.
+		 */
+		OAUTH_AUTHORIZE_URL(REQUIRED),
+
+		/**
+		 * URL to exchange the authorization code for an OAuth access token. If
+		 * API_PLATFORM is "custom", this is required.
+		 */
+		OAUTH_TOKEN_URL(REQUIRED),
+
+		/**
+		 * The base URL for contacting this webapp (including context path. Used
+		 * when building the redirect URL for the browser.
+		 */
+		WEBAPP_BASE_URL(REQUIRED),
+
+		/**
+		 * Where should ORCID call back to during the auth dance? Path within
+		 * this webapp.
+		 */
+		CALLBACK_PATH(REQUIRED);
+
+		private final SettingConstraint constraint;
+
+		Setting(SettingConstraint constraint) {
+			this.constraint = constraint;
+		}
+
+		public boolean isRequired() {
+			return REQUIRED == constraint;
+		}
+	}
 
 	private final Map<Setting, String> settings;
 
@@ -95,8 +167,7 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 		}
 	}
 
-	@Override
-	public String getSetting(Setting key) {
+	String getSetting(Setting key) {
 		if (settings.containsKey(key)) {
 			return settings.get(key);
 		} else {
@@ -127,6 +198,21 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	@Override
 	public String getApiMemberUrl() {
 		return getSetting(AUTHORIZED_API_BASE_URL);
+	}
+
+	@Override
+	public String getClientId() {
+		return getSetting(CLIENT_ID);
+	}
+
+	@Override
+	public String getClientSecret() {
+		return getSetting(CLIENT_SECRET);
+	}
+
+	@Override
+	public String getWebappBaseUrl() {
+		return getSetting(WEBAPP_BASE_URL);
 	}
 
 	@Override

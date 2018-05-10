@@ -1,7 +1,6 @@
 package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
 import static edu.cornell.libraries.orcidclient.auth.AuthorizationStateProgress.copy;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
 
 import java.io.IOException;
 
@@ -39,7 +38,7 @@ public class AuthenticationClientCallback extends AbstractActor {
 				JtwigModel.newModel() //
 						.with("progressBefore", progressBefore) //
 						.with("progressAfter", progressAfter) //
-						.with("mainPageUrl", occ.getSetting(WEBAPP_BASE_URL)));
+						.with("mainPageUrl", occ.getWebappBaseUrl()));
 	}
 
 }

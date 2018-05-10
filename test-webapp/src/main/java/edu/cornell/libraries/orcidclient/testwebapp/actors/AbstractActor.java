@@ -1,6 +1,5 @@
 package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
 import static org.jtwig.JtwigTemplate.classpathTemplate;
 
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,7 +37,7 @@ public abstract class AbstractActor {
 
 	protected void render(String path, JtwigModel model) throws IOException {
 		classpathTemplate(path).render(
-				model.with("mainPageUrl", occ.getSetting(WEBAPP_BASE_URL)),
+				model.with("mainPageUrl", occ.getWebappBaseUrl()),
 				resp.getOutputStream());
 	}
 

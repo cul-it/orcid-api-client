@@ -1,10 +1,5 @@
 package edu.cornell.libraries.orcidclient.auth;
 
-import java.util.EnumMap;
-import java.util.Map;
-
-import edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting;
-
 /**
  * TODO
  */
@@ -17,7 +12,8 @@ public class StubOrcidAuthorizationClientContext
 	private String authCodeRequestUrl;
 	private String accessTokenRequestUrl;
 	private String callbackUrl;
-	private Map<Setting, String> settings = new EnumMap<>(Setting.class);
+	private String clientId;
+	private String clientSecret;
 
 	public void setAuthCodeRequestUrl(String authCodeRequestUrl) {
 		this.authCodeRequestUrl = authCodeRequestUrl;
@@ -30,9 +26,13 @@ public class StubOrcidAuthorizationClientContext
 	public void setCallbackUrl(String callbackUrl) {
 		this.callbackUrl = callbackUrl;
 	}
-	
-	public void setSetting(Setting key, String value) {
-		settings.put(key, value);
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public void setClientSecret(String clientSecret) {
+		this.clientSecret = clientSecret;
 	}
 
 	// ----------------------------------------------------------------------
@@ -55,8 +55,13 @@ public class StubOrcidAuthorizationClientContext
 	}
 
 	@Override
-	public String getSetting(Setting key) {
-		return settings.get(key);
+	public String getClientId() {
+		return clientId;
+	}
+
+	@Override
+	public String getClientSecret() {
+		return clientSecret;
 	}
 
 }

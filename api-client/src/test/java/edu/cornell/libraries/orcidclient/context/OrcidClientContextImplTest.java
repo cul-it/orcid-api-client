@@ -1,14 +1,14 @@
 package edu.cornell.libraries.orcidclient.context;
 
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.API_PLATFORM;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.AUTHORIZED_API_BASE_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CALLBACK_PATH;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_SECRET;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.OAUTH_AUTHORIZE_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.OAUTH_TOKEN_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.PUBLIC_API_BASE_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.API_PLATFORM;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.AUTHORIZED_API_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.CALLBACK_PATH;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.CLIENT_ID;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.CLIENT_SECRET;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_AUTHORIZE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_TOKEN_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.PUBLIC_API_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.WEBAPP_BASE_URL;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
@@ -20,8 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import edu.cornell.libraries.orcidclient.OrcidClientException;
-import edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting;
 import edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.MissingSettingException;
+import edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting;
 import edu.cornell.libraries.orcidclient.testing.AbstractTestClass;
 
 /**

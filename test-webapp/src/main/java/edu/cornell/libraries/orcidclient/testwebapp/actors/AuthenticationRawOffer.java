@@ -1,7 +1,5 @@
 package edu.cornell.libraries.orcidclient.testwebapp.actors;
 
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,16 +22,15 @@ public class AuthenticationRawOffer extends AbstractActor {
 		super(req, resp);
 	}
 
-	public void exec()
-			throws IOException, ServletException {
+	public void exec() throws IOException, ServletException {
 		try {
 			URI requestUri = new URIBuilder(occ.getAuthCodeRequestUrl())
-					.addParameter("client_id", occ.getSetting(CLIENT_ID))
+					.addParameter("client_id", occ.getClientId())
 					.addParameter("scope", "/authenticate")
 					.addParameter("response_type", "code")
 					.addParameter("redirect_uri", occ.getCallbackUrl())
 					.addParameter("state", CALLBACK_STATE).build();
-			
+
 			render("/templates/authenticateRaw.twig.html", //
 					JtwigModel.newModel() //
 							.with("authRequestUrl", requestUri.toString()));

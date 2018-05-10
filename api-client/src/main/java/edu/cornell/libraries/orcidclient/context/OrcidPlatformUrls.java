@@ -1,15 +1,15 @@
 package edu.cornell.libraries.orcidclient.context;
 
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.AUTHORIZED_API_BASE_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.OAUTH_AUTHORIZE_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.OAUTH_TOKEN_URL;
-import static edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting.PUBLIC_API_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.AUTHORIZED_API_BASE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_AUTHORIZE_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_TOKEN_URL;
+import static edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting.PUBLIC_API_BASE_URL;
 
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-import edu.cornell.libraries.orcidclient.context.OrcidClientContext.Setting;
+import edu.cornell.libraries.orcidclient.context.OrcidClientContextImpl.Setting;
 
 /**
  * When an ORCID platform is specified, it defines these four URLs.
