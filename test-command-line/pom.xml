@@ -33,7 +33,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>edu.cornell.libraries.orcidclient.testcommandline.TestCommandLineApp</mainClass>
+					<mainClass>edu.cornell.library.orcidclient.testcommandline.TestCommandLineApp</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

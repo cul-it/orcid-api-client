@@ -6,12 +6,12 @@
 	version="3.1">
 
 	<listener>
-		<listener-class>edu.cornell.libraries.orcidclient.testwebapp.support.WebappSetup</listener-class>
+		<listener-class>edu.cornell.library.orcidclient.testwebapp.support.WebappSetup</listener-class>
 	</listener>
 
 	<servlet>
 		<servlet-name>mainServlet</servlet-name>
-		<servlet-class>edu.cornell.libraries.orcidclient.testwebapp.MainController</servlet-class>
+		<servlet-class>edu.cornell.library.orcidclient.testwebapp.MainController</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>mainServlet</servlet-name>
@@ -24,7 +24,7 @@
 
 	<servlet>
 		<servlet-name>callbackServlet</servlet-name>
-		<servlet-class>edu.cornell.libraries.orcidclient.testwebapp.CallbackController</servlet-class>
+		<servlet-class>edu.cornell.library.orcidclient.testwebapp.CallbackController</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>callbackServlet</servlet-name>

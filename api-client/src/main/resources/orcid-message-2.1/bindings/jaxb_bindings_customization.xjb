@@ -27,7 +27,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
 
 	<jxb:bindings schemaLocation="../common_2.1/common-2.1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.common"></jxb:package>
+			<jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.common"></jxb:package>
 			<jxb:nameXmlTransform>
 				<jxb:elementName suffix="Element" />
 			</jxb:nameXmlTransform>
@@ -47,7 +47,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/activities-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.activities"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.activities"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -56,7 +56,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/address-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.address"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.address"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -65,7 +65,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/bulk-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.bulk"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.bulk"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -74,7 +74,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/education-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.education"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.education"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -83,7 +83,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/email-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.email"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.email"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -92,7 +92,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/employment-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.employment"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.employment"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -101,7 +101,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/error-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.error"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.error"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -110,7 +110,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/funding-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.funding"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.funding"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -119,7 +119,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/history-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.history"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.history"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -128,7 +128,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/keyword-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.keyword"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.keyword"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -137,7 +137,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/other-name-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.othername"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.othername"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -146,7 +146,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/peer-review-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.peerreview"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.peerreview"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -155,7 +155,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/person-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.person"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.person"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -164,7 +164,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/person-external-identifier-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.personexternalidentifier"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.personexternalidentifier"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -173,7 +173,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/personal-details-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.personaldetails"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.personaldetails"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -182,7 +182,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/preferences-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.preferences"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.preferences"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -191,7 +191,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/record-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.record"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.record"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -200,7 +200,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/researcher-url-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.researcherurl"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.researcherurl"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -209,7 +209,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/search-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.search"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.search"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
@@ -218,7 +218,7 @@ https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/d
     
     <jxb:bindings schemaLocation = "../record_2.1/work-2.1.xsd">
 	    <jxb:schemaBindings>
-	        <jxb:package name="edu.cornell.libraries.orcidclient.orcid_message_2_1.work"></jxb:package>
+	        <jxb:package name="edu.cornell.library.orcidclient.orcid_message_2_1.work"></jxb:package>
 	        <jxb:nameXmlTransform>
 	          <jxb:elementName suffix="Element"/>
 	        </jxb:nameXmlTransform>
