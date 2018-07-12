@@ -3,12 +3,9 @@ package edu.cornell.library.orcidclient.context;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.cornell.library.orcidclient.actions.OrcidApiClient;
 import edu.cornell.library.orcidclient.auth.OrcidAuthorizationClientContext;
 
 /**
@@ -42,8 +39,6 @@ public abstract class OrcidClientContext
 	// The interface
 	// ----------------------------------------------------------------------
 
-	public abstract OrcidApiClient getApiClient(HttpServletRequest req);
-
 	public abstract String getApiPublicUrl();
 
 	public abstract String getApiMemberUrl();
@@ -60,11 +55,6 @@ public abstract class OrcidClientContext
 	private static class OrcidClientContextNotInitialized
 			extends OrcidClientContext {
 		private static final String MESSAGE = "OrcidClientContext has not been initialized";
-
-		@Override
-		public OrcidApiClient getApiClient(HttpServletRequest req) {
-			throw new IllegalStateException(MESSAGE);
-		}
 
 		@Override
 		public String getCallbackUrl() {

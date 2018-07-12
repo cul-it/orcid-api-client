@@ -19,13 +19,10 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIUtils;
 
-import edu.cornell.library.orcidclient.actions.OrcidApiClient;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
@@ -111,7 +108,8 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	public OrcidClientContextImpl(Map<Setting, String> settings)
 			throws OrcidClientException {
 		Objects.requireNonNull(settings, "'settings' may not be null.");
-		this.settings = new EnumMap<>(settings);
+		this.settings = new EnumMap<>(Setting.class);
+		this.settings.putAll(settings);
 
 		adjustSettingsForPlatform();
 		complainAboutMissingSettings();
@@ -213,11 +211,6 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	@Override
 	public String getWebappBaseUrl() {
 		return getSetting(WEBAPP_BASE_URL);
-	}
-
-	@Override
-	public OrcidApiClient getApiClient(HttpServletRequest req) {
-		return new OrcidApiClient(this, req);
 	}
 
 	@Override
