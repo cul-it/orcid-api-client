@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.testing.AbstractTestClass;
 
 /**

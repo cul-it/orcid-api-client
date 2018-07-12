@@ -5,10 +5,10 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.ApiScope;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress;
 import edu.cornell.library.orcidclient.auth.OrcidAuthorizationClient;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * The user has asked for client-based authentication. Start the dance.

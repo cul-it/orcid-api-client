@@ -9,9 +9,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
+import edu.cornell.library.orcidclient.exceptions.OrcidApiErrorResponseException;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.http.HttpWrapper;
 import edu.cornell.library.orcidclient.http.HttpWrapper.DeleteRequest;
 import edu.cornell.library.orcidclient.http.HttpWrapper.HttpResponse;
@@ -63,7 +64,7 @@ abstract class AbstractRecordElementEditAction<T extends ElementSummary> {
 			return getPutCode(response);
 		} catch (HttpStatusCodeException e) {
 			log.error("HttpResponse status code: " + e.getStatusCode());
-			throw new OrcidClientException(
+			throw new OrcidApiErrorResponseException(
 					"Failed to add " + getUrlPath() + ". HTTP status code="
 							+ e.getStatusCode() + ", xml='" + xml + "'",
 					e);

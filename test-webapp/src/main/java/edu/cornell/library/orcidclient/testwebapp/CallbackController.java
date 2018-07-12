@@ -6,9 +6,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.http.BaseHttpWrapper;
 import edu.cornell.library.orcidclient.http.HttpWrapper;
 import edu.cornell.library.orcidclient.testwebapp.actors.AuthenticationClientCallback;

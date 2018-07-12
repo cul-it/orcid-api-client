@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.ApiScope;
 import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgressCache;
 
 /**

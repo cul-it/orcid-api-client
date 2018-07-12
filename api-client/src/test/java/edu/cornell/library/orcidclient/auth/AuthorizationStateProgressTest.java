@@ -21,11 +21,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.ApiScope;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureDetails;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.testing.AbstractTestClass;
 import edu.cornell.library.orcidclient.util.PrettyToStringPrinter;
 

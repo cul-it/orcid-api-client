@@ -25,8 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIUtils;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.OrcidApiClient;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * Read the supplied settings, validate them, adjust them as appropriate, and be

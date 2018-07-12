@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jtwig.JtwigModel;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.ApiScope;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.testwebapp.support.WebappCache;
 
 /**

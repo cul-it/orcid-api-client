@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jtwig.JtwigModel;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.OrcidActionClient;
 import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.elements.ExternalIdBuilder;
@@ -19,6 +18,7 @@ import edu.cornell.library.orcidclient.elements.OrcidIdBuilder;
 import edu.cornell.library.orcidclient.elements.WorkBuilder;
 import edu.cornell.library.orcidclient.elements.WorkBuilder.CitationBuilder;
 import edu.cornell.library.orcidclient.elements.WorkBuilder.ContributorBuilder;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.orcid_message_2_1.common.LanguageCode;
 import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkElement;
 import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkType;

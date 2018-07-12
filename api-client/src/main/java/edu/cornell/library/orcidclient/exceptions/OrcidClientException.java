@@ -1,4 +1,4 @@
-package edu.cornell.library.orcidclient;
+package edu.cornell.library.orcidclient.exceptions;
 
 /**
  * The ORCID client code has detected a problem.

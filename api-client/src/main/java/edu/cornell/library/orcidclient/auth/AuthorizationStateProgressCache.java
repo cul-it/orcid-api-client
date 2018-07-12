@@ -1,7 +1,7 @@
 package edu.cornell.library.orcidclient.auth;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.ApiScope;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * Hold that progress of the authentication dance(s).

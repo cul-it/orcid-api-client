@@ -9,10 +9,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.ApiScope;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgressCache;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * A cache implementation that provides medium-length memory: the length of an

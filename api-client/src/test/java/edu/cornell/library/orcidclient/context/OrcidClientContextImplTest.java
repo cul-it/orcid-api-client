@@ -19,9 +19,9 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.context.OrcidClientContextImpl.MissingSettingException;
 import edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.testing.AbstractTestClass;
 
 /**

@@ -15,10 +15,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.ApiScope;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureDetails;
 import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.http.HttpWrapper;
 import edu.cornell.library.orcidclient.http.HttpWrapper.HttpStatusCodeException;
 import edu.cornell.library.orcidclient.http.HttpWrapper.PostRequest;

@@ -8,9 +8,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIUtils;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.http.HttpWrapper;
 import edu.cornell.library.orcidclient.http.HttpWrapper.GetRequest;
 import edu.cornell.library.orcidclient.http.HttpWrapper.HttpResponse;

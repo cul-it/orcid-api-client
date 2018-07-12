@@ -14,7 +14,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * Some convenience methods for dealing with the XML messages in the ORCID API.

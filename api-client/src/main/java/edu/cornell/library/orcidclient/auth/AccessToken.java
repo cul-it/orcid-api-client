@@ -7,8 +7,8 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.ApiScope;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * The access token granted at the end of the OAuth negotiation.

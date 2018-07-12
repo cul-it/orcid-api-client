@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jtwig.JtwigModel;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.OrcidActionClient;
 import edu.cornell.library.orcidclient.auth.AccessToken;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.orcid_message_2_1.activities.WorkGroup;
 import edu.cornell.library.orcidclient.orcid_message_2_1.record.RecordElement;
 import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkSummaryElement;

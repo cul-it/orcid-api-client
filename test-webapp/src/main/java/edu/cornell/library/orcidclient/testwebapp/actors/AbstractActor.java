@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jtwig.JtwigModel;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.OrcidActionClient;
 import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.http.BaseHttpWrapper;
 import edu.cornell.library.orcidclient.testwebapp.support.WebappCache;
 

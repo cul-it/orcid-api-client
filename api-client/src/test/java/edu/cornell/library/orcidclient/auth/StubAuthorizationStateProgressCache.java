@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.actions.ApiScope;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * Implement the cache with the usual map, plus a list that maintains history.

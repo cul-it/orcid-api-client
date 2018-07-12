@@ -27,12 +27,13 @@ public class ErrorPage extends AbstractActor {
 
 	public void exec() {
 		try {
+			log.error("Error detected", exception);
+
 			StringWriter sw = new StringWriter();
 			exception.printStackTrace(new PrintWriter(sw));
 			render("/templates/errorPage.twig.html", //
 					JtwigModel.newModel() //
-							.with("exception", exception) //
-							.with("stackTrace", sw.toString()));
+							.with("exception", sw.toString()));
 		} catch (IOException e) {
 			log.error(e, e);
 		}

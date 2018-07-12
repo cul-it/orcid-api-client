@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jtwig.JtwigModel;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * Show the choices to the user.

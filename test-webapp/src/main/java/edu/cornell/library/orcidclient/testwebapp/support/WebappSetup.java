@@ -17,10 +17,10 @@ import javax.servlet.annotation.WebListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.cornell.library.orcidclient.OrcidClientException;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
 import edu.cornell.library.orcidclient.context.OrcidClientContextImpl;
 import edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * Read the settings file, store the webapp properties for later use, and
