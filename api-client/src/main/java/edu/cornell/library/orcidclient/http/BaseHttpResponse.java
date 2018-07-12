@@ -31,7 +31,8 @@ public class BaseHttpResponse implements HttpResponse {
 			throws IOException, HttpStatusCodeException {
 		response.handleResponse(new BaseResponseHandler());
 		if (statusCode >= 400) {
-			throw new HttpStatusCodeException(reasonPhrase, statusCode);
+			throw new HttpStatusCodeException(reasonPhrase, statusCode,
+					contentString);
 		}
 	}
 

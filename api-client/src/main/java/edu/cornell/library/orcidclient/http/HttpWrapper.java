@@ -14,7 +14,7 @@ public interface HttpWrapper {
 	PutRequest createPutRequest(String url);
 
 	DeleteRequest createDeleteRequest(String url);
-	
+
 	interface GetRequest {
 		String getUrl();
 
@@ -29,15 +29,15 @@ public interface HttpWrapper {
 		PostRequest addFormField(String key, String value);
 
 		PostRequest addHeader(String key, String value);
-		
+
 		PostRequest setBodyString(String body);
 
 		HttpResponse execute() throws IOException, HttpStatusCodeException;
 	}
-	
+
 	interface PutRequest {
 		String getUrl();
-		
+
 		PutRequest addHeader(String key, String value);
 
 		PutRequest setBodyString(String body);
@@ -47,14 +47,15 @@ public interface HttpWrapper {
 
 	interface DeleteRequest {
 		String getUrl();
-		
+
 		DeleteRequest addHeader(String key, String value);
-		
+
 		HttpResponse execute() throws IOException, HttpStatusCodeException;
 	}
-	
+
 	interface HttpResponse {
 		String getContentString() throws IOException;
+
 		List<String> getHeaderValues(String key) throws IOException;
 	}
 
@@ -74,14 +75,25 @@ public interface HttpWrapper {
 
 	public static class HttpStatusCodeException extends HttpWrapperException {
 		private final int statusCode;
+		private final String responseContent;
 
 		public HttpStatusCodeException(String message, int statusCode) {
+			this(message, statusCode, "");
+		}
+		
+		public HttpStatusCodeException(String message, int statusCode,
+				String responseContent) {
 			super(message + ": statusCode=" + statusCode);
 			this.statusCode = statusCode;
+			this.responseContent = responseContent;
 		}
 
 		public int getStatusCode() {
 			return statusCode;
+		}
+
+		public String getResponseContent() {
+			return responseContent;
 		}
 	}
 

@@ -13,6 +13,7 @@ import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress;
 import edu.cornell.library.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.util.ParameterMap;
+import edu.cornell.library.orcidclient.util.PrettyToStringPrinter;
 
 /**
  * When the client-based authentication is complete, show them the results.
@@ -36,8 +37,12 @@ public class AuthenticationClientCallback extends AbstractActor {
 
 		render("/templates/authenticateClientCallback.twig.html", //
 				JtwigModel.newModel() //
-						.with("progressBefore", progressBefore) //
-						.with("progressAfter", progressAfter) //
+						.with("progressBefore",
+								new PrettyToStringPrinter()
+										.format(progressBefore)) //
+						.with("progressAfter",
+								new PrettyToStringPrinter()
+										.format(progressAfter)) //
 						.with("mainPageUrl", occ.getWebappBaseUrl()));
 	}
 

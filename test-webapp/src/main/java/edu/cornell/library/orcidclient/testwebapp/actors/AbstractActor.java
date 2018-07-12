@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jtwig.JtwigModel;
+import org.jtwig.environment.EnvironmentConfiguration;
+import org.jtwig.environment.EnvironmentConfigurationBuilder;
 
 import edu.cornell.library.orcidclient.actions.OrcidActionClient;
 import edu.cornell.library.orcidclient.auth.AccessToken;
@@ -28,15 +30,19 @@ public abstract class AbstractActor {
 	protected final HttpServletRequest req;
 	protected final HttpServletResponse resp;
 	protected final OrcidClientContext occ;
+	private final EnvironmentConfiguration env;
 
 	public AbstractActor(HttpServletRequest req, HttpServletResponse resp) {
 		this.req = req;
 		this.resp = resp;
 		this.occ = OrcidClientContext.getInstance();
+
+		this.env = EnvironmentConfigurationBuilder.configuration().escape()
+				.withInitialEngine("html").and().build();
 	}
 
 	protected void render(String path, JtwigModel model) throws IOException {
-		classpathTemplate(path).render(
+		classpathTemplate(path, env).render(
 				model.with("mainPageUrl", occ.getWebappBaseUrl()),
 				resp.getOutputStream());
 	}
