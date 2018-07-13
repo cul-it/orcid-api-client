@@ -1,10 +1,13 @@
 package edu.cornell.library.orcidclient.actions;
 
+import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
+import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.http.HttpWrapper;
 
 /**
- * So far, just a facade for creating Action objects.
+ * So far, a facade for creating Action objects, and for testing the "liveness"
+ * of access tokens.
  */
 public class OrcidActionClient {
 	private final OrcidClientContext context;
@@ -16,10 +19,16 @@ public class OrcidActionClient {
 		this.httpWrapper = httpWrapper;
 	}
 
+	public boolean isAccessTokenValid(AccessToken accessToken)
+			throws OrcidClientException {
+		return new AccessTokenValidator(context, httpWrapper)
+				.isValid(accessToken);
+	}
+
 	public ReadRecordAction createReadRecordAction() {
 		return new ReadRecordAction(context, httpWrapper);
 	}
-	
+
 	public ExternalIdsEditAction createEditExiternalIdsAction() {
 		return new ExternalIdsEditAction(context, httpWrapper);
 	}
@@ -27,5 +36,5 @@ public class OrcidActionClient {
 	public WorksEditAction createEditWorksAction() {
 		return new WorksEditAction(context, httpWrapper);
 	}
-	
+
 }
