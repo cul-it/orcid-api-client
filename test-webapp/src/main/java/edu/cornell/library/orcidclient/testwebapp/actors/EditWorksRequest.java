@@ -69,8 +69,7 @@ public class EditWorksRequest extends AbstractActor {
 		int[] pubDate = parseDate(req.getParameter("publicationDate"));
 		String idSuffix = req.getParameter("externalId");
 
-		return new WorkBuilder(WorkType.JOURNAL_ARTICLE) //
-				.setTitle(title) //
+		return new WorkBuilder(WorkType.JOURNAL_ARTICLE, title)
 				.setPublicationDate(pubDate) //
 				.setLanguageCode(LanguageCode.EN) //
 				.setCountry("US") //
@@ -90,14 +89,13 @@ public class EditWorksRequest extends AbstractActor {
 		}
 		return ints;
 	}
-	
+
 	/**
 	 * This is how we would create a fully-populated work.
 	 */
 	@SuppressWarnings("unused")
 	private WorkElement generate() {
-		return new WorkBuilder(WorkType.JOURNAL_ARTICLE) //
-				.setTitle("The article title") //
+		return new WorkBuilder(WorkType.JOURNAL_ARTICLE, "The article title")
 				.setSubtitle("An odyssey") //
 				.setPublicationDate(1953, 7, 30) //
 				.setShortDescription("A most excellent article.") //

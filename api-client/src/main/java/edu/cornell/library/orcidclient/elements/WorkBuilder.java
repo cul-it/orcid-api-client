@@ -7,9 +7,6 @@ import edu.cornell.library.orcidclient.orcid_message_2_1.common.CountryElement;
 import edu.cornell.library.orcidclient.orcid_message_2_1.common.CreditName;
 import edu.cornell.library.orcidclient.orcid_message_2_1.common.ExternalIds;
 import edu.cornell.library.orcidclient.orcid_message_2_1.common.FuzzyDate;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.FuzzyDate.Day;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.FuzzyDate.Month;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.FuzzyDate.Year;
 import edu.cornell.library.orcidclient.orcid_message_2_1.common.LanguageCode;
 import edu.cornell.library.orcidclient.orcid_message_2_1.work.Citation;
 import edu.cornell.library.orcidclient.orcid_message_2_1.work.CitationType;
@@ -24,11 +21,8 @@ import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkTitle;
 import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkType;
 
 /**
- * A conversational tool for building a WorkElement.
- * 
- * All sorts of questions abound. Should we throw an exception if there is no
- * title? if there is no publication date? Should we be checking the publication
- * date to avoid Feb. 31, etc.?
+ * A conversational tool for building a WorkElement. The only required fields
+ * are type and title.
  */
 public class WorkBuilder {
 	private final WorkType workType;
@@ -43,13 +37,9 @@ public class WorkBuilder {
 	private List<ExternalIdBuilder> externalIds = new ArrayList<>();
 	private List<ContributorBuilder> contributors = new ArrayList<>();
 
-	public WorkBuilder(WorkType workType) {
+	public WorkBuilder(WorkType workType, String title) {
 		this.workType = workType;
-	}
-
-	public WorkBuilder setTitle(String title) {
 		this.title = title;
-		return this;
 	}
 
 	public WorkBuilder setSubtitle(String subtitle) {
@@ -104,10 +94,8 @@ public class WorkBuilder {
 	public WorkElement build() {
 		WorkElement work = new WorkElement();
 		work.setType(workType);
+		work.setTitle(buildTitle());
 
-		if (title != null) {
-			work.setTitle(buildTitle());
-		}
 		if (publicationDate != null) {
 			work.setPublicationDate(buildPublicationDate());
 		}
