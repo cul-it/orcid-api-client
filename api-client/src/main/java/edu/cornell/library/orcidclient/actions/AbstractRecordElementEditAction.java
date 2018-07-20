@@ -29,8 +29,8 @@ abstract class AbstractRecordElementEditAction<T extends ElementSummary> {
 	private static final Log log = LogFactory
 			.getLog(AbstractRecordElementEditAction.class);
 
-	private final OrcidClientContext context;
-	private final HttpWrapper httpWrapper;
+	protected final OrcidClientContext context;
+	protected final HttpWrapper httpWrapper;
 
 	public AbstractRecordElementEditAction(OrcidClientContext context,
 			HttpWrapper httpWrapper) {

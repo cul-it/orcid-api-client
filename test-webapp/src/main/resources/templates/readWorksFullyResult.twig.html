@@ -1,0 +1,18 @@
+{% extends "parent.twig.html" %}
+{% set title = "Read Works Fully Result" %}
+
+{% block body %}
+  <H2>
+    From the <pre>/works</pre> call.
+  </H2>
+  <pre>{{worksSummaryXml}}</pre>
+  
+  <H2>
+    From the <pre>/work/[putcode]</pre> calls.
+  </H2>
+  
+  {% for workXml in workXmls %}
+    <pre>{{workXml}}</pre>
+  {% endfor %}
+  
+{% endblock body %}

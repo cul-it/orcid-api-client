@@ -1,0 +1,36 @@
+{% extends "parent.twig.html" %}
+{% set title = "Read Works Fully" %}
+
+{% block body %}
+  <p>
+    Use an existing access token to read an ORCID record, focusing on the works.
+  </p>
+  <p>
+    Select an access token, click the submit button, and you will see the result.
+  </p>
+ 
+  <form action="request" method="get" style="width:100%">
+    <div> 
+      Select an access token:
+      {% if (tokens.size == 0) %}
+        <p><b>No tokens available. Go and create one.</b></p>
+      {% else %}
+        <table>
+        {% for token in tokens %}
+          <tr>
+            <td><input type="radio" value="{{token.token}}" name="token" /></td>
+            <td>{{token.scope}}</td>
+            <td>{{token.expiresIn}}</td>
+            <td>{{token.name}}</td>
+            <td>{{token.token}}</td>
+          </tr>
+        {% endfor %}
+        </table>
+      {% endif %}
+    </div>
+  
+    <div>
+      <input type="submit" name="ReadWorksFullyRequest" value="Do it."><br>
+    </div>
+  </form> 
+{% endblock body %}

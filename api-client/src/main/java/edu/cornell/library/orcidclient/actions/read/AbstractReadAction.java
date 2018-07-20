@@ -1,4 +1,4 @@
-package edu.cornell.library.orcidclient.actions;
+package edu.cornell.library.orcidclient.actions.read;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,22 +15,32 @@ import edu.cornell.library.orcidclient.http.HttpWrapper;
 import edu.cornell.library.orcidclient.http.HttpWrapper.GetRequest;
 import edu.cornell.library.orcidclient.http.HttpWrapper.HttpResponse;
 import edu.cornell.library.orcidclient.http.HttpWrapper.HttpStatusCodeException;
-import edu.cornell.library.orcidclient.orcid_message_2_1.record.RecordElement;
 import edu.cornell.library.orcidclient.util.OrcidXmlUtil;
 
 /**
- * Reads the summary of an ORCID record.
+ * The basis for classes that read information from the ORCID record.
+ * 
+ * Different endpoints return different element types. To implement a typesafe
+ * class that does reads, create a read() method that takes a subclass of
+ * Endpoint as a parameter. Then, that endpoint can be passed to readElement()
+ * in this class, and the result is typed correctly.
  */
-public class ReadRecordAction {
-	private static final Log log = LogFactory.getLog(ReadRecordAction.class);
+public abstract class AbstractReadAction {
+	private static final Log log = LogFactory.getLog(AbstractReadAction.class);
 
 	private final OrcidClientContext context;
 	private final HttpWrapper httpWrapper;
 
-	public ReadRecordAction(OrcidClientContext context,
+	public AbstractReadAction(OrcidClientContext context,
 			HttpWrapper httpWrapper) {
 		this.context = context;
 		this.httpWrapper = httpWrapper;
+	}
+
+	protected <T> T readElement(AccessToken accessToken, Endpoint<T> endpoint)
+			throws OrcidClientException {
+		String xml = readXml(accessToken, endpoint.getPath());
+		return OrcidXmlUtil.unmarshall(xml, endpoint.getResultClass());
 	}
 
 	/**
@@ -41,12 +51,12 @@ public class ReadRecordAction {
 	 *      -L -i
 	 * </pre>
 	 */
-	public RecordElement read(AccessToken accessToken)
+	public String readXml(AccessToken accessToken, String endpointPath)
 			throws OrcidClientException {
 		try {
 			URI baseUri = new URI(context.getApiPublicUrl());
 			String requestUrl = URIUtils
-					.resolve(baseUri, accessToken.getOrcid() + "/record")
+					.resolve(baseUri, accessToken.getOrcid() + endpointPath)
 					.toString();
 			GetRequest request = httpWrapper.createGetRequest(requestUrl)
 					.addHeader("Accept", "application/vnd.orcid+xml")
@@ -54,9 +64,8 @@ public class ReadRecordAction {
 
 			HttpResponse response = request.execute();
 			String xml = response.getContentString();
-			log.debug("Record summary: " + xml);
-
-			return OrcidXmlUtil.unmarshall(xml, RecordElement.class);
+			log.debug("Read action result: " + xml);
+			return xml;
 		} catch (URISyntaxException e) {
 			throw new OrcidClientException(
 					"API_BASE_URL is not syntactically valid.", e);
@@ -65,6 +74,29 @@ public class ReadRecordAction {
 		} catch (IOException e) {
 			throw new OrcidClientException("Failed to read profile.", e);
 		}
+	}
+
+	// ----------------------------------------------------------------------
+	// Helper classes
+	// ----------------------------------------------------------------------
+
+	public abstract static class Endpoint<T> {
+		private final String path;
+		private final Class<T> resultClass;
+
+		protected Endpoint(String path, Class<T> resultClass) {
+			this.path = path;
+			this.resultClass = resultClass;
+		}
+
+		public String getPath() {
+			return path;
+		}
+
+		public Class<T> getResultClass() {
+			return resultClass;
+		}
+
 	}
 
 }

@@ -21,6 +21,8 @@ import edu.cornell.library.orcidclient.testwebapp.actors.ErrorPage;
 import edu.cornell.library.orcidclient.testwebapp.actors.IndexPage;
 import edu.cornell.library.orcidclient.testwebapp.actors.ReadRecordOffer;
 import edu.cornell.library.orcidclient.testwebapp.actors.ReadRecordRequest;
+import edu.cornell.library.orcidclient.testwebapp.actors.ReadWorksFullyOffer;
+import edu.cornell.library.orcidclient.testwebapp.actors.ReadWorksFullyRequest;
 
 /**
  * Present the index page, or react to selections from it.
@@ -71,6 +73,12 @@ public class MainController extends AbstractController {
 			} else if (req
 					.getParameter("EditWorks") != null) {
 				new EditWorksOffer(req, resp).exec();
+			} else if (req
+					.getParameter("ReadWorksFully") != null) {
+				new ReadWorksFullyOffer(req, resp).exec();
+			} else if (req
+					.getParameter("ReadWorksFullyRequest") != null) {
+				new ReadWorksFullyRequest(req, resp).exec();
 			} else if (req
 					.getParameter("EditWorksGetList") != null) {
 				new EditWorksReader(req, resp).exec();
