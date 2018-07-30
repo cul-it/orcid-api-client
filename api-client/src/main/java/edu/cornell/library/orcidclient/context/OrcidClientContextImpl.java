@@ -8,6 +8,7 @@ import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Set
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_AUTHORIZE_URL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_TOKEN_URL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.PUBLIC_API_BASE_URL;
+import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.SITE_BASE_URL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.WEBAPP_BASE_URL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.SettingConstraint.OPTIONAL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.SettingConstraint.REQUIRED;
@@ -52,6 +53,12 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 		 * Environment - "public" or "sandbox".
 		 */
 		API_PLATFORM(OPTIONAL),
+
+		/**
+		 * Root of the website where user's may view ORCID records. If
+		 * API_PLATFORM is "custom", this is required.
+		 */
+		SITE_BASE_URL(REQUIRED),
 
 		/**
 		 * Root of the public API (requires no authorization). If API_PLATFORM
@@ -176,6 +183,11 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	@Override
 	public String getCallbackUrl() {
 		return callbackUrl;
+	}
+
+	@Override
+	public String getSiteBaseUrl() {
+		return getSetting(SITE_BASE_URL);
 	}
 
 	@Override

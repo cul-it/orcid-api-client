@@ -1,5 +1,7 @@
 package edu.cornell.library.orcidclient.actions;
 
+import static edu.cornell.library.orcidclient.auth.AccessToken.NO_TOKEN;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,6 +39,10 @@ public class AccessTokenValidator {
 
 	public boolean isValid(AccessToken accessToken)
 			throws OrcidClientException {
+		if (accessToken == null || accessToken == NO_TOKEN) {
+			return false;
+		}
+		
 		try {
 			URI baseUri = new URI(context.getApiPublicUrl());
 			String requestUrl = URIUtils

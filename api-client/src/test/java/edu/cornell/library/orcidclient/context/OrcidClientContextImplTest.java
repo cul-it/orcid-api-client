@@ -8,6 +8,7 @@ import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Set
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_AUTHORIZE_URL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.OAUTH_TOKEN_URL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.PUBLIC_API_BASE_URL;
+import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.SITE_BASE_URL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.WEBAPP_BASE_URL;
 import static org.junit.Assert.assertEquals;
 
@@ -41,6 +42,7 @@ public class OrcidClientContextImplTest extends AbstractTestClass {
 
 	private final Map<Setting, String> SETTINGS_WITHOUT_PLATFORM = Collections
 			.unmodifiableMap(new SettingsMap() //
+					.and(SITE_BASE_URL, "http://unittest.org/")
 					.and(AUTHORIZED_API_BASE_URL,
 							"http://api.unittest.org/v9.9/")
 					.and(PUBLIC_API_BASE_URL, "http://pub.unittest.org/v9.9/")
@@ -70,6 +72,7 @@ public class OrcidClientContextImplTest extends AbstractTestClass {
 	public void successWithPlatform() throws OrcidClientException {
 		provided = SETTINGS_WITH_PLATFORM;
 		expected = settings(SETTINGS_WITH_PLATFORM)
+				.and(SITE_BASE_URL, "https://sandbox.orcid.org/")
 				.and(AUTHORIZED_API_BASE_URL,
 						"https://api.sandbox.orcid.org/v2.1/")
 				.and(PUBLIC_API_BASE_URL, "https://pub.sandbox.orcid.org/v2.1/")
@@ -86,6 +89,7 @@ public class OrcidClientContextImplTest extends AbstractTestClass {
 		provided = settings(SETTINGS_WITHOUT_PLATFORM).and(API_PLATFORM,
 				"production");
 		expected = settings(SETTINGS_WITHOUT_PLATFORM)
+				.except(SITE_BASE_URL, "https://orcid.org/")
 				.except(PUBLIC_API_BASE_URL, "https://pub.orcid.org/v2.1/")
 				.except(OAUTH_TOKEN_URL, "https://orcid.org/oauth/token")
 				.except(AUTHORIZED_API_BASE_URL, "https://api.orcid.org/v2.1/")

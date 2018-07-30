@@ -39,6 +39,8 @@ public abstract class OrcidClientContext
 	// The interface
 	// ----------------------------------------------------------------------
 
+	public abstract String getSiteBaseUrl();
+
 	public abstract String getApiPublicUrl();
 
 	public abstract String getApiMemberUrl();
@@ -58,6 +60,11 @@ public abstract class OrcidClientContext
 
 		@Override
 		public String getCallbackUrl() {
+			throw new IllegalStateException(MESSAGE);
+		}
+
+		@Override
+		public String getSiteBaseUrl() {
 			throw new IllegalStateException(MESSAGE);
 		}
 
