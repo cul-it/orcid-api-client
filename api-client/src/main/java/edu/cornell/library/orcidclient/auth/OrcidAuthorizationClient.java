@@ -94,7 +94,8 @@ public class OrcidAuthorizationClient {
 	public OauthProgress createProgressObject(ApiScope scope, URI successUrl,
 			URI failureUrl, URI deniedUrl) throws OrcidClientException {
 		OauthProgress authProgress = new OauthProgress(scope, successUrl,
-				failureUrl, deniedUrl).addState(State.SEEKING_AUTHORIZATION);
+				failureUrl, deniedUrl);
+		authProgress.addState(State.SEEKING_AUTHORIZATION);
 		log.debug("createdProgressObject: " + authProgress);
 
 		cache.store(authProgress);
@@ -206,11 +207,10 @@ public class OrcidAuthorizationClient {
 			return fail(progress, new MissingAuthCodeFailureDetails());
 		}
 
-		progress = progress.addCode(code);
-		storeProgressById(progress);
+		progress.addCode(code);
 
-		progress = getAccessTokenFromAuthCode(progress);
-		storeProgressById(progress);
+		getAccessTokenFromAuthCode(progress);
+		
 		return progress.getRedirectUrl().toString();
 	}
 
@@ -230,7 +230,7 @@ public class OrcidAuthorizationClient {
 		return progress;
 	}
 
-	private OauthProgress getAccessTokenFromAuthCode(OauthProgress progress) {
+	private void getAccessTokenFromAuthCode(OauthProgress progress) {
 		PostRequest postRequest = httpWrapper
 				.createPostRequest(context.getAccessTokenRequestUrl())
 				.addFormField("client_id", context.getClientId())
@@ -246,42 +246,41 @@ public class OrcidAuthorizationClient {
 			try {
 				log.debug("Json response: '" + string + "'");
 				AccessToken accessToken = AccessToken.parse(string);
-				return progress.addAccessToken(accessToken);
+				progress.addAccessToken(accessToken);
 			} catch (OrcidClientException e) {
 				BadAccessTokenFailureDetails details = new BadAccessTokenFailureDetails(
 						string);
 				log.warn(details.describe() + " : " + progress, e);
-				return progress.addFailure(details);
+				progress.addFailure(details);
 			}
 		} catch (HttpStatusCodeException e) {
 			FailureDetails details = new UnknownFailureDetails(
 					"Bad response code: " + e.getStatusCode());
 			log.warn(details.describe() + " : " + progress);
-			return progress.addFailure(details);
+			progress.addFailure(details);
 		} catch (IOException e) {
 			FailureDetails details = new UnknownFailureDetails(
 					"Unknown failure: " + e);
 			log.warn(details.describe() + " : " + progress);
-			return progress.addFailure(details);
+			progress.addFailure(details);
 		}
 
 	}
 
 	private String deny(OauthProgress progress, String error,
-			String errorDescription) throws OrcidClientException {
-		OauthProgress denied = progress.addState(State.DENIED);
+			String errorDescription) {
+		progress.addState(State.DENIED);
 		log.warn("User denied access, error='" + error + "', description='"
-				+ errorDescription + "': " + denied);
-		storeProgressById(denied);
-		return denied.getRedirectUrl().toString();
+				+ errorDescription + "': " + progress);
+		return progress.getRedirectUrl().toString();
 	}
 
 	private String fail(OauthProgress progress, FailureDetails details)
 			throws OrcidClientException {
-		OauthProgress failed = progress.addFailure(details);
-		log.warn(details.describe() + " : " + failed);
-		storeProgressById(failed);
-		return failed.getRedirectUrl().toString();
+		progress.addFailure(details);
+		log.warn(details.describe() + " : " + progress);
+		storeProgressById(progress);
+		return progress.getRedirectUrl().toString();
 	}
 
 	private void storeProgressById(OauthProgress progress)

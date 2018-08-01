@@ -124,7 +124,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 				.add("state", progress.getId()).toMap();
 		redirectUrl = client.processAuthorizationResponse(parameters);
 
-		assertFailureRecordInCache(0, INVALID_STATE);
+		assertFailureRecordInCache(INVALID_STATE);
 	}
 
 	@Test
@@ -139,7 +139,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 				.add("error_description", "the_description").toMap();
 		redirectUrl = client.processAuthorizationResponse(parameters);
 
-		assertFailureRecordInCache(0, ERROR_STATUS);
+		assertFailureRecordInCache(ERROR_STATUS);
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 				.add("error", "the_error_code").toMap();
 		redirectUrl = client.processAuthorizationResponse(parameters);
 
-		assertFailureRecordInCache(0, ERROR_STATUS);
+		assertFailureRecordInCache(ERROR_STATUS);
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 				.add("state", progress.getId()).toMap();
 		redirectUrl = client.processAuthorizationResponse(parameters);
 
-		assertFailureRecordInCache(0, NO_AUTH_CODE);
+		assertFailureRecordInCache(NO_AUTH_CODE);
 	}
 
 	@Test
@@ -195,8 +195,8 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 				.add("code", "theCode").toMap();
 		redirectUrl = client.processAuthorizationResponse(parameters);
 
-		assertCodeRecordInCache(0, "theCode");
-		assertFailureRecordInCache(1, UNKNOWN);
+		assertCodeRecordInCache("theCode");
+		assertFailureRecordInCache(UNKNOWN);
 	}
 
 	@Test
@@ -212,8 +212,8 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 				.add("code", "theCode").toMap();
 		redirectUrl = client.processAuthorizationResponse(parameters);
 
-		assertCodeRecordInCache(0, "theCode");
-		assertFailureRecordInCache(1, BAD_ACCESS_TOKEN);
+		assertCodeRecordInCache("theCode");
+		assertFailureRecordInCache(BAD_ACCESS_TOKEN);
 	}
 
 	@Test
@@ -229,7 +229,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 				.add("code", "theCode").toMap();
 		redirectUrl = client.processAuthorizationResponse(parameters);
 
-		assertCodeRecordInCache(0, "theCode");
+		assertCodeRecordInCache("theCode");
 		assertSuccessRecordInCache();
 	}
 
@@ -262,51 +262,37 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	}
 
 	private OauthProgress basicProgress(State state) {
-		return new OauthProgress(READ_PUBLIC, SUCCESS_URL, FAILURE_URL,
-				DENIED_URL).addState(state);
+		OauthProgress p = new OauthProgress(READ_PUBLIC, SUCCESS_URL,
+				FAILURE_URL, DENIED_URL);
+		p.addState(state);
+		return p;
 	}
 
-	private void assertCodeRecordInCache(int index, String expectedCode) {
-		OauthProgress cached = cache.getList().get(index);
-		assertEquals(State.SEEKING_ACCESS_TOKEN, cached.getState());
+	private void assertCodeRecordInCache(String expectedCode)
+			throws OrcidClientException {
+		OauthProgress cached = cache.getByScope(READ_PUBLIC);
 		assertEquals(expectedCode, cached.getAuthorizationCode());
 	}
 
-	private void assertFailureRecordInCache(int index,
-			FailureCause failureCause) {
-		// Returned a failure URL for redirecting?
-		assertEquals(FAILURE_URL.toString(), redirectUrl);
-
-		// A Failure record should be the last state recorded.
-		List<OauthProgress> cacheList = cache.getList();
-		assertEquals(index + 1, cacheList.size());
-
+	private void assertFailureRecordInCache(FailureCause failureCause)
+			throws OrcidClientException {
 		// The change of state was a failure with the expected cause?
-		OauthProgress cached = cacheList.get(index);
+		assertEquals(FAILURE_URL.toString(), redirectUrl);
+		OauthProgress cached = cache.getByScope(READ_PUBLIC);
 		assertEquals(FAILURE, cached.getState());
 		assertEquals(failureCause, cached.getFailureCause());
 	}
 
-	private void assertDeniedRecordInCache() {
+	private void assertDeniedRecordInCache() throws OrcidClientException {
 		// Returned a failure URL for redirecting?
 		assertEquals(DENIED_URL.toString(), redirectUrl);
-
-		// Recorded a change of state in the cache?
-		List<OauthProgress> cacheList = cache.getList();
-		assertEquals(1, cacheList.size());
-
-		// The change of state was in denial?
-		OauthProgress cached = cacheList.get(0);
-		assertEquals(DENIED, cached.getState());
+		assertEquals(DENIED, cache.getByScope(READ_PUBLIC).getState());
 	}
 
-	private void assertSuccessRecordInCache() {
-		// Returned the success URL for redirecting?
-		assertEquals(SUCCESS_URL.toString(), redirectUrl);
-
+	private void assertSuccessRecordInCache() throws OrcidClientException {
 		// The change of state was a Success?
-		OauthProgress cached = cache.getList().get(1);
-		assertEquals(SUCCESS, cached.getState());
+		assertEquals(SUCCESS_URL.toString(), redirectUrl);
+		assertEquals(SUCCESS, cache.getByScope(READ_PUBLIC).getState());
 	}
 
 	// ----------------------------------------------------------------------

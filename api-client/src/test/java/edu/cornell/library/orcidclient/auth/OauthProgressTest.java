@@ -112,25 +112,29 @@ public class OauthProgressTest extends AbstractTestClass {
 
 	@Test
 	public void addState_setsOnlyState() {
-		modified = initial.copy().addState(SEEKING_AUTHORIZATION);
+		modified = initial.copy();
+		modified.addState(SEEKING_AUTHORIZATION);
 		assertProgress(SEEKING_AUTHORIZATION, null, null, null);
 	}
 
 	@Test
 	public void addCode_setsStateAndCode() {
-		modified = initial.copy().addCode("new_code");
+		modified = initial.copy();
+		modified.addCode("new_code");
 		assertProgress(SEEKING_ACCESS_TOKEN, null, null, "new_code");
 	}
 
 	@Test
 	public void addAccessToken_setsStateAndToken() {
-		modified = initial.copy().addAccessToken(NEW_TOKEN);
+		modified = initial.copy();
+		modified.addAccessToken(NEW_TOKEN);
 		assertProgress(SUCCESS, null, NEW_TOKEN, null);
 	}
 
 	@Test
 	public void addFailure_setsStateAndDetails() {
-		modified = initial.copy().addFailure(new ExampleFailureDetails());
+		modified = initial.copy();
+		modified.addFailure(new ExampleFailureDetails());
 		assertProgress(FAILURE, UNKNOWN, null, null);
 	}
 

@@ -136,7 +136,8 @@ public class WebappCache implements OauthProgressCache {
 				AccessToken token = AccessToken.parse(line);
 				ApiScope scope = token.getScope();
 				OauthProgress progress = new OauthProgress(scope, NO_URI,
-						NO_URI, NO_URI).addAccessToken(token);
+						NO_URI, NO_URI);
+				progress.addAccessToken(token);
 				progressMap.put(progress.getId(), progress);
 			}
 		} catch (IOException e) {

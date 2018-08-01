@@ -152,27 +152,23 @@ public class OauthProgress {
 		return authorizationCode;
 	}
 
-	public OauthProgress addState(State newState) {
+	public void addState(State newState) {
 		state = newState;
-		return this;
 	}
 
-	public OauthProgress addFailure(FailureDetails details) {
+	public void addFailure(FailureDetails details) {
 		state = FAILURE;
 		failureDetails = details;
-		return this;
 	}
 
-	public OauthProgress addCode(String code) {
+	public void addCode(String code) {
 		state = SEEKING_ACCESS_TOKEN;
 		authorizationCode = code;
-		return this;
 	}
 
-	public OauthProgress addAccessToken(AccessToken token) {
+	public void addAccessToken(AccessToken token) {
 		state = State.SUCCESS;
 		accessToken = token;
-		return this;
 	}
 
 	@Override
