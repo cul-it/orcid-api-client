@@ -1,10 +1,10 @@
 package edu.cornell.library.orcidclient.auth;
 
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.BAD_ACCESS_TOKEN;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.ERROR_STATUS;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.INVALID_STATE;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.NO_AUTH_CODE;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.UNKNOWN;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.BAD_ACCESS_TOKEN;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.ERROR_STATUS;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.INVALID_STATE;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.NO_AUTH_CODE;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.UNKNOWN;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,8 +16,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
 
 import edu.cornell.library.orcidclient.actions.ApiScope;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureDetails;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State;
+import edu.cornell.library.orcidclient.auth.OauthProgress.FailureDetails;
+import edu.cornell.library.orcidclient.auth.OauthProgress.State;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.http.HttpWrapper;
 import edu.cornell.library.orcidclient.http.HttpWrapper.HttpStatusCodeException;
@@ -30,9 +30,9 @@ import edu.cornell.library.orcidclient.util.ParameterMap;
  * This is based on what has happened in this HTTP session, and what is
  * available from the persistent storage.
  * 
- * Each instance should be short-lived. The persistent state is kept in the
- * cache, and the particular cache-instance may contain state that depends on
- * the HTTP request.
+ * Each instance should be short-lived, tied to an HTTP session. The state of
+ * the dance is kept in the progress cache. Long-term storage of access tokens
+ * is handled by the AccessTokenCache.
  */
 public class OrcidAuthorizationClient {
 	private static final Log log = LogFactory
@@ -67,11 +67,11 @@ public class OrcidAuthorizationClient {
 	}
 
 	private final OrcidAuthorizationClientContext context;
-	private final AuthorizationStateProgressCache cache;
+	private final OauthProgressCache cache;
 	private final HttpWrapper httpWrapper;
 
 	public OrcidAuthorizationClient(OrcidAuthorizationClientContext context,
-			AuthorizationStateProgressCache cache, HttpWrapper httpWrapper) {
+			OauthProgressCache cache, HttpWrapper httpWrapper) {
 		this.context = context;
 		this.cache = cache;
 		this.httpWrapper = httpWrapper;
@@ -86,27 +86,19 @@ public class OrcidAuthorizationClient {
 	 *            If the negotiation succeeds, redirect the browser to this URL.
 	 * @param failureUrl
 	 *            If the negotiation fails, redirect the browser to this URL.
+	 * @param deniedUrl
+	 *            If the user denies authorization, redirect the browser to this
+	 *            URL.
 	 * @throws OrcidClientException
 	 */
-	public AuthorizationStateProgress createProgressObject(ApiScope scope,
-			URI successUrl, URI failureUrl) throws OrcidClientException {
-		AuthorizationStateProgress authProgress = AuthorizationStateProgress
-				.create(scope, successUrl, failureUrl)
-				.addState(State.SEEKING_AUTHORIZATION);
+	public OauthProgress createProgressObject(ApiScope scope, URI successUrl,
+			URI failureUrl, URI deniedUrl) throws OrcidClientException {
+		OauthProgress authProgress = new OauthProgress(scope, successUrl,
+				failureUrl, deniedUrl).addState(State.SEEKING_AUTHORIZATION);
 		log.debug("createdProgressObject: " + authProgress);
 
 		cache.store(authProgress);
 		return authProgress;
-	}
-
-	/**
-	 * Remove any unresolved progress for this scope.
-	 * 
-	 * Depending on the cache implementation, this could leave no progress for
-	 * this scope, or could revert to the previously committed progress.
-	 */
-	public void resetProgress(ApiScope scope) throws OrcidClientException {
-		cache.clearScopeProgress(scope);
 	}
 
 	/**
@@ -118,7 +110,7 @@ public class OrcidAuthorizationClient {
 	 * 
 	 * @throws OrcidClientException
 	 */
-	public String buildAuthorizationCall(AuthorizationStateProgress progress)
+	public String buildAuthorizationCall(OauthProgress progress)
 			throws OrcidClientException {
 		try {
 			URI fullUri = new URIBuilder(context.getAuthCodeRequestUrl())
@@ -163,7 +155,7 @@ public class OrcidAuthorizationClient {
 	 */
 	public AccessToken getAccessToken(ApiScope scope)
 			throws IllegalStateException, OrcidClientException {
-		AuthorizationStateProgress progress = cache.getByScope(scope);
+		OauthProgress progress = cache.getByScope(scope);
 		if (progress.getState() != State.SUCCESS) {
 			throw new IllegalStateException(
 					"No access token available for scope: `" + scope + "`");
@@ -177,7 +169,7 @@ public class OrcidAuthorizationClient {
 	 * 
 	 * @returns the requested progress indicator, or null.
 	 */
-	public AuthorizationStateProgress getProgressById(String id)
+	public OauthProgress getProgressById(String id)
 			throws OrcidClientException {
 		return cache.getByID(id);
 	}
@@ -186,14 +178,14 @@ public class OrcidAuthorizationClient {
 	 * Update the authorization status to reflect this respons from our
 	 * authorization request.
 	 * 
-	 * Return the redirect URL for either success or failure, as appropriate.
+	 * Return the redirect URL for success, denied, or failure, as appropriate.
 	 * 
 	 * @throws OrcidClientException
 	 */
 	public String processAuthorizationResponse(ParameterMap parameters)
 			throws OrcidClientException {
 		String state = parameters.getParameter("state");
-		AuthorizationStateProgress progress = getExistingAuthStatus(state);
+		OauthProgress progress = getExistingAuthStatus(state);
 		if (State.SEEKING_AUTHORIZATION != progress.getState()) {
 			return fail(progress, new InvalidStateFailureDetails());
 		}
@@ -219,21 +211,17 @@ public class OrcidAuthorizationClient {
 
 		progress = getAccessTokenFromAuthCode(progress);
 		storeProgressById(progress);
-		if (State.SUCCESS != progress.getState()) {
-			return progress.getFailureUrl().toString();
-		}
-
-		return progress.getSuccessUrl().toString();
+		return progress.getRedirectUrl().toString();
 	}
 
-	private AuthorizationStateProgress getExistingAuthStatus(String state)
+	private OauthProgress getExistingAuthStatus(String state)
 			throws OrcidClientException {
 		if (state == null || state.isEmpty()) {
 			throw new OrcidClientException(
 					"Request did not contain a 'state' parameter");
 		}
 
-		AuthorizationStateProgress progress = getProgressById(state);
+		OauthProgress progress = getProgressById(state);
 		if (progress == null) {
 			throw new OrcidClientException(
 					"Not seeking authorization for this state: " + state);
@@ -242,8 +230,7 @@ public class OrcidAuthorizationClient {
 		return progress;
 	}
 
-	private AuthorizationStateProgress getAccessTokenFromAuthCode(
-			AuthorizationStateProgress progress) {
+	private OauthProgress getAccessTokenFromAuthCode(OauthProgress progress) {
 		PostRequest postRequest = httpWrapper
 				.createPostRequest(context.getAccessTokenRequestUrl())
 				.addFormField("client_id", context.getClientId())
@@ -280,24 +267,24 @@ public class OrcidAuthorizationClient {
 
 	}
 
-	private String deny(AuthorizationStateProgress progress, String error,
+	private String deny(OauthProgress progress, String error,
 			String errorDescription) throws OrcidClientException {
-		AuthorizationStateProgress denied = progress.addState(State.DENIED);
+		OauthProgress denied = progress.addState(State.DENIED);
 		log.warn("User denied access, error='" + error + "', description='"
 				+ errorDescription + "': " + denied);
 		storeProgressById(denied);
-		return denied.getFailureUrl().toString();
+		return denied.getRedirectUrl().toString();
 	}
 
-	private String fail(AuthorizationStateProgress progress,
-			FailureDetails details) throws OrcidClientException {
-		AuthorizationStateProgress failed = progress.addFailure(details);
+	private String fail(OauthProgress progress, FailureDetails details)
+			throws OrcidClientException {
+		OauthProgress failed = progress.addFailure(details);
 		log.warn(details.describe() + " : " + failed);
 		storeProgressById(failed);
-		return failed.getFailureUrl().toString();
+		return failed.getRedirectUrl().toString();
 	}
 
-	private void storeProgressById(AuthorizationStateProgress progress)
+	private void storeProgressById(OauthProgress progress)
 			throws OrcidClientException {
 		cache.store(progress);
 	}

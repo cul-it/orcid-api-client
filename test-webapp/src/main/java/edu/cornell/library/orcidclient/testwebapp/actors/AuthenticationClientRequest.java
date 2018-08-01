@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.cornell.library.orcidclient.actions.ApiScope;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress;
+import edu.cornell.library.orcidclient.auth.OauthProgress;
 import edu.cornell.library.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
@@ -24,8 +24,8 @@ public class AuthenticationClientRequest extends AbstractActor {
 
 	public void exec() throws IOException, OrcidClientException {
 		ApiScope scope = getScopeFromRequest();
-		AuthorizationStateProgress progress = authClient
-				.createProgressObject(scope, callbackUrl(), callbackUrl());
+		OauthProgress progress = authClient.createProgressObject(scope,
+				callbackUrl(), callbackUrl(), callbackUrl());
 
 		resp.sendRedirect(authClient.buildAuthorizationCall(progress));
 	}

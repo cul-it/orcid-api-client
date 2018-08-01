@@ -10,15 +10,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.cornell.library.orcidclient.actions.ApiScope;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgressCache;
+import edu.cornell.library.orcidclient.auth.OauthProgress;
+import edu.cornell.library.orcidclient.auth.OauthProgressCache;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
  * A cache implementation that provides medium-length memory: the length of an
  * HTTP Session.
  */
-public class SessionBasedCache implements AuthorizationStateProgressCache {
+public class SessionBasedCache implements OauthProgressCache {
 	private static final Log log = LogFactory.getLog(SessionBasedCache.class);
 
 	private static final String SESSION_KEY = SessionBasedCache.class.getName();
@@ -46,21 +46,20 @@ public class SessionBasedCache implements AuthorizationStateProgressCache {
 	// The instance
 	// ----------------------------------------------------------------------
 
-	private final Map<ApiScope, AuthorizationStateProgress> map = new EnumMap<>(
+	private final Map<ApiScope, OauthProgress> map = new EnumMap<>(
 			ApiScope.class);
 
 	@Override
-	public void store(AuthorizationStateProgress progress)
+	public void store(OauthProgress progress)
 			throws OrcidClientException {
-		AuthorizationStateProgress previous = map.put(progress.getScope(),
+		OauthProgress previous = map.put(progress.getScope(),
 				progress);
 		log.debug("Stored: " + progress + ", previously was: " + previous);
 	}
 
 	@Override
-	public AuthorizationStateProgress getByID(String id)
-			throws OrcidClientException {
-		for (AuthorizationStateProgress progress : map.values()) {
+	public OauthProgress getByID(String id) throws OrcidClientException {
+		for (OauthProgress progress : map.values()) {
 			if (progress.getId().equals(id)) {
 				log.debug("Found by ID: " + progress);
 				return progress;
@@ -71,17 +70,10 @@ public class SessionBasedCache implements AuthorizationStateProgressCache {
 	}
 
 	@Override
-	public AuthorizationStateProgress getByScope(ApiScope scope)
+	public OauthProgress getByScope(ApiScope scope)
 			throws OrcidClientException {
-		AuthorizationStateProgress progress = map.get(scope);
+		OauthProgress progress = map.get(scope);
 		log.debug("Found for scope: " + scope + ", " + progress);
 		return progress;
 	}
-
-	@Override
-	public void clearScopeProgress(ApiScope scope) throws OrcidClientException {
-		AuthorizationStateProgress previous = map.remove(scope);
-		log.debug("Cleared scope: " + scope + ", previously was: " + previous);
-	}
-
 }

@@ -1,15 +1,15 @@
 package edu.cornell.library.orcidclient.auth;
 
 import static edu.cornell.library.orcidclient.actions.ApiScope.READ_PUBLIC;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.BAD_ACCESS_TOKEN;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.ERROR_STATUS;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.INVALID_STATE;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.NO_AUTH_CODE;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.UNKNOWN;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State.DENIED;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State.FAILURE;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State.SEEKING_AUTHORIZATION;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State.SUCCESS;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.BAD_ACCESS_TOKEN;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.ERROR_STATUS;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.INVALID_STATE;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.NO_AUTH_CODE;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.UNKNOWN;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.State.DENIED;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.State.FAILURE;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.State.SEEKING_AUTHORIZATION;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.State.SUCCESS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -25,8 +25,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.cornell.library.orcidclient.actions.ApiScope;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State;
+import edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause;
+import edu.cornell.library.orcidclient.auth.OauthProgress.State;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.testing.AbstractTestClass;
 import edu.cornell.library.orcidclient.util.ParameterMap;
@@ -36,6 +36,7 @@ import edu.cornell.library.orcidclient.util.ParameterMap;
 public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	private static final URI SUCCESS_URL = newURI("http://this.test/success");
 	private static final URI FAILURE_URL = newURI("http://this.test/failure");
+	private static final URI DENIED_URL = newURI("http://this.test/denied");
 
 	private static final String VALID_TOKEN_STRING = "" //
 			+ "{" //
@@ -61,9 +62,9 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	private OrcidAuthorizationClient client;
 	private StubHttpWrapper httpClient;
 	private StubOrcidAuthorizationClientContext context;
-	private StubAuthorizationStateProgressCache cache;
+	private StubOauthProgressCache cache;
 
-	private AuthorizationStateProgress progress;
+	private OauthProgress progress;
 	private ParameterMap parameters;
 	private String redirectUrl;
 	private StringWriter clientLog;
@@ -75,7 +76,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 
 		httpClient = new StubHttpWrapper();
 
-		cache = new StubAuthorizationStateProgressCache();
+		cache = new StubOauthProgressCache();
 		client = new OrcidAuthorizationClient(context, cache, httpClient);
 
 		clientLog = new StringWriter();
@@ -86,7 +87,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	public void createProgressObject_writesToCache()
 			throws OrcidClientException {
 		progress = client.createProgressObject(ApiScope.ACTIVITIES_UPDATE,
-				SUCCESS_URL, FAILURE_URL);
+				SUCCESS_URL, FAILURE_URL, DENIED_URL);
 		assertNotNull(progress);
 		assertEquals(1, cache.getList().size());
 	}
@@ -260,54 +261,51 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 		}
 	}
 
-	private AuthorizationStateProgress basicProgress(State state) {
-		return AuthorizationStateProgress
-				.create(READ_PUBLIC, SUCCESS_URL, FAILURE_URL).addState(state);
+	private OauthProgress basicProgress(State state) {
+		return new OauthProgress(READ_PUBLIC, SUCCESS_URL, FAILURE_URL,
+				DENIED_URL).addState(state);
 	}
 
 	private void assertCodeRecordInCache(int index, String expectedCode) {
-		AuthorizationStateProgress cached = cache.getList().get(index);
-		assertEquals(progress.getId(), cached.getId());
+		OauthProgress cached = cache.getList().get(index);
 		assertEquals(State.SEEKING_ACCESS_TOKEN, cached.getState());
 		assertEquals(expectedCode, cached.getAuthorizationCode());
 	}
-	
-	private void assertFailureRecordInCache(int index, FailureCause failureCause) {
+
+	private void assertFailureRecordInCache(int index,
+			FailureCause failureCause) {
 		// Returned a failure URL for redirecting?
 		assertEquals(FAILURE_URL.toString(), redirectUrl);
 
 		// A Failure record should be the last state recorded.
-		List<AuthorizationStateProgress> cacheList = cache.getList();
+		List<OauthProgress> cacheList = cache.getList();
 		assertEquals(index + 1, cacheList.size());
 
 		// The change of state was a failure with the expected cause?
-		AuthorizationStateProgress cached = cacheList.get(index);
-		assertEquals(progress.getId(), cached.getId());
+		OauthProgress cached = cacheList.get(index);
 		assertEquals(FAILURE, cached.getState());
 		assertEquals(failureCause, cached.getFailureCause());
 	}
 
 	private void assertDeniedRecordInCache() {
 		// Returned a failure URL for redirecting?
-		assertEquals(FAILURE_URL.toString(), redirectUrl);
+		assertEquals(DENIED_URL.toString(), redirectUrl);
 
 		// Recorded a change of state in the cache?
-		List<AuthorizationStateProgress> cacheList = cache.getList();
+		List<OauthProgress> cacheList = cache.getList();
 		assertEquals(1, cacheList.size());
 
 		// The change of state was in denial?
-		AuthorizationStateProgress cached = cacheList.get(0);
-		assertEquals(progress.getId(), cached.getId());
+		OauthProgress cached = cacheList.get(0);
 		assertEquals(DENIED, cached.getState());
 	}
-	
+
 	private void assertSuccessRecordInCache() {
 		// Returned the success URL for redirecting?
 		assertEquals(SUCCESS_URL.toString(), redirectUrl);
 
 		// The change of state was a Success?
-		AuthorizationStateProgress cached = cache.getList().get(1);
-		assertEquals(progress.getId(), cached.getId());
+		OauthProgress cached = cache.getList().get(1);
 		assertEquals(SUCCESS, cached.getState());
 	}
 

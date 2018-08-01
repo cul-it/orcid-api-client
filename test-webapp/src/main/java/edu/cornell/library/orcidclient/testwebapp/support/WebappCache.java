@@ -1,6 +1,6 @@
 package edu.cornell.library.orcidclient.testwebapp.support;
 
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.NO_URI;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.NO_URI;
 import static edu.cornell.library.orcidclient.testwebapp.support.WebappSetup.WEBAPP_CACHE_FILE_KEY;
 import static org.apache.commons.io.FileUtils.readLines;
 
@@ -16,10 +16,10 @@ import java.util.Optional;
 
 import edu.cornell.library.orcidclient.actions.ApiScope;
 import edu.cornell.library.orcidclient.auth.AccessToken;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State;
+import edu.cornell.library.orcidclient.auth.OauthProgress;
+import edu.cornell.library.orcidclient.auth.OauthProgress.State;
+import edu.cornell.library.orcidclient.auth.OauthProgressCache;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgressCache;
 
 /**
  * Keep the cache in memory as expected, but also:
@@ -30,7 +30,7 @@ import edu.cornell.library.orcidclient.auth.AuthorizationStateProgressCache;
  * When an item is stored or cleared, rewrite the backing file with all of the
  * current access token.
  */
-public class WebappCache implements AuthorizationStateProgressCache {
+public class WebappCache implements OauthProgressCache {
 
 	// ----------------------------------------------------------------------
 	// The factory
@@ -55,7 +55,7 @@ public class WebappCache implements AuthorizationStateProgressCache {
 	// ----------------------------------------------------------------------
 
 	private Optional<String> cacheFilePath;
-	private Map<String, AuthorizationStateProgress> progressMap = new HashMap<>();
+	private Map<String, OauthProgress> progressMap = new HashMap<>();
 
 	public WebappCache() throws OrcidClientException {
 		locateBackingFile();
@@ -135,8 +135,8 @@ public class WebappCache implements AuthorizationStateProgressCache {
 			for (String line : lines) {
 				AccessToken token = AccessToken.parse(line);
 				ApiScope scope = token.getScope();
-				AuthorizationStateProgress progress = AuthorizationStateProgress
-						.create(scope, NO_URI, NO_URI).addAccessToken(token);
+				OauthProgress progress = new OauthProgress(scope, NO_URI,
+						NO_URI, NO_URI).addAccessToken(token);
 				progressMap.put(progress.getId(), progress);
 			}
 		} catch (IOException e) {
@@ -152,7 +152,7 @@ public class WebappCache implements AuthorizationStateProgressCache {
 
 		File cacheFile = new File(cacheFilePath.get());
 		try (PrintWriter out = new PrintWriter(cacheFile, "UTF-8")) {
-			for (AuthorizationStateProgress progress : progressMap.values()) {
+			for (OauthProgress progress : progressMap.values()) {
 				if (progress.getState() == State.SUCCESS) {
 					out.println(progress.getAccessToken().getJsonString());
 				}
@@ -168,21 +168,20 @@ public class WebappCache implements AuthorizationStateProgressCache {
 	// ----------------------------------------------------------------------
 
 	@Override
-	public void store(AuthorizationStateProgress progress)
-			throws OrcidClientException {
+	public void store(OauthProgress progress) throws OrcidClientException {
 		clearScopeProgress(progress.getScope());
 		progressMap.put(progress.getId(), progress);
 		writeToBackingFile();
 	}
 
 	@Override
-	public AuthorizationStateProgress getByID(String id) {
+	public OauthProgress getByID(String id) {
 		return progressMap.get(id);
 	}
 
 	@Override
-	public AuthorizationStateProgress getByScope(ApiScope scope) {
-		for (AuthorizationStateProgress progress : progressMap.values()) {
+	public OauthProgress getByScope(ApiScope scope) {
+		for (OauthProgress progress : progressMap.values()) {
 			if (scope == progress.getScope()) {
 				return progress;
 			}
@@ -190,10 +189,9 @@ public class WebappCache implements AuthorizationStateProgressCache {
 		return null;
 	}
 
-	@Override
-	public void clearScopeProgress(ApiScope scope) throws OrcidClientException {
-		Iterator<AuthorizationStateProgress> it = progressMap.values()
-				.iterator();
+	private void clearScopeProgress(ApiScope scope)
+			throws OrcidClientException {
+		Iterator<OauthProgress> it = progressMap.values().iterator();
 		while (it.hasNext()) {
 			if (it.next().getScope() == scope) {
 				it.remove();
@@ -207,12 +205,16 @@ public class WebappCache implements AuthorizationStateProgressCache {
 		return String.format("WebappCache[cacheFilePath=%s, progressMap=%s]",
 				cacheFilePath, progressMap);
 	}
-	
+
 	// ----------------------------------------------------------------------
 	// Extra functions
 	// ----------------------------------------------------------------------
 
-	public List<AuthorizationStateProgress> getProgressList() {
+	public List<OauthProgress> getProgressList() {
 		return new ArrayList<>(progressMap.values());
+	}
+
+	public void clear() {
+		progressMap.clear();
 	}
 }

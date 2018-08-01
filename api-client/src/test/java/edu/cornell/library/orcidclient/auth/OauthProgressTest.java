@@ -3,17 +3,17 @@ package edu.cornell.library.orcidclient.auth;
 import static edu.cornell.library.orcidclient.actions.ApiScope.AUTHENTICATE;
 import static edu.cornell.library.orcidclient.actions.ApiScope.READ_PUBLIC;
 import static edu.cornell.library.orcidclient.auth.AccessToken.NO_TOKEN;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause.UNKNOWN;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureDetails.NO_FAILURE;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State.FAILURE;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State.NONE;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State.SEEKING_ACCESS_TOKEN;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State.SEEKING_AUTHORIZATION;
-import static edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State.SUCCESS;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.UNKNOWN;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureDetails.NO_FAILURE;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.State.FAILURE;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.State.NONE;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.State.SEEKING_ACCESS_TOKEN;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.State.SEEKING_AUTHORIZATION;
+import static edu.cornell.library.orcidclient.auth.OauthProgress.State.SUCCESS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -22,12 +22,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.cornell.library.orcidclient.actions.ApiScope;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureCause;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.FailureDetails;
-import edu.cornell.library.orcidclient.auth.AuthorizationStateProgress.State;
+import edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause;
+import edu.cornell.library.orcidclient.auth.OauthProgress.FailureDetails;
+import edu.cornell.library.orcidclient.auth.OauthProgress.State;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.testing.AbstractTestClass;
-import edu.cornell.library.orcidclient.util.PrettyToStringPrinter;
 
 /**
  * If I were more rigorous, these methods would be more restricted.
@@ -38,9 +37,10 @@ import edu.cornell.library.orcidclient.util.PrettyToStringPrinter;
  * In each case, confirm that the original instance was not changed by the
  * operation.
  */
-public class AuthorizationStateProgressTest extends AbstractTestClass {
+public class OauthProgressTest extends AbstractTestClass {
 	private static final URI URI_1 = uri("http://uri1");
 	private static final URI URI_2 = uri("http://uri2");
+	private static final URI URI_3 = uri("http://uri3");
 
 	private static final String EXPECTED_SLAPPED_TOGETHER_TOKEN = "" //
 			+ "AccessToken[" //
@@ -53,13 +53,14 @@ public class AuthorizationStateProgressTest extends AbstractTestClass {
 			+ "name=NO_NAME, " //
 			+ "orcid=NO_ORCID]";
 	private static final String EXPECTED_SLAPPED_TOGETHER = "" //
-			+ "AuthorizationStateProgress[" //
+			+ "OauthProgress[" //
 			+ "id=1919892312, " //
 			+ "state=NONE, " //
 			+ "failureDetails=FailureDetails[cause=NONE, describe()=No failure], " //
 			+ "scope=READ_PUBLIC, " //
 			+ "successUrl=http://uri1, " //
 			+ "failureUrl=http://uri2, " //
+			+ "deniedUrl=http://uri3, " //
 			+ "accessToken=" + EXPECTED_SLAPPED_TOGETHER_TOKEN + ", " //
 			+ "authorizationCode=auth_code]";
 
@@ -74,14 +75,14 @@ public class AuthorizationStateProgressTest extends AbstractTestClass {
 			+ "\"name\":\"Sofia Garcia \"" //
 			+ "}");
 
-	private AuthorizationStateProgress initial;
+	private OauthProgress initial;
 	private String initialString;
-	private AuthorizationStateProgress modified;
+	private OauthProgress modified;
 
 	@Before
 	public void setup() {
-		initial = slapTogether(READ_PUBLIC, URI_1, URI_2, NONE, NO_FAILURE,
-				NO_TOKEN, "auth_code");
+		initial = slapTogether(READ_PUBLIC, URI_1, URI_2, URI_3, NONE,
+				NO_FAILURE, NO_TOKEN, "auth_code");
 		initialString = initial.toString();
 	}
 
@@ -98,10 +99,8 @@ public class AuthorizationStateProgressTest extends AbstractTestClass {
 	public void confirmThatIdsAreDifferent() {
 		// IDs are different every time.
 		assertNotEquals(
-				AuthorizationStateProgress.create(AUTHENTICATE, URI_1, URI_2)
-						.getId(),
-				AuthorizationStateProgress.create(AUTHENTICATE, URI_1, URI_2)
-						.getId());
+				new OauthProgress(AUTHENTICATE, URI_1, URI_2, URI_3).getId(),
+				new OauthProgress(AUTHENTICATE, URI_1, URI_2, URI_3).getId());
 	}
 
 	@Test
@@ -113,25 +112,25 @@ public class AuthorizationStateProgressTest extends AbstractTestClass {
 
 	@Test
 	public void addState_setsOnlyState() {
-		modified = initial.addState(SEEKING_AUTHORIZATION);
+		modified = initial.copy().addState(SEEKING_AUTHORIZATION);
 		assertProgress(SEEKING_AUTHORIZATION, null, null, null);
 	}
 
 	@Test
 	public void addCode_setsStateAndCode() {
-		modified = initial.addCode("new_code");
+		modified = initial.copy().addCode("new_code");
 		assertProgress(SEEKING_ACCESS_TOKEN, null, null, "new_code");
 	}
 
 	@Test
 	public void addAccessToken_setsStateAndToken() {
-		modified = initial.addAccessToken(NEW_TOKEN);
+		modified = initial.copy().addAccessToken(NEW_TOKEN);
 		assertProgress(SUCCESS, null, NEW_TOKEN, null);
 	}
 
 	@Test
 	public void addFailure_setsStateAndDetails() {
-		modified = initial.addFailure(new ExampleFailureDetails());
+		modified = initial.copy().addFailure(new ExampleFailureDetails());
 		assertProgress(FAILURE, UNKNOWN, null, null);
 	}
 
@@ -139,41 +138,37 @@ public class AuthorizationStateProgressTest extends AbstractTestClass {
 	// Helper methods
 	// ----------------------------------------------------------------------
 
-	private AuthorizationStateProgress slapTogether(ApiScope scope,
-			URI successUrl, URI failureUrl, State state,
+	private OauthProgress slapTogether(ApiScope scope, URI successUrl,
+			URI failureUrl, URI deniedUrl, State state,
 			FailureDetails failureDetails, AccessToken accessToken,
 			String authorizationCode) {
+		OauthProgress oap = new OauthProgress(scope, successUrl, failureUrl,
+				deniedUrl);
+		setFieldByReflection(oap, "state", state);
+		setFieldByReflection(oap, "failureDetails", failureDetails);
+		setFieldByReflection(oap, "accessToken", accessToken);
+		setFieldByReflection(oap, "authorizationCode", authorizationCode);
+		return oap;
+	}
+
+	private void setFieldByReflection(OauthProgress progress, String name,
+			Object value) {
 		try {
-			Class<AuthorizationStateProgress> aspClass = AuthorizationStateProgress.class;
-
-			Constructor<AuthorizationStateProgress> rawConstructor = aspClass
-					.getDeclaredConstructor(ApiScope.class, URI.class,
-							URI.class);
-			rawConstructor.setAccessible(true);
-
-			Constructor<AuthorizationStateProgress> copyConstructor = aspClass
-					.getDeclaredConstructor(aspClass, State.class,
-							FailureDetails.class, AccessToken.class,
-							String.class);
-			copyConstructor.setAccessible(true);
-
-			AuthorizationStateProgress asp1 = rawConstructor.newInstance(scope,
-					successUrl, failureUrl);
-			return copyConstructor.newInstance(asp1, state, failureDetails,
-					accessToken, authorizationCode);
+			Field f = OauthProgress.class.getDeclaredField(name);
+			f.setAccessible(true);
+			f.set(progress, value);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to slap together an instance.",
-					e);
+			throw new RuntimeException(
+					"Failed to set the value of '" + name + "'.", e);
 		}
 	}
 
 	private void assertProgress(State state, FailureCause failureCause,
 			AccessToken accessToken, String authorizationCode) {
 		assertEquals("scope", initial.getScope(), modified.getScope());
-		assertEquals("successUrl", initial.getSuccessUrl(),
-				modified.getSuccessUrl());
-		assertEquals("failureUrl", initial.getFailureUrl(),
-				modified.getFailureUrl());
+		assertEquals("successUrl", initial.successUrl, modified.successUrl);
+		assertEquals("failureUrl", initial.failureUrl, modified.failureUrl);
+		assertEquals("deniedUrl", initial.deniedUrl, modified.deniedUrl);
 		assertEquals("state", notNull(state, initial.getState()),
 				modified.getState());
 		assertEquals("failureCause",
