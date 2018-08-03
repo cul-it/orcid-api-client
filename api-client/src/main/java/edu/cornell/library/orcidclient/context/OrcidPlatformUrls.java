@@ -7,10 +7,8 @@ import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Set
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.SITE_BASE_URL;
 
 import java.util.Collections;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
-
-import edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting;
 
 /**
  * When an ORCID platform is specified, it defines these four URLs.
@@ -34,7 +32,7 @@ enum OrcidPlatformUrls {
 
 	private OrcidPlatformUrls(String siteUrl, String publicUrl,
 			String memberUrl, String oauthUrl, String tokenUrl) {
-		Map<Setting, String> map = new EnumMap<>(Setting.class);
+		Map<String, String> map = new HashMap<>();
 		map.put(SITE_BASE_URL, siteUrl);
 		map.put(PUBLIC_API_BASE_URL, publicUrl);
 		map.put(AUTHORIZED_API_BASE_URL, memberUrl);
@@ -43,9 +41,9 @@ enum OrcidPlatformUrls {
 		this.urls = Collections.unmodifiableMap(map);
 	}
 
-	Map<Setting, String> urls;
+	Map<String, String> urls;
 
-	public Map<Setting, String> getUrls() {
+	public Map<String, String> getUrls() {
 		return urls;
 	}
 }

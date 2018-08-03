@@ -3,7 +3,6 @@ package edu.cornell.library.orcidclient.testwebapp.support;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +18,6 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
 import edu.cornell.library.orcidclient.context.OrcidClientContextImpl;
-import edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
@@ -45,7 +43,7 @@ public class WebappSetup implements ServletContextListener {
 		String path = locatePropertiesFile(sce);
 		Properties properties = loadProperties(path);
 		webappProperties = extractWebappProperties(properties);
-		Map<Setting, String> settings = convertToOrcidSettings(properties);
+		Map<String, String> settings = convertToStringMap(properties);
 		initializeOrcidContext(settings);
 	}
 
@@ -85,22 +83,15 @@ public class WebappSetup implements ServletContextListener {
 		return Collections.unmodifiableMap(webappProps);
 	}
 
-	private Map<Setting, String> convertToOrcidSettings(Properties settings) {
-		Map<Setting, String> settingsMap = new HashMap<>();
+	private Map<String, String> convertToStringMap(Properties settings) {
+		Map<String, String> settingsMap = new HashMap<>();
 		for (String name : settings.stringPropertyNames()) {
-			try {
-				Setting key = Setting.valueOf(name);
-				settingsMap.put(key, settings.getProperty(name));
-			} catch (Exception e) {
-				log.error(
-						"Invalid property key: '" + name + "'. Valid keys are "
-								+ Arrays.asList(Setting.values()));
-			}
+			settingsMap.put(name, settings.getProperty(name));
 		}
 		return settingsMap;
 	}
 
-	private void initializeOrcidContext(Map<Setting, String> settings) {
+	private void initializeOrcidContext(Map<String, String> settings) {
 		try {
 			OrcidClientContext.initialize(new OrcidClientContextImpl(settings));
 			log.info("Context is: " + OrcidClientContext.getInstance());

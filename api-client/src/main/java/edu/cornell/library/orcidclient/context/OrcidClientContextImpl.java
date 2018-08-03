@@ -10,13 +10,11 @@ import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Set
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.PUBLIC_API_BASE_URL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.SITE_BASE_URL;
 import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Setting.WEBAPP_BASE_URL;
-import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.SettingConstraint.OPTIONAL;
-import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.SettingConstraint.REQUIRED;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,88 +32,83 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	private static final Log log = LogFactory
 			.getLog(OrcidClientContextImpl.class);
 
-	public enum SettingConstraint {
-		REQUIRED, OPTIONAL
-	}
-
-	public enum Setting {
+	public interface Setting {
 		/**
 		 * ID assigned by ORCID to the application.
 		 */
-		CLIENT_ID(REQUIRED),
+		String CLIENT_ID = "CLIENT_ID";
 
 		/**
 		 * Secret code assigned by ORCID to the application.
 		 */
-		CLIENT_SECRET(REQUIRED),
+		String CLIENT_SECRET = "CLIENT_SECRET";
 
 		/**
 		 * Environment - "public" or "sandbox".
 		 */
-		API_PLATFORM(OPTIONAL),
+		String API_PLATFORM = "API_PLATFORM";
 
 		/**
-		 * Root of the website where user's may view ORCID records. If
+		 * Root of the website where users may view ORCID records. If
 		 * API_PLATFORM is "custom", this is required.
 		 */
-		SITE_BASE_URL(REQUIRED),
+		String SITE_BASE_URL = "SITE_BASE_URL";
 
 		/**
 		 * Root of the public API (requires no authorization). If API_PLATFORM
 		 * is "custom", this is required.
 		 */
-		PUBLIC_API_BASE_URL(REQUIRED),
+		String PUBLIC_API_BASE_URL = "PUBLIC_API_BASE_URL";
 
 		/**
 		 * Root of the restricted API (requires authorization). If API_PLATFORM
 		 * is "custom", this is required.
 		 */
-		AUTHORIZED_API_BASE_URL(REQUIRED),
+		String AUTHORIZED_API_BASE_URL = "AUTHORIZED_API_BASE_URL";
 
 		/**
 		 * URL to obtain an authorization code. This is sent to the browser as a
 		 * redirect, so the user can log in at the ORCID site. If API_PLATFORM
 		 * is "custom", this is required.
 		 */
-		OAUTH_AUTHORIZE_URL(REQUIRED),
+		String OAUTH_AUTHORIZE_URL = "OAUTH_AUTHORIZE_URL";
 
 		/**
 		 * URL to exchange the authorization code for an OAuth access token. If
 		 * API_PLATFORM is "custom", this is required.
 		 */
-		OAUTH_TOKEN_URL(REQUIRED),
+		String OAUTH_TOKEN_URL = "OAUTH_TOKEN_URL";
 
 		/**
 		 * The base URL for contacting this webapp (including context path. Used
 		 * when building the redirect URL for the browser.
 		 */
-		WEBAPP_BASE_URL(REQUIRED),
+		String WEBAPP_BASE_URL = "WEBAPP_BASE_URL";
 
 		/**
 		 * Where should ORCID call back to during the auth dance? Path within
 		 * this webapp.
 		 */
-		CALLBACK_PATH(REQUIRED);
+		String CALLBACK_PATH = "CALLBACK_PATH";
 
-		private final SettingConstraint constraint;
-
-		Setting(SettingConstraint constraint) {
-			this.constraint = constraint;
-		}
-
-		public boolean isRequired() {
-			return REQUIRED == constraint;
-		}
+		String[] ALL_SETTINGS = new String[] { API_PLATFORM, CLIENT_ID, CLIENT_SECRET,
+				SITE_BASE_URL, PUBLIC_API_BASE_URL, AUTHORIZED_API_BASE_URL,
+				OAUTH_AUTHORIZE_URL, OAUTH_TOKEN_URL, WEBAPP_BASE_URL,
+				CALLBACK_PATH };
+		String[] REQUIRED_SETTINGS = new String[] { CLIENT_ID, CLIENT_SECRET,
+				SITE_BASE_URL, PUBLIC_API_BASE_URL, AUTHORIZED_API_BASE_URL,
+				OAUTH_AUTHORIZE_URL, OAUTH_TOKEN_URL, WEBAPP_BASE_URL,
+				CALLBACK_PATH };
 	}
 
-	private final Map<Setting, String> settings;
+	private final Map<String, String> settings;
 
 	private String callbackUrl;
 
-	public OrcidClientContextImpl(Map<Setting, String> settings)
+	public OrcidClientContextImpl(Map<String, String> settings)
 			throws OrcidClientException {
 		Objects.requireNonNull(settings, "'settings' may not be null.");
-		this.settings = new EnumMap<>(Setting.class);
+		this.settings = new HashMap<>();
 		this.settings.putAll(settings);
 
 		adjustSettingsForPlatform();
@@ -140,8 +133,8 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	}
 
 	private void complainAboutMissingSettings() throws MissingSettingException {
-		for (Setting s : Setting.values()) {
-			if (s.isRequired() && !settings.containsKey(s)) {
+		for (String s : Setting.REQUIRED_SETTINGS) {
+			if (!settings.containsKey(s)) {
 				throw new MissingSettingException(s);
 			}
 		}
@@ -153,7 +146,7 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 		ensureSettingEndsWithSlash(WEBAPP_BASE_URL);
 	}
 
-	private void ensureSettingEndsWithSlash(Setting key) {
+	private void ensureSettingEndsWithSlash(String key) {
 		String base = getSetting(key);
 		if (!base.endsWith("/")) {
 			settings.put(key, base + "/");
@@ -172,7 +165,7 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 		}
 	}
 
-	String getSetting(Setting key) {
+	String getSetting(String key) {
 		if (settings.containsKey(key)) {
 			return settings.get(key);
 		} else {
@@ -237,11 +230,11 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	}
 
 	static class MissingSettingException extends OrcidClientException {
-		public MissingSettingException(Setting missingSetting) {
+		public MissingSettingException(String missingSetting) {
 			super(toMessage(missingSetting));
 		}
 
-		private static String toMessage(Setting ms) {
+		private static String toMessage(String ms) {
 			return "You must provide a value for '" + ms + "'";
 		}
 	}

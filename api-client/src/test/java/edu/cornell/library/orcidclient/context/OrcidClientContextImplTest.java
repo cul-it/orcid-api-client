@@ -13,7 +13,6 @@ import static edu.cornell.library.orcidclient.context.OrcidClientContextImpl.Set
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ import edu.cornell.library.orcidclient.testing.AbstractTestClass;
  * style.
  */
 public class OrcidClientContextImplTest extends AbstractTestClass {
-	private final Map<Setting, String> SETTINGS_WITH_PLATFORM = Collections
+	private final Map<String, String> SETTINGS_WITH_PLATFORM = Collections
 			.unmodifiableMap(new SettingsMap() //
 					.and(API_PLATFORM, "sandbox")
 					.and(CLIENT_ID, "XXX-9X42XXYY3Z4ZZ1YZ")
@@ -40,7 +39,7 @@ public class OrcidClientContextImplTest extends AbstractTestClass {
 					.and(CALLBACK_PATH, "test/callback")
 					.and(WEBAPP_BASE_URL, "http://my.domain/myapp/"));
 
-	private final Map<Setting, String> SETTINGS_WITHOUT_PLATFORM = Collections
+	private final Map<String, String> SETTINGS_WITHOUT_PLATFORM = Collections
 			.unmodifiableMap(new SettingsMap() //
 					.and(SITE_BASE_URL, "http://unittest.org/")
 					.and(AUTHORIZED_API_BASE_URL,
@@ -54,11 +53,11 @@ public class OrcidClientContextImplTest extends AbstractTestClass {
 					.and(CALLBACK_PATH, "test/callback")
 					.and(WEBAPP_BASE_URL, "http://my.domain/myapp/"));
 
-	private final Map<Setting, String> DONT_CARE = Collections.emptyMap();
+	private final Map<String, String> DONT_CARE = Collections.emptyMap();
 
 	private OrcidClientContextImpl context;
-	private Map<Setting, String> provided;
-	private Map<Setting, String> expected;
+	private Map<String, String> provided;
+	private Map<String, String> expected;
 
 	@Test
 	public void successWithoutPlatform() throws OrcidClientException {
@@ -86,16 +85,16 @@ public class OrcidClientContextImplTest extends AbstractTestClass {
 	@Test
 	public void platformSettingsOverrideExplicitSettings()
 			throws OrcidClientException {
-		provided = settings(SETTINGS_WITHOUT_PLATFORM).and(API_PLATFORM,
-				"production");
+		provided = settings(SETTINGS_WITHOUT_PLATFORM) //
+				.and(API_PLATFORM, "production");
 		expected = settings(SETTINGS_WITHOUT_PLATFORM)
+				.and(API_PLATFORM, "production")
 				.except(SITE_BASE_URL, "https://orcid.org/")
 				.except(PUBLIC_API_BASE_URL, "https://pub.orcid.org/v2.1/")
 				.except(OAUTH_TOKEN_URL, "https://orcid.org/oauth/token")
 				.except(AUTHORIZED_API_BASE_URL, "https://api.orcid.org/v2.1/")
 				.except(OAUTH_AUTHORIZE_URL,
-						"https://orcid.org/oauth/authorize")
-				.and(API_PLATFORM, "production");
+						"https://orcid.org/oauth/authorize");
 		assertExpectedSettings();
 	}
 
@@ -158,8 +157,8 @@ public class OrcidClientContextImplTest extends AbstractTestClass {
 	private void assertExpectedSettings() throws OrcidClientException {
 		context = new OrcidClientContextImpl(provided);
 
-		Map<Setting, String> actual = new HashMap<>();
-		for (Setting key : Setting.values()) {
+		Map<String, String> actual = new HashMap<>();
+		for (String key : Setting.ALL_SETTINGS) {
 			String setting = context.getSetting(key);
 			if (StringUtils.isNotEmpty(setting)) {
 				actual.put(key, setting);
@@ -169,7 +168,7 @@ public class OrcidClientContextImplTest extends AbstractTestClass {
 		assertEquals(expected, actual);
 	}
 
-	private SettingsMap settings(Map<Setting, String> initial) {
+	private SettingsMap settings(Map<String, String> initial) {
 		return new SettingsMap(initial);
 	}
 
@@ -177,26 +176,26 @@ public class OrcidClientContextImplTest extends AbstractTestClass {
 	// Helper classes
 	// ----------------------------------------------------------------------
 
-	private static class SettingsMap extends EnumMap<Setting, String> {
+	private static class SettingsMap extends HashMap<String, String> {
 		public SettingsMap() {
-			super(Setting.class);
+			super();
 		}
 
-		public SettingsMap(Map<Setting, String> initial) {
+		public SettingsMap(Map<String, String> initial) {
 			super(initial);
 		}
 
-		public SettingsMap and(Setting key, String value) {
+		public SettingsMap and(String key, String value) {
 			put(key, value);
 			return this;
 		}
 
-		public SettingsMap except(Setting key, String value) {
+		public SettingsMap except(String key, String value) {
 			put(key, value);
 			return this;
 		}
 
-		public SettingsMap butNot(Setting key) {
+		public SettingsMap butNot(String key) {
 			remove(key);
 			return this;
 		}
