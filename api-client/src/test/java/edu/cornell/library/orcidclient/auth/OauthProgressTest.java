@@ -2,14 +2,12 @@ package edu.cornell.library.orcidclient.auth;
 
 import static edu.cornell.library.orcidclient.actions.ApiScope.AUTHENTICATE;
 import static edu.cornell.library.orcidclient.actions.ApiScope.READ_PUBLIC;
-import static edu.cornell.library.orcidclient.auth.AccessToken.NO_TOKEN;
 import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause.UNKNOWN;
 import static edu.cornell.library.orcidclient.auth.OauthProgress.FailureDetails.NO_FAILURE;
 import static edu.cornell.library.orcidclient.auth.OauthProgress.State.FAILURE;
 import static edu.cornell.library.orcidclient.auth.OauthProgress.State.NONE;
 import static edu.cornell.library.orcidclient.auth.OauthProgress.State.SEEKING_ACCESS_TOKEN;
 import static edu.cornell.library.orcidclient.auth.OauthProgress.State.SEEKING_AUTHORIZATION;
-import static edu.cornell.library.orcidclient.auth.OauthProgress.State.SUCCESS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -25,7 +23,6 @@ import edu.cornell.library.orcidclient.actions.ApiScope;
 import edu.cornell.library.orcidclient.auth.OauthProgress.FailureCause;
 import edu.cornell.library.orcidclient.auth.OauthProgress.FailureDetails;
 import edu.cornell.library.orcidclient.auth.OauthProgress.State;
-import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.testing.AbstractTestClass;
 
 /**
@@ -33,25 +30,12 @@ import edu.cornell.library.orcidclient.testing.AbstractTestClass;
  * 
  * For example, not allowed to call addState() with FAILURE, not allowed to call
  * addAccessToken() unless SEEKING_ACCESS_TOKEN, etc.
- * 
- * In each case, confirm that the original instance was not changed by the
- * operation.
  */
 public class OauthProgressTest extends AbstractTestClass {
 	private static final URI URI_1 = uri("http://uri1");
 	private static final URI URI_2 = uri("http://uri2");
 	private static final URI URI_3 = uri("http://uri3");
 
-	private static final String EXPECTED_SLAPPED_TOGETHER_TOKEN = "" //
-			+ "AccessToken[" //
-			+ "jsonString=\"NO_JSON_STRING\", " //
-			+ "token=NO_TOKEN, " //
-			+ "type=NO_TYPE, " //
-			+ "refreshToken=NO_REFRESH_TOKEN, " //
-			+ "expiresIn=-1, " //
-			+ "scope=null, " //
-			+ "name=NO_NAME, " //
-			+ "orcid=NO_ORCID]";
 	private static final String EXPECTED_SLAPPED_TOGETHER = "" //
 			+ "OauthProgress[" //
 			+ "id=1919892312, " //
@@ -61,19 +45,7 @@ public class OauthProgressTest extends AbstractTestClass {
 			+ "successUrl=http://uri1, " //
 			+ "failureUrl=http://uri2, " //
 			+ "deniedUrl=http://uri3, " //
-			+ "accessToken=" + EXPECTED_SLAPPED_TOGETHER_TOKEN + ", " //
 			+ "authorizationCode=auth_code]";
-
-	private static final AccessToken NEW_TOKEN = accessToken("" //
-			+ "{" //
-			+ "\"access_token\":\"89f0181c-168b-4d7d-831c-1fdda2d7bbbb\", " //
-			+ "\"token_type\":\"bearer\", " //
-			+ "\"refresh_token\":\"69e883f6-d84e-4ae6-87f5-ef0044e3e9a7\", " //
-			+ "\"expires_in\":631138518, " //
-			+ "\"scope\":\"/authenticate\", " //
-			+ "\"orcid\":\"0000-0001-2345-6789\", " //
-			+ "\"name\":\"Sofia Garcia \"" //
-			+ "}");
 
 	private OauthProgress initial;
 	private String initialString;
@@ -82,7 +54,7 @@ public class OauthProgressTest extends AbstractTestClass {
 	@Before
 	public void setup() {
 		initial = slapTogether(READ_PUBLIC, URI_1, URI_2, URI_3, NONE,
-				NO_FAILURE, NO_TOKEN, "auth_code");
+				NO_FAILURE, "auth_code");
 		initialString = initial.toString();
 	}
 
@@ -114,28 +86,21 @@ public class OauthProgressTest extends AbstractTestClass {
 	public void addState_setsOnlyState() {
 		modified = initial.copy();
 		modified.addState(SEEKING_AUTHORIZATION);
-		assertProgress(SEEKING_AUTHORIZATION, null, null, null);
+		assertProgress(SEEKING_AUTHORIZATION, null, null);
 	}
 
 	@Test
 	public void addCode_setsStateAndCode() {
 		modified = initial.copy();
 		modified.addCode("new_code");
-		assertProgress(SEEKING_ACCESS_TOKEN, null, null, "new_code");
-	}
-
-	@Test
-	public void addAccessToken_setsStateAndToken() {
-		modified = initial.copy();
-		modified.addAccessToken(NEW_TOKEN);
-		assertProgress(SUCCESS, null, NEW_TOKEN, null);
+		assertProgress(SEEKING_ACCESS_TOKEN, null, "new_code");
 	}
 
 	@Test
 	public void addFailure_setsStateAndDetails() {
 		modified = initial.copy();
 		modified.addFailure(new ExampleFailureDetails());
-		assertProgress(FAILURE, UNKNOWN, null, null);
+		assertProgress(FAILURE, UNKNOWN, null);
 	}
 
 	// ----------------------------------------------------------------------
@@ -144,13 +109,11 @@ public class OauthProgressTest extends AbstractTestClass {
 
 	private OauthProgress slapTogether(ApiScope scope, URI successUrl,
 			URI failureUrl, URI deniedUrl, State state,
-			FailureDetails failureDetails, AccessToken accessToken,
-			String authorizationCode) {
+			FailureDetails failureDetails, String authorizationCode) {
 		OauthProgress oap = new OauthProgress(scope, successUrl, failureUrl,
 				deniedUrl);
 		setFieldByReflection(oap, "state", state);
 		setFieldByReflection(oap, "failureDetails", failureDetails);
-		setFieldByReflection(oap, "accessToken", accessToken);
 		setFieldByReflection(oap, "authorizationCode", authorizationCode);
 		return oap;
 	}
@@ -168,7 +131,7 @@ public class OauthProgressTest extends AbstractTestClass {
 	}
 
 	private void assertProgress(State state, FailureCause failureCause,
-			AccessToken accessToken, String authorizationCode) {
+			String authorizationCode) {
 		assertEquals("scope", initial.getScope(), modified.getScope());
 		assertEquals("successUrl", initial.successUrl, modified.successUrl);
 		assertEquals("failureUrl", initial.failureUrl, modified.failureUrl);
@@ -178,9 +141,6 @@ public class OauthProgressTest extends AbstractTestClass {
 		assertEquals("failureCause",
 				notNull(failureCause, initial.getFailureCause()),
 				modified.getFailureCause());
-		assertEquals("accessToken",
-				notNull(accessToken, initial.getAccessToken()),
-				modified.getAccessToken());
 		assertEquals("authorizationCode",
 				notNull(authorizationCode, initial.getAuthorizationCode()),
 				modified.getAuthorizationCode());
@@ -194,14 +154,6 @@ public class OauthProgressTest extends AbstractTestClass {
 		try {
 			return new URI(string);
 		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private static AccessToken accessToken(String json) {
-		try {
-			return AccessToken.parse(json);
-		} catch (OrcidClientException e) {
 			throw new RuntimeException(e);
 		}
 	}

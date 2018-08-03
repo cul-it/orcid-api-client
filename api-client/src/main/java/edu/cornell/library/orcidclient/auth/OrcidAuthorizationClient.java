@@ -67,13 +67,16 @@ public class OrcidAuthorizationClient {
 	}
 
 	private final OrcidAuthorizationClientContext context;
-	private final OauthProgressCache cache;
+	private final OauthProgressCache progressCache;
+	private final AccessTokenCache tokenCache;
 	private final HttpWrapper httpWrapper;
 
 	public OrcidAuthorizationClient(OrcidAuthorizationClientContext context,
-			OauthProgressCache cache, HttpWrapper httpWrapper) {
+			OauthProgressCache progressCache, AccessTokenCache tokenCache,
+			HttpWrapper httpWrapper) {
 		this.context = context;
-		this.cache = cache;
+		this.progressCache = progressCache;
+		this.tokenCache = tokenCache;
 		this.httpWrapper = httpWrapper;
 	}
 
@@ -98,7 +101,7 @@ public class OrcidAuthorizationClient {
 		authProgress.addState(State.SEEKING_AUTHORIZATION);
 		log.debug("createdProgressObject: " + authProgress);
 
-		cache.store(authProgress);
+		progressCache.store(authProgress);
 		return authProgress;
 	}
 
@@ -135,7 +138,7 @@ public class OrcidAuthorizationClient {
 	 */
 	public AuthProcessResolution getAuthProcessResolution(ApiScope scope)
 			throws OrcidClientException {
-		switch (cache.getByScope(scope).getState()) {
+		switch (progressCache.getByScope(scope).getState()) {
 		case DENIED:
 			return AuthProcessResolution.DENIED;
 		case FAILURE:
@@ -156,12 +159,12 @@ public class OrcidAuthorizationClient {
 	 */
 	public AccessToken getAccessToken(ApiScope scope)
 			throws IllegalStateException, OrcidClientException {
-		OauthProgress progress = cache.getByScope(scope);
-		if (progress.getState() != State.SUCCESS) {
+		AccessToken token = tokenCache.getToken(scope);
+		if (token == null) {
 			throw new IllegalStateException(
 					"No access token available for scope: `" + scope + "`");
 		} else {
-			return progress.getAccessToken();
+			return token;
 		}
 	}
 
@@ -172,7 +175,7 @@ public class OrcidAuthorizationClient {
 	 */
 	public OauthProgress getProgressById(String id)
 			throws OrcidClientException {
-		return cache.getByID(id);
+		return progressCache.getByID(id);
 	}
 
 	/**
@@ -210,7 +213,7 @@ public class OrcidAuthorizationClient {
 		progress.addCode(code);
 
 		getAccessTokenFromAuthCode(progress);
-		
+
 		return progress.getRedirectUrl().toString();
 	}
 
@@ -246,7 +249,8 @@ public class OrcidAuthorizationClient {
 			try {
 				log.debug("Json response: '" + string + "'");
 				AccessToken accessToken = AccessToken.parse(string);
-				progress.addAccessToken(accessToken);
+				progress.addState(State.SUCCESS);
+				tokenCache.addAccessToken(accessToken);
 			} catch (OrcidClientException e) {
 				BadAccessTokenFailureDetails details = new BadAccessTokenFailureDetails(
 						string);
@@ -285,7 +289,7 @@ public class OrcidAuthorizationClient {
 
 	private void storeProgressById(OauthProgress progress)
 			throws OrcidClientException {
-		cache.store(progress);
+		progressCache.store(progress);
 	}
 
 	// ----------------------------------------------------------------------

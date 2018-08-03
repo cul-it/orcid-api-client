@@ -62,7 +62,8 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	private OrcidAuthorizationClient client;
 	private StubHttpWrapper httpClient;
 	private StubOrcidAuthorizationClientContext context;
-	private StubOauthProgressCache cache;
+	private StubOauthProgressCache progressCache;
+	private StubAccessTokenCache tokenCache;
 
 	private OauthProgress progress;
 	private ParameterMap parameters;
@@ -76,8 +77,10 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 
 		httpClient = new StubHttpWrapper();
 
-		cache = new StubOauthProgressCache();
-		client = new OrcidAuthorizationClient(context, cache, httpClient);
+		progressCache = new StubOauthProgressCache();
+		tokenCache = new StubAccessTokenCache();
+		client = new OrcidAuthorizationClient(context, progressCache,
+				tokenCache, httpClient);
 
 		clientLog = new StringWriter();
 		captureLogOutput(OrcidAuthorizationClient.class, clientLog, true);
@@ -89,7 +92,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 		progress = client.createProgressObject(ApiScope.ACTIVITIES_UPDATE,
 				SUCCESS_URL, FAILURE_URL, DENIED_URL);
 		assertNotNull(progress);
-		assertEquals(1, cache.getList().size());
+		assertEquals(1, progressCache.getList().size());
 	}
 
 	@Test
@@ -118,7 +121,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	public void stateMatchesExistingSuccess_recordFailure()
 			throws OrcidClientException {
 		progress = basicProgress(SUCCESS);
-		cache.set(progress);
+		progressCache.set(progress);
 
 		parameters = new Parameters() //
 				.add("state", progress.getId()).toMap();
@@ -131,7 +134,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	public void errorWithDescription_recordFailure()
 			throws OrcidClientException {
 		progress = basicProgress(SEEKING_AUTHORIZATION);
-		cache.set(progress);
+		progressCache.set(progress);
 
 		parameters = new Parameters() //
 				.add("state", progress.getId()) //
@@ -146,7 +149,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	public void errorWithoutDescription_recordFailure()
 			throws OrcidClientException {
 		progress = basicProgress(SEEKING_AUTHORIZATION);
-		cache.set(progress);
+		progressCache.set(progress);
 
 		parameters = new Parameters() //
 				.add("state", progress.getId()) //
@@ -159,7 +162,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	@Test
 	public void missingCode_recordFailure() throws OrcidClientException {
 		progress = basicProgress(SEEKING_AUTHORIZATION);
-		cache.set(progress);
+		progressCache.set(progress);
 
 		parameters = new Parameters() //
 				.add("state", progress.getId()).toMap();
@@ -171,7 +174,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	@Test
 	public void userDenies_recordDenied() throws OrcidClientException {
 		progress = basicProgress(SEEKING_AUTHORIZATION);
-		cache.set(progress);
+		progressCache.set(progress);
 
 		parameters = new Parameters() //
 				.add("state", progress.getId()) //
@@ -186,7 +189,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	public void tokenRequestReturnsErrorCode_recordCodeAndFailure()
 			throws OrcidClientException {
 		progress = basicProgress(SEEKING_AUTHORIZATION);
-		cache.set(progress);
+		progressCache.set(progress);
 
 		httpClient.setResponse(400, VALID_TOKEN_STRING);
 
@@ -203,7 +206,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	public void tokenRequestReturnsInvalidJson_recordCodeAndFailure()
 			throws OrcidClientException {
 		progress = basicProgress(SEEKING_AUTHORIZATION);
-		cache.set(progress);
+		progressCache.set(progress);
 
 		httpClient.setResponse(200, INVALID_TOKEN_STRING);
 
@@ -220,7 +223,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	public void tokenRequestReturnsOK_recordCodeAndSuccess()
 			throws OrcidClientException {
 		progress = basicProgress(SEEKING_AUTHORIZATION);
-		cache.set(progress);
+		progressCache.set(progress);
 
 		httpClient.setResponse(200, VALID_TOKEN_STRING);
 
@@ -270,7 +273,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 
 	private void assertCodeRecordInCache(String expectedCode)
 			throws OrcidClientException {
-		OauthProgress cached = cache.getByScope(READ_PUBLIC);
+		OauthProgress cached = progressCache.getByScope(READ_PUBLIC);
 		assertEquals(expectedCode, cached.getAuthorizationCode());
 	}
 
@@ -278,7 +281,7 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 			throws OrcidClientException {
 		// The change of state was a failure with the expected cause?
 		assertEquals(FAILURE_URL.toString(), redirectUrl);
-		OauthProgress cached = cache.getByScope(READ_PUBLIC);
+		OauthProgress cached = progressCache.getByScope(READ_PUBLIC);
 		assertEquals(FAILURE, cached.getState());
 		assertEquals(failureCause, cached.getFailureCause());
 	}
@@ -286,13 +289,13 @@ public class OrcidAuthorizationClientTest extends AbstractTestClass {
 	private void assertDeniedRecordInCache() throws OrcidClientException {
 		// Returned a failure URL for redirecting?
 		assertEquals(DENIED_URL.toString(), redirectUrl);
-		assertEquals(DENIED, cache.getByScope(READ_PUBLIC).getState());
+		assertEquals(DENIED, progressCache.getByScope(READ_PUBLIC).getState());
 	}
 
 	private void assertSuccessRecordInCache() throws OrcidClientException {
 		// The change of state was a Success?
 		assertEquals(SUCCESS_URL.toString(), redirectUrl);
-		assertEquals(SUCCESS, cache.getByScope(READ_PUBLIC).getState());
+		assertEquals(SUCCESS, progressCache.getByScope(READ_PUBLIC).getState());
 	}
 
 	// ----------------------------------------------------------------------

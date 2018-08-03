@@ -1,4 +1,4 @@
-package edu.cornell.library.orcidclient.auth.cache;
+package edu.cornell.library.orcidclient.auth;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -10,34 +10,41 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.cornell.library.orcidclient.actions.ApiScope;
-import edu.cornell.library.orcidclient.auth.OauthProgress;
-import edu.cornell.library.orcidclient.auth.OauthProgressCache;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
- * A cache implementation that provides medium-length memory: the length of an
- * HTTP Session.
+ * A progress cache tied to an HTTP Session
+ * 
+ * This is the only sensible implementation strategy, since the progress being
+ * tracked is based on a series of HTTP requests.
+ * 
+ * Since multiple HTTP requests may come simultaneously, this must be
+ * thread-safe.
  */
-public class SessionBasedCache implements OauthProgressCache {
-	private static final Log log = LogFactory.getLog(SessionBasedCache.class);
+public class OauthProgressCacheImpl implements OauthProgressCache {
+	private static final Log log = LogFactory
+			.getLog(OauthProgressCacheImpl.class);
 
-	private static final String SESSION_KEY = SessionBasedCache.class.getName();
+	private static final String SESSION_ATTRIBUTE_KEY = OauthProgressCacheImpl.class
+			.getName();
 
 	// ----------------------------------------------------------------------
 	// Factory
 	// ----------------------------------------------------------------------
 
-	public static SessionBasedCache getCache(HttpServletRequest req) {
-		return getCache(req.getSession());
+	public static synchronized OauthProgressCacheImpl instance(
+			HttpServletRequest req) {
+		return instance(req.getSession());
 	}
 
-	public static SessionBasedCache getCache(HttpSession session) {
-		Object attribute = session.getAttribute(SESSION_KEY);
-		if (attribute instanceof SessionBasedCache) {
-			return (SessionBasedCache) attribute;
+	public static synchronized OauthProgressCacheImpl instance(
+			HttpSession session) {
+		Object attribute = session.getAttribute(SESSION_ATTRIBUTE_KEY);
+		if (attribute instanceof OauthProgressCacheImpl) {
+			return (OauthProgressCacheImpl) attribute;
 		} else {
-			SessionBasedCache cache = new SessionBasedCache();
-			session.setAttribute(SESSION_KEY, cache);
+			OauthProgressCacheImpl cache = new OauthProgressCacheImpl();
+			session.setAttribute(SESSION_ATTRIBUTE_KEY, cache);
 			return cache;
 		}
 	}
@@ -50,10 +57,8 @@ public class SessionBasedCache implements OauthProgressCache {
 			ApiScope.class);
 
 	@Override
-	public void store(OauthProgress progress)
-			throws OrcidClientException {
-		OauthProgress previous = map.put(progress.getScope(),
-				progress);
+	public void store(OauthProgress progress) throws OrcidClientException {
+		OauthProgress previous = map.put(progress.getScope(), progress);
 		log.debug("Stored: " + progress + ", previously was: " + previous);
 	}
 

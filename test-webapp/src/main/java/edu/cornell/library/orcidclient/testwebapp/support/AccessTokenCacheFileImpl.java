@@ -1,6 +1,5 @@
 package edu.cornell.library.orcidclient.testwebapp.support;
 
-import static edu.cornell.library.orcidclient.auth.OauthProgress.NO_URI;
 import static edu.cornell.library.orcidclient.testwebapp.support.WebappSetup.WEBAPP_CACHE_FILE_KEY;
 import static org.apache.commons.io.FileUtils.readLines;
 
@@ -9,45 +8,44 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import edu.cornell.library.orcidclient.actions.ApiScope;
 import edu.cornell.library.orcidclient.auth.AccessToken;
-import edu.cornell.library.orcidclient.auth.OauthProgress;
-import edu.cornell.library.orcidclient.auth.OauthProgress.State;
-import edu.cornell.library.orcidclient.auth.OauthProgressCache;
+import edu.cornell.library.orcidclient.auth.AccessTokenCache;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 
 /**
- * Keep the cache in memory as expected, but also:
- * 
- * When the cache is created, load any accessTokens from the backing file. Wrap
- * each one in a progress instance with a Success state.
- * 
- * When an item is stored or cleared, rewrite the backing file with all of the
- * current access token.
+ * TODO
  */
-public class WebappCache implements OauthProgressCache {
+public class AccessTokenCacheFileImpl implements AccessTokenCache {
+	private final static String SESSION_ATTRIBUTE_KEY = AccessTokenCacheFileImpl.class
+			.getName();
 
 	// ----------------------------------------------------------------------
-	// The factory
+	// Factory
 	// ----------------------------------------------------------------------
 
-	private volatile static WebappCache instance;
-
-	/**
-	 * The first time someone asks for the cache, create an instance. Don't do
-	 * it sooner, in case WebappSetup has not run yet.
-	 */
-	public synchronized static WebappCache getCache()
+	public static AccessTokenCacheFileImpl instance(HttpServletRequest req)
 			throws OrcidClientException {
-		if (instance == null) {
-			instance = new WebappCache();
+		return instance(req.getSession());
+	}
+
+	public static AccessTokenCacheFileImpl instance(HttpSession session)
+			throws OrcidClientException {
+		Object attribute = session.getAttribute(SESSION_ATTRIBUTE_KEY);
+		if (attribute instanceof AccessTokenCacheFileImpl) {
+			return (AccessTokenCacheFileImpl) attribute;
+		} else {
+			AccessTokenCacheFileImpl cache = new AccessTokenCacheFileImpl();
+			session.setAttribute(SESSION_ATTRIBUTE_KEY, cache);
+			return cache;
 		}
-		return instance;
 	}
 
 	// ----------------------------------------------------------------------
@@ -55,9 +53,9 @@ public class WebappCache implements OauthProgressCache {
 	// ----------------------------------------------------------------------
 
 	private Optional<String> cacheFilePath;
-	private Map<String, OauthProgress> progressMap = new HashMap<>();
+	private Map<ApiScope, AccessToken> tokenMap = new HashMap<>();
 
-	public WebappCache() throws OrcidClientException {
+	public AccessTokenCacheFileImpl() throws OrcidClientException {
 		locateBackingFile();
 
 		if (!backingFileExists()) {
@@ -88,7 +86,7 @@ public class WebappCache implements OauthProgressCache {
 
 		if (!cacheFile.canWrite()) {
 			throw new OrcidClientException(
-					"Can't write to WebappCache backing file: "
+					"Can't write to AccessTokenCache backing file: "
 							+ cacheFile.getAbsolutePath());
 		}
 
@@ -99,13 +97,13 @@ public class WebappCache implements OauthProgressCache {
 		File cacheFile = new File(cacheFilePath.get());
 		File parent = cacheFile.getParentFile();
 		if (!parent.isDirectory()) {
-			throw new OrcidClientException("Can't create WebappCache "
+			throw new OrcidClientException("Can't create the AccessTokenCache "
 					+ "backing file - parent directory does not exist: "
 					+ cacheFile.getAbsolutePath());
 		}
 
 		if (!parent.canWrite()) {
-			throw new OrcidClientException("Can't create WebappCache "
+			throw new OrcidClientException("Can't create the AccessTokenCache "
 					+ "backing file - can't write to parent directory: "
 					+ cacheFile.getAbsolutePath());
 		}
@@ -114,13 +112,15 @@ public class WebappCache implements OauthProgressCache {
 			boolean created = cacheFile.createNewFile();
 			if (!created) {
 				throw new OrcidClientException(
-						"Failed to create the WebappCache "
+						"Failed to create the AccessTokenCache "
 								+ "backing file - don't know why: "
 								+ cacheFile.getAbsolutePath());
 			}
 		} catch (IOException e) {
-			throw new OrcidClientException("Failed to create the WebappCache "
-					+ "backing file: " + cacheFile.getAbsolutePath(), e);
+			throw new OrcidClientException(
+					"Failed to create the AccessTokenCache " + "backing file: "
+							+ cacheFile.getAbsolutePath(),
+					e);
 		}
 	}
 
@@ -134,11 +134,7 @@ public class WebappCache implements OauthProgressCache {
 			List<String> lines = readLines(cacheFile, "UTF-8");
 			for (String line : lines) {
 				AccessToken token = AccessToken.parse(line);
-				ApiScope scope = token.getScope();
-				OauthProgress progress = new OauthProgress(scope, NO_URI,
-						NO_URI, NO_URI);
-				progress.addAccessToken(token);
-				progressMap.put(progress.getId(), progress);
+				tokenMap.put(token.getScope(), token);
 			}
 		} catch (IOException e) {
 			throw new OrcidClientException(
@@ -153,10 +149,8 @@ public class WebappCache implements OauthProgressCache {
 
 		File cacheFile = new File(cacheFilePath.get());
 		try (PrintWriter out = new PrintWriter(cacheFile, "UTF-8")) {
-			for (OauthProgress progress : progressMap.values()) {
-				if (progress.getState() == State.SUCCESS) {
-					out.println(progress.getAccessToken().getJsonString());
-				}
+			for (AccessToken token : tokenMap.values()) {
+				out.println(token.getJsonString());
 			}
 		} catch (IOException e) {
 			throw new OrcidClientException(
@@ -164,58 +158,32 @@ public class WebappCache implements OauthProgressCache {
 		}
 	}
 
-	// ----------------------------------------------------------------------
-	// The basic functionality
-	// ----------------------------------------------------------------------
-
 	@Override
-	public void store(OauthProgress progress) throws OrcidClientException {
-		clearScopeProgress(progress.getScope());
-		progressMap.put(progress.getId(), progress);
+	public void addAccessToken(AccessToken token) throws OrcidClientException {
+		tokenMap.put(token.getScope(), token);
 		writeToBackingFile();
 	}
 
 	@Override
-	public OauthProgress getByID(String id) {
-		return progressMap.get(id);
-	}
-
-	@Override
-	public OauthProgress getByScope(ApiScope scope) {
-		for (OauthProgress progress : progressMap.values()) {
-			if (scope == progress.getScope()) {
-				return progress;
-			}
-		}
-		return null;
-	}
-
-	private void clearScopeProgress(ApiScope scope)
-			throws OrcidClientException {
-		Iterator<OauthProgress> it = progressMap.values().iterator();
-		while (it.hasNext()) {
-			if (it.next().getScope() == scope) {
-				it.remove();
-			}
-		}
-		writeToBackingFile();
+	public AccessToken getToken(ApiScope scope) throws OrcidClientException {
+		return tokenMap.get(scope);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("WebappCache[cacheFilePath=%s, progressMap=%s]",
-				cacheFilePath, progressMap);
+		return String.format(
+				"AccessTokenCacheFileImpl[cacheFilePath=%s, tokenMap=%s]",
+				cacheFilePath, tokenMap);
 	}
 
-	// ----------------------------------------------------------------------
-	// Extra functions
-	// ----------------------------------------------------------------------
-
-	public List<OauthProgress> getProgressList() {
-		return new ArrayList<>(progressMap.values());
+	/** NOTE: specific to this class, not to the interface. */
+	public List<AccessToken> getAccessTokens() {
+		return new ArrayList<>(tokenMap.values());
 	}
 
-	public void clear() {
-		progressMap.clear();
+	/** NOTE: specific to this class, not to the interface. */
+	public void clear() throws OrcidClientException {
+		tokenMap.clear();
+		writeToBackingFile();
 	}
 }

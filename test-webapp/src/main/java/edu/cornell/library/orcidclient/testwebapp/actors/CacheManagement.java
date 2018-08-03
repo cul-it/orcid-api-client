@@ -8,10 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.jtwig.JtwigModel;
 
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
-import edu.cornell.library.orcidclient.testwebapp.support.WebappCache;
+import edu.cornell.library.orcidclient.testwebapp.support.AccessTokenCacheFileImpl;
+import edu.cornell.library.orcidclient.util.PrettyToStringPrinter;
 
 /**
- * TODO
+ * Show and/or clear the access token cache.
  */
 public class CacheManagement extends AbstractActor {
 
@@ -20,7 +21,7 @@ public class CacheManagement extends AbstractActor {
 	}
 
 	public void exec() throws IOException, OrcidClientException {
-		WebappCache cache = WebappCache.getCache();
+		AccessTokenCacheFileImpl cache = AccessTokenCacheFileImpl.instance(req);
 		String message = null;
 
 		if (null != req.getParameter("clear")) {
@@ -30,7 +31,8 @@ public class CacheManagement extends AbstractActor {
 
 		render("/templates/cacheManagement.twig.html", //
 				JtwigModel.newModel() //
-						.with("cache", cache) //
+						.with("cache",
+								new PrettyToStringPrinter().format(cache)) //
 						.with("message", message));
 	}
 

@@ -37,7 +37,8 @@ public class AccessToken {
 	// The factory
 	// ----------------------------------------------------------------------
 
-	public static AccessToken parse(String jsonString) throws OrcidClientException {
+	public static AccessToken parse(String jsonString)
+			throws OrcidClientException {
 		try {
 			return new AccessToken(jsonString);
 		} catch (IOException e) {
@@ -97,6 +98,19 @@ public class AccessToken {
 		this.orcid = "NO_ORCID";
 	}
 
+	public AccessToken(String jsonString, String token, String type,
+			String refreshToken, long expiresIn, ApiScope scope, String name,
+			String orcid) {
+		this.jsonString = jsonString;
+		this.token = token;
+		this.type = type;
+		this.refreshToken = refreshToken;
+		this.expiresIn = expiresIn;
+		this.scope = scope;
+		this.name = name;
+		this.orcid = orcid;
+	}
+
 	public String getJsonString() {
 		return jsonString;
 	}
@@ -132,7 +146,7 @@ public class AccessToken {
 	public boolean isShortTerm() {
 		return expiresIn < 10000;
 	}
-	
+
 	public String toAuthHeader() {
 		return type + " " + token;
 	}

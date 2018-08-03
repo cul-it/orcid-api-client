@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,11 +16,12 @@ import org.jtwig.environment.EnvironmentConfigurationBuilder;
 
 import edu.cornell.library.orcidclient.actions.OrcidActionClient;
 import edu.cornell.library.orcidclient.auth.AccessToken;
+import edu.cornell.library.orcidclient.auth.OauthProgressCacheImpl;
 import edu.cornell.library.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.http.BaseHttpWrapper;
-import edu.cornell.library.orcidclient.testwebapp.support.WebappCache;
+import edu.cornell.library.orcidclient.testwebapp.support.AccessTokenCacheFileImpl;
 
 /**
  * Methods that are in common among some or all Actors.
@@ -57,8 +57,9 @@ public abstract class AbstractActor {
 
 	protected OrcidAuthorizationClient getAuthorizationClient()
 			throws OrcidClientException {
-		return new OrcidAuthorizationClient(occ, WebappCache.getCache(),
-				new BaseHttpWrapper());
+		return new OrcidAuthorizationClient(occ,
+				OauthProgressCacheImpl.instance(req),
+				AccessTokenCacheFileImpl.instance(req), new BaseHttpWrapper());
 	}
 
 	protected OrcidActionClient getActionClient() {
@@ -67,9 +68,7 @@ public abstract class AbstractActor {
 
 	protected List<AccessToken> getTokensFromCache() {
 		try {
-			return WebappCache.getCache().getProgressList().stream() //
-					.map(p -> p.getAccessToken()) //
-					.collect(Collectors.toList());
+			return AccessTokenCacheFileImpl.instance(req).getAccessTokens();
 		} catch (OrcidClientException e) {
 			throw new RuntimeException(e);
 		}

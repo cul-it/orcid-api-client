@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.cornell.library.orcidclient.auth.OauthProgressCacheImpl;
 import edu.cornell.library.orcidclient.auth.OrcidAuthorizationClient;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
@@ -15,7 +16,7 @@ import edu.cornell.library.orcidclient.testwebapp.actors.AuthenticationClientCal
 import edu.cornell.library.orcidclient.testwebapp.actors.AuthenticationRawCallback;
 import edu.cornell.library.orcidclient.testwebapp.actors.AuthenticationRawOffer;
 import edu.cornell.library.orcidclient.testwebapp.actors.CallbackFailed;
-import edu.cornell.library.orcidclient.testwebapp.support.WebappCache;
+import edu.cornell.library.orcidclient.testwebapp.support.AccessTokenCacheFileImpl;
 
 /**
  * ORCID has issued a redirect to here. Read the "state" parameter to figure out
@@ -35,8 +36,8 @@ public class CallbackController extends AbstractController {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		try {
-			OrcidAuthorizationClient auth = getAuthorizationClient();
-			
+			OrcidAuthorizationClient auth = getAuthorizationClient(req);
+
 			String state = req.getParameter("state");
 			if (AuthenticationRawOffer.CALLBACK_STATE.equals(state)) {
 				new AuthenticationRawCallback(req, resp).exec();
@@ -50,9 +51,10 @@ public class CallbackController extends AbstractController {
 		}
 	}
 
-	private OrcidAuthorizationClient getAuthorizationClient()
-			throws OrcidClientException {
-		return new OrcidAuthorizationClient(occ, WebappCache.getCache(),
-				httpWrapper);
+	private OrcidAuthorizationClient getAuthorizationClient(
+			HttpServletRequest req) throws OrcidClientException {
+		return new OrcidAuthorizationClient(occ,
+				OauthProgressCacheImpl.instance(req),
+				AccessTokenCacheFileImpl.instance(req), httpWrapper);
 	}
 }

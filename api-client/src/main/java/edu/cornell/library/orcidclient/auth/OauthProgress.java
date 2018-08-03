@@ -4,7 +4,6 @@ import static edu.cornell.library.orcidclient.auth.OauthProgress.State.FAILURE;
 import static edu.cornell.library.orcidclient.auth.OauthProgress.State.SEEKING_ACCESS_TOKEN;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,7 +77,6 @@ public class OauthProgress {
 
 	private State state;
 	private FailureDetails failureDetails;
-	private AccessToken accessToken;
 	private String authorizationCode;
 
 	/**
@@ -93,7 +91,6 @@ public class OauthProgress {
 		this.successUrl = successUrl;
 		this.failureUrl = failureUrl;
 		this.deniedUrl = deniedUrl;
-		this.accessToken = AccessToken.NO_TOKEN;
 		this.authorizationCode = "";
 	}
 
@@ -104,7 +101,6 @@ public class OauthProgress {
 				this.failureUrl, this.deniedUrl);
 		that.state = this.state;
 		that.failureDetails = this.failureDetails;
-		that.accessToken = this.accessToken;
 		that.authorizationCode = this.authorizationCode;
 		return that;
 	}
@@ -144,10 +140,6 @@ public class OauthProgress {
 		return failureDetails;
 	}
 
-	public AccessToken getAccessToken() {
-		return accessToken;
-	}
-
 	public String getAuthorizationCode() {
 		return authorizationCode;
 	}
@@ -166,19 +158,14 @@ public class OauthProgress {
 		authorizationCode = code;
 	}
 
-	public void addAccessToken(AccessToken token) {
-		state = State.SUCCESS;
-		accessToken = token;
-	}
-
 	@Override
 	public String toString() {
 		return String.format(
 				"OauthProgress[id=%s, state=%s, failureDetails=%s, "
 						+ "scope=%s, successUrl=%s, failureUrl=%s, deniedUrl=%s, "
-						+ "accessToken=%s, authorizationCode=%s]",
+						+ "authorizationCode=%s]",
 				id, state, failureDetails, scope, successUrl, failureUrl,
-				deniedUrl, accessToken, authorizationCode);
+				deniedUrl, authorizationCode);
 	}
 
 }
