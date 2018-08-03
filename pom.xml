@@ -38,9 +38,7 @@
 
 	<modules>
 		<module>api-client</module>
-		<module>mock-server</module>
 		<module>test-webapp</module>
-		<module>test-command-line</module>
 	</modules>
 
 	<properties>
