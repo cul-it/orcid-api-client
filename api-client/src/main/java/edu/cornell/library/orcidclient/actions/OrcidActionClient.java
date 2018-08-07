@@ -21,6 +21,10 @@ public class OrcidActionClient {
 		this.httpWrapper = httpWrapper;
 	}
 
+	public void checkConnection() throws OrcidClientException {
+		new ActionConnectionChecker(context, httpWrapper).check();
+	}
+
 	public boolean isAccessTokenValid(AccessToken accessToken)
 			throws OrcidClientException {
 		return new AccessTokenValidator(context, httpWrapper)

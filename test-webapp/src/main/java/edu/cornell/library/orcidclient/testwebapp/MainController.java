@@ -11,6 +11,7 @@ import edu.cornell.library.orcidclient.testwebapp.actors.AuthenticationClientOff
 import edu.cornell.library.orcidclient.testwebapp.actors.AuthenticationClientRequest;
 import edu.cornell.library.orcidclient.testwebapp.actors.AuthenticationRawOffer;
 import edu.cornell.library.orcidclient.testwebapp.actors.CacheManagement;
+import edu.cornell.library.orcidclient.testwebapp.actors.CheckConnectionHandler;
 import edu.cornell.library.orcidclient.testwebapp.actors.EditExternalIdsOffer;
 import edu.cornell.library.orcidclient.testwebapp.actors.EditExternalIdsReader;
 import edu.cornell.library.orcidclient.testwebapp.actors.EditExternalIdsRequest;
@@ -39,57 +40,59 @@ public class MainController extends AbstractController {
 			throws ServletException, IOException {
 
 		try {
-			if (req.getParameter("RawAuthentication") != null) {
+			if (has(req, "CheckConnection")) {
+				new CheckConnectionHandler(req, resp).exec();
+			} else if (has(req, "ConnectionSiteSucceed")) {
+				new CheckConnectionHandler(req, resp).execSiteSucceed();
+			} else if (has(req, "ConnectionSiteFail")) {
+				new CheckConnectionHandler(req, resp).execSiteFail();
+			} else if (has(req, "ConnectionOauthSucceed")) {
+				new CheckConnectionHandler(req, resp).execOauthSucceed();
+			} else if (has(req, "ConnectionOauthFailAuthCode")) {
+				new CheckConnectionHandler(req, resp).execFailAuthCode();
+			} else if (has(req, "ConnectionOauthFailAccessToken")) {
+				new CheckConnectionHandler(req, resp).execFailAccessToken();
+			} else if (has(req, "ConnectionApiSucceed")) {
+				new CheckConnectionHandler(req, resp).execApiSucceed();
+			} else if (has(req, "ConnectionApiFailPublic")) {
+				new CheckConnectionHandler(req, resp).execApiFailPublic();
+			} else if (has(req, "ConnectionApiFailMember")) {
+				new CheckConnectionHandler(req, resp).execApiFailMember();
+			} else if (has(req, "RawAuthentication")) {
 				new AuthenticationRawOffer(req, resp).exec();
-			} else if (req.getParameter("ClientAuthentication") != null) {
+			} else if (has(req, "ClientAuthentication")) {
 				new AuthenticationClientOffer(req, resp).exec();
-			} else if (req
-					.getParameter("ClientAuthenticationRequest") != null) {
+			} else if (has(req, "ClientAuthenticationRequest")) {
 				new AuthenticationClientRequest(req, resp).exec();
-			} else if (req
-					.getParameter("CacheManagement") != null) {
+			} else if (has(req, "CacheManagement")) {
 				new CacheManagement(req, resp).exec();
-			} else if (req
-					.getParameter("ReadRecord") != null) {
+			} else if (has(req, "ReadRecord")) {
 				new ReadRecordOffer(req, resp).exec();
-			} else if (req
-					.getParameter("ReadRecordRequest") != null) {
+			} else if (has(req, "ReadRecordRequest")) {
 				new ReadRecordRequest(req, resp).exec();
-			} else if (req
-					.getParameter("EditExternalIds") != null) {
+			} else if (has(req, "EditExternalIds")) {
 				new EditExternalIdsOffer(req, resp).exec();
-			} else if (req
-					.getParameter("EditExternalIdsGetList") != null) {
+			} else if (has(req, "EditExternalIdsGetList")) {
 				new EditExternalIdsReader(req, resp).exec();
-			} else if (req
-					.getParameter("EditExternalIdsAdd") != null) {
+			} else if (has(req, "EditExternalIdsAdd")) {
 				new EditExternalIdsRequest(req, resp).add();
-			} else if (req
-					.getParameter("EditExternalIdsUpdate") != null) {
+			} else if (has(req, "EditExternalIdsUpdate")) {
 				new EditExternalIdsRequest(req, resp).update();
-			} else if (req
-					.getParameter("EditExternalIdsRemove") != null) {
+			} else if (has(req, "EditExternalIdsRemove")) {
 				new EditExternalIdsRequest(req, resp).remove();
-			} else if (req
-					.getParameter("EditWorks") != null) {
+			} else if (has(req, "EditWorks")) {
 				new EditWorksOffer(req, resp).exec();
-			} else if (req
-					.getParameter("ReadWorksFully") != null) {
+			} else if (has(req, "ReadWorksFully")) {
 				new ReadWorksFullyOffer(req, resp).exec();
-			} else if (req
-					.getParameter("ReadWorksFullyRequest") != null) {
+			} else if (has(req, "ReadWorksFullyRequest")) {
 				new ReadWorksFullyRequest(req, resp).exec();
-			} else if (req
-					.getParameter("EditWorksGetList") != null) {
+			} else if (has(req, "EditWorksGetList")) {
 				new EditWorksReader(req, resp).exec();
-			} else if (req
-					.getParameter("EditWorksAdd") != null) {
+			} else if (has(req, "EditWorksAdd")) {
 				new EditWorksRequest(req, resp).add();
-			} else if (req
-					.getParameter("EditWorksUpdate") != null) {
+			} else if (has(req, "EditWorksUpdate")) {
 				new EditWorksRequest(req, resp).update();
-			} else if (req
-					.getParameter("EditWorksRemove") != null) {
+			} else if (has(req, "EditWorksRemove")) {
 				new EditWorksRequest(req, resp).remove();
 			} else {
 				new IndexPage(req, resp).exec();
@@ -97,5 +100,9 @@ public class MainController extends AbstractController {
 		} catch (Exception e) {
 			new ErrorPage(req, resp, e).exec();
 		}
+	}
+
+	private boolean has(HttpServletRequest req, String name) {
+		return req.getParameter(name) != null;
 	}
 }

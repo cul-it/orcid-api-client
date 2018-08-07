@@ -1,0 +1,46 @@
+{% extends "parent.twig.html" %}
+{% set title = "Check Connections" %}
+
+{% block body %}
+  <p>
+    Check that the URLs of the API succeed (or fail) as expected.
+  </p>
+  <p>
+    Click to test a connection type. If you click "Succeed", the actual
+	URL is tested. If you click "Fail", a modified URL is tested instead.
+  </p>
+ 
+  {% if (defined(result)) %}
+    <p style="margin: 5px; padding: 5px; background-color: #CCCCCC; ">
+    {{result ? "SUCCESS" : "FAILURE"}}
+    </p>
+  {% endif %}
+ 
+  <form action="request" method="get" style="width:100%">
+    <div>
+      <table>
+        <tr>
+          <td></td>
+          <td>ORCID site URL:</td>
+          <td><input type="submit" name="ConnectionSiteSucceed" value="Succeed"></td>
+          <td><input type="submit" name="ConnectionSiteFail" value="Fail"></td>
+          <td>""</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>OAuth client URLs:</td>
+          <td><input type="submit" name="ConnectionOauthSucceed" value="Succeed both URLs"></td>
+          <td><input type="submit" name="ConnectionOauthFailAuthCode" value="Fail Auth Code URL"></td>
+          <td><input type="submit" name="ConnectionOauthFailAccessToken" value="Fail Access Token URL"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>ORCID API URLs:</td>
+          <td><input type="submit" name="ConnectionApiSucceed" value="Succeed both URLs"></td>
+          <td><input type="submit" name="ConnectionApiFailPublic" value="Fail Public URL"></td>
+          <td><input type="submit" name="ConnectionApiFailMember" value="Fail Member URL"></td>
+        </tr>
+      </table> 
+    </div>
+  </form> 
+{% endblock body %}

@@ -80,6 +80,42 @@ public class OrcidAuthorizationClient {
 		this.httpWrapper = httpWrapper;
 	}
 
+	public void checkConnection() throws OrcidClientException {
+		checkAuthCodeRequestUrl();
+		checkAccessTokenRequestUrl();
+	}
+
+	/** The request should return 200 */
+	private void checkAuthCodeRequestUrl() throws OrcidClientException {
+		String url = context.getAuthCodeRequestUrl();
+		try {
+			httpWrapper.createPostRequest(url).execute();
+		} catch (HttpStatusCodeException | IOException e) {
+			throw new OrcidClientException(
+					"OAuth request is not available at '" + url + "'", e);
+		}
+	}
+
+	/** With no access code, the request should return 401 - Not authorized */
+	private void checkAccessTokenRequestUrl() throws OrcidClientException {
+		String url = context.getAccessTokenRequestUrl();
+		try {
+			httpWrapper.createPostRequest(url).execute();
+		} catch (HttpStatusCodeException e) {
+			// Expecting "Not Authorized - 401"
+			if (e.getStatusCode() != 401) {
+				throw new OrcidClientException(
+						"Access Token request is not available at '" + url
+								+ "'",
+						e);
+			}
+		} catch (IOException e) {
+			throw new OrcidClientException(
+					"Access Token request is not available at '" + url + "'",
+					e);
+		}
+	}
+
 	/**
 	 * Create a progress object to use in seeking authorization for this scope.
 	 * Add it to the cache, so it can be used to track the progress of the
