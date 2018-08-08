@@ -4,14 +4,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.vivoweb</groupId>
+	<groupId>edu.cornell.library</groupId>
 	<artifactId>orcid-api-client-project</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>ORCiD Client API Parent</name>
 	<description>Parent project for orcid-api-client</description>
-	<url>http://vivoweb.org/</url>
+	<url>http://library.cornell.edu/</url>
 
 	<licenses>
 		<license>
@@ -22,12 +22,6 @@
 	</licenses>
 
 	<developers>
-		<developer>
-			<name>Graham Triggs</name>
-			<email>gtriggs@duraspace.org</email>
-			<organization>DuraSpace</organization>
-			<organizationUrl>http://vivoweb.org/</organizationUrl>
-		</developer>
 		<developer>
 			<name>Jim Blake</name>
 			<email>jeb228@cornell.edu</email>
