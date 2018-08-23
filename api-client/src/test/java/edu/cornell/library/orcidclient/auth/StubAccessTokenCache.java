@@ -22,4 +22,11 @@ public class StubAccessTokenCache implements AccessTokenCache {
 	public AccessToken getToken(ApiScope scope) throws OrcidClientException {
 		return map.get(scope);
 	}
+
+	@Override
+	public void removeAccessToken(AccessToken accessToken)
+			throws OrcidClientException {
+		map.values().remove(accessToken);
+	}
+
 }

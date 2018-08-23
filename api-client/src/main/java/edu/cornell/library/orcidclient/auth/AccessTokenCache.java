@@ -21,4 +21,13 @@ public interface AccessTokenCache {
 	 * Otherwise, return null.
 	 */
 	AccessToken getToken(ApiScope scope) throws OrcidClientException;
+
+	/**
+	 * Remove this access token from the cache. The access token has been found
+	 * to be invalid, probably because the ORCID user has rescinded permission.
+	 * 
+	 * If the cache does not contain this access token, this action has no
+	 * effect.
+	 */
+	void removeAccessToken(AccessToken accessToken) throws OrcidClientException;
 }

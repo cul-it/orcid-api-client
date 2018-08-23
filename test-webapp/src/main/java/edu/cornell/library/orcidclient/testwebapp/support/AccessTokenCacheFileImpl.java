@@ -170,6 +170,13 @@ public class AccessTokenCacheFileImpl implements AccessTokenCache {
 	}
 
 	@Override
+	public void removeAccessToken(AccessToken accessToken)
+			throws OrcidClientException {
+		tokenMap.values().remove(accessToken);
+		writeToBackingFile();
+	}
+
+	@Override
 	public String toString() {
 		return String.format(
 				"AccessTokenCacheFileImpl[cacheFilePath=%s, tokenMap=%s]",
