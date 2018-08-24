@@ -44,7 +44,7 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 		String CLIENT_SECRET = "CLIENT_SECRET";
 
 		/**
-		 * Environment - "public" or "sandbox".
+		 * Environment - "production" or "sandbox".
 		 */
 		String API_PLATFORM = "API_PLATFORM";
 
