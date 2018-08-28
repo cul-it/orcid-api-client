@@ -20,6 +20,21 @@
 	<artifactId>orcid-api-client</artifactId>
 	<packaging>jar</packaging>
 
+	<repositories>
+		<repository>
+			<id>jaxb-repo</id>
+			<url>file://${project.basedir}/repo</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.orcid</groupId>
+			<artifactId>orcid-model</artifactId>
+			<version>1.1.5-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
