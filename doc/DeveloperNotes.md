@@ -31,7 +31,8 @@ compiled into Java classes.
 # Using ORCIDs JAXB JAR file
 ## Orcid provides a JAR file
 * They have created (somehow) a JAR file with JAXB-based classes. 
-	* https://github.com/ORCID/orcid-conversion-lib/blob/master/orcid-model/orcid-model-2.1.jar
+	* [Read all about it.](https://github.com/ORCID/orcid-conversion-lib/blob/master/orcid-model)
+	* [Get the JAR file.](https://github.com/ORCID/orcid-conversion-lib/blob/master/orcid-model/orcid-model-2.1.jar)
 * They use this file themselves.
 * Note that this one JAR file contains classes for several versions of the API
 	* The versions are distinguished by package names -- double-check your `import` statements!

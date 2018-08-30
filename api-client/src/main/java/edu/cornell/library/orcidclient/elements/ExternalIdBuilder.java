@@ -1,22 +1,23 @@
 package edu.cornell.library.orcidclient.elements;
 
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.ExternalId;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.RelationshipType;
+import org.orcid.jaxb.model.common_v2.Url;
+import org.orcid.jaxb.model.record_v2.ExternalID;
+import org.orcid.jaxb.model.record_v2.Relationship;
 
 /**
  * A conversational tool for building an External ID.
  */
 public class ExternalIdBuilder {
-	private final RelationshipType relationship;
+	private final Relationship relationship;
 	private String type;
 	private String url;
 	private String value;
 
 	public ExternalIdBuilder() {
-		this(RelationshipType.SELF);
+		this(Relationship.SELF);
 	}
 
-	public ExternalIdBuilder(RelationshipType relationship) {
+	public ExternalIdBuilder(Relationship relationship) {
 		this.relationship = relationship;
 	}
 
@@ -35,12 +36,12 @@ public class ExternalIdBuilder {
 		return this;
 	}
 
-	public ExternalId build() {
-		ExternalId id = new ExternalId();
-		id.setExternalIdRelationship(relationship);
-		id.setExternalIdType(type);
-		id.setExternalIdUrl(url);
-		id.setExternalIdValue(value);
+	public ExternalID build() {
+		ExternalID id = new ExternalID();
+		id.setRelationship(relationship);
+		id.setType(type);
+		id.setUrl(new Url(url));
+		id.setValue(value);
 		return id;
 	}
 }

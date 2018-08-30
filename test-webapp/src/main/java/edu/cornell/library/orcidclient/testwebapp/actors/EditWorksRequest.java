@@ -1,8 +1,8 @@
 package edu.cornell.library.orcidclient.testwebapp.actors;
 
-import static edu.cornell.library.orcidclient.orcid_message_2_1.work.CitationType.BIBTEX;
-import static edu.cornell.library.orcidclient.orcid_message_2_1.work.ContributorRole.AUTHOR;
-import static edu.cornell.library.orcidclient.orcid_message_2_1.work.ContributorSequence.FIRST;
+import static org.orcid.jaxb.model.common_v2.ContributorRole.AUTHOR;
+import static org.orcid.jaxb.model.record_v2.CitationType.BIBTEX;
+import static org.orcid.jaxb.model.record_v2.SequenceType.FIRST;
 
 import java.io.IOException;
 
@@ -10,18 +10,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jtwig.JtwigModel;
+import org.orcid.jaxb.model.record_v2.Work;
+import org.orcid.jaxb.model.record_v2.WorkType;
 
 import edu.cornell.library.orcidclient.actions.OrcidActionClient;
 import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.elements.ExternalIdBuilder;
-import edu.cornell.library.orcidclient.elements.OrcidIdBuilder;
 import edu.cornell.library.orcidclient.elements.WorkBuilder;
 import edu.cornell.library.orcidclient.elements.WorkBuilder.CitationBuilder;
 import edu.cornell.library.orcidclient.elements.WorkBuilder.ContributorBuilder;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.LanguageCode;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkElement;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkType;
 
 /**
  * Do it. Add, Remove or Update a Work.
@@ -38,7 +36,7 @@ public class EditWorksRequest extends AbstractActor {
 
 	public void add() throws IOException, OrcidClientException {
 		String putCode = actions.createEditWorksAction().add(token,
-				populateWorkElement());
+				populateWork());
 
 		render("/templates/editWorksResult.twig.html", //
 				JtwigModel.newModel() //
@@ -47,8 +45,7 @@ public class EditWorksRequest extends AbstractActor {
 
 	public void update() throws IOException, OrcidClientException {
 		String putCode = req.getParameter("putCode");
-		actions.createEditWorksAction().update(token, populateWorkElement(),
-				putCode);
+		actions.createEditWorksAction().update(token, populateWork(), putCode);
 
 		render("/templates/editWorksResult.twig.html", //
 				JtwigModel.newModel() //
@@ -64,14 +61,14 @@ public class EditWorksRequest extends AbstractActor {
 						.with("putCode", "No problems with remove"));
 	}
 
-	private WorkElement populateWorkElement() {
+	private Work populateWork() {
 		String title = req.getParameter("title");
 		int[] pubDate = parseDate(req.getParameter("publicationDate"));
 		String idSuffix = req.getParameter("externalId");
 
 		return new WorkBuilder(WorkType.JOURNAL_ARTICLE, title)
 				.setPublicationDate(pubDate) //
-				.setLanguageCode(LanguageCode.EN) //
+				.setLanguageCode("EN") //
 				.setCountry("US") //
 				.setJournalTitle("My favorite journal") //
 				.addExternalId(new ExternalIdBuilder() //
@@ -94,12 +91,12 @@ public class EditWorksRequest extends AbstractActor {
 	 * This is how we would create a fully-populated work.
 	 */
 	@SuppressWarnings("unused")
-	private WorkElement generate() {
+	private Work generate() {
 		return new WorkBuilder(WorkType.JOURNAL_ARTICLE, "The article title")
 				.setSubtitle("An odyssey") //
 				.setPublicationDate(1953, 7, 30) //
 				.setShortDescription("A most excellent article.") //
-				.setLanguageCode(LanguageCode.EN) //
+				.setLanguageCode("EN") //
 				.setCountry("AR") //
 				.setJournalTitle("My favorite journal") //
 				.setCitation(
@@ -111,7 +108,7 @@ public class EditWorksRequest extends AbstractActor {
 				.addContributor(new ContributorBuilder(AUTHOR, FIRST) //
 						.setCreditName("Joe Bagadonuts") //
 						.setContributorEmail("joeBags@donuts.edu") //
-						.setOrcidId(new OrcidIdBuilder("0000-0000-0000-0000"))) //
+						.setOrcidId("0000-0000-0000-0000")) //
 				.build();
 	}
 

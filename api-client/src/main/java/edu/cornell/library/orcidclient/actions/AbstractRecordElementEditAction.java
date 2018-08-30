@@ -1,7 +1,6 @@
 package edu.cornell.library.orcidclient.actions;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -19,23 +18,34 @@ import edu.cornell.library.orcidclient.http.HttpWrapper.HttpResponse;
 import edu.cornell.library.orcidclient.http.HttpWrapper.HttpStatusCodeException;
 import edu.cornell.library.orcidclient.http.HttpWrapper.PostRequest;
 import edu.cornell.library.orcidclient.http.HttpWrapper.PutRequest;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.ElementSummary;
 import edu.cornell.library.orcidclient.util.OrcidXmlUtil;
 
 /**
  * Perform ADD, UPDATE and REMOVE operations on elements of the ORCID record.
  */
-abstract class AbstractRecordElementEditAction<T extends ElementSummary> {
+abstract class AbstractRecordElementEditAction<T> {
 	private static final Log log = LogFactory
 			.getLog(AbstractRecordElementEditAction.class);
 
 	protected final OrcidClientContext context;
 	protected final HttpWrapper httpWrapper;
 
+	/**
+	 * The elements that might include a "put code" do not have a common
+	 * ancester, so every concrete implementation of this class must specify how
+	 * to store the "put code" in the element;
+	 */
+	protected final PutCodeSetter<T> putCodeSetter;
+	
+	protected interface PutCodeSetter<T> {
+		void setPutcode(T element, String putCodeString);
+	}
+
 	public AbstractRecordElementEditAction(OrcidClientContext context,
-			HttpWrapper httpWrapper) {
+			HttpWrapper httpWrapper, PutCodeSetter<T> putCodeSetter) {
 		this.context = context;
 		this.httpWrapper = httpWrapper;
+		this.putCodeSetter = putCodeSetter;
 	}
 
 	protected abstract String getUrlPath();
@@ -81,9 +91,9 @@ abstract class AbstractRecordElementEditAction<T extends ElementSummary> {
 	 *   -X PUT 'https://api.sandbox.orcid.org/v2.0/0000-0002-9227-8514/external-identifiers/[PUT-CODE]
 	 * </pre>
 	 */
-	public void update(AccessToken accessToken, T element, String putCode)
-			throws OrcidClientException {
-		element.setPutCode(new BigInteger(putCode));
+	public void update(AccessToken accessToken, T element,
+			String putCode) throws OrcidClientException {
+		putCodeSetter.setPutcode(element, putCode);
 		String xml = OrcidXmlUtil.marshall(element);
 		try {
 			String requestUrl = createRequestUrl(accessToken, getUrlPath(),

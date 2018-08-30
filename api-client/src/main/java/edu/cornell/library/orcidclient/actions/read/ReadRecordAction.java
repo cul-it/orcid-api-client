@@ -1,10 +1,11 @@
 package edu.cornell.library.orcidclient.actions.read;
 
+import org.orcid.jaxb.model.record_v2.Record;
+
 import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
 import edu.cornell.library.orcidclient.http.HttpWrapper;
-import edu.cornell.library.orcidclient.orcid_message_2_1.record.RecordElement;
 
 /**
  * Reads the summary of an ORCID record.
@@ -17,15 +18,14 @@ public class ReadRecordAction extends AbstractReadAction {
 		super(context, httpWrapper);
 	}
 
-	public RecordElement read(AccessToken accessToken)
-			throws OrcidClientException {
+	public Record read(AccessToken accessToken) throws OrcidClientException {
 		return readElement(accessToken, RECORD);
 	}
 
-	public static class RecordEndpoint extends Endpoint<RecordElement> {
+	public static class RecordEndpoint extends Endpoint<Record> {
 
 		protected RecordEndpoint(String path) {
-			super(path, RecordElement.class);
+			super(path, Record.class);
 		}
 	}
 }

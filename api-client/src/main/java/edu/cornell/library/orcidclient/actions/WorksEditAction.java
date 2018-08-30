@@ -1,8 +1,9 @@
 package edu.cornell.library.orcidclient.actions;
 
+import org.orcid.jaxb.model.record_v2.Work;
+
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
 import edu.cornell.library.orcidclient.http.HttpWrapper;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkElement;
 
 /**
  * Perform ADD, UPDATE and REMOVE operations on Works.
@@ -17,12 +18,12 @@ import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkElement;
  *    -X POST 'https://api.sandbox.orcid.org/v2.0/0000-0002-9227-8514/work'
  * </pre>
  */
-public class WorksEditAction
-		extends AbstractRecordElementEditAction<WorkElement> {
+public class WorksEditAction extends AbstractRecordElementEditAction<Work> {
 
 	public WorksEditAction(OrcidClientContext context,
 			HttpWrapper httpWrapper) {
-		super(context, httpWrapper);
+		super(context, httpWrapper,
+				(work, putCode) -> work.setPutCode(Long.valueOf(putCode)));
 	}
 
 	@Override

@@ -1,11 +1,12 @@
 package edu.cornell.library.orcidclient.actions;
 
+import org.orcid.jaxb.model.record_v2.PersonExternalIdentifier;
+
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
 import edu.cornell.library.orcidclient.http.HttpWrapper;
-import edu.cornell.library.orcidclient.orcid_message_2_1.personexternalidentifier.ExternalIdentifierElement;
 
 /**
- * Perform ADD, UPDATE and REMOVE operations on External IDs.
+ * Perform ADD, UPDATE and REMOVE operations on Person External IDs.
  * 
  * Note that the contents of an External ID are similar to:
  * 
@@ -17,11 +18,12 @@ import edu.cornell.library.orcidclient.orcid_message_2_1.personexternalidentifie
  * </pre>
  */
 public class ExternalIdsEditAction
-		extends AbstractRecordElementEditAction<ExternalIdentifierElement> {
+		extends AbstractRecordElementEditAction<PersonExternalIdentifier> {
 
 	public ExternalIdsEditAction(OrcidClientContext context,
 			HttpWrapper httpWrapper) {
-		super(context, httpWrapper);
+		super(context, httpWrapper,
+				(id, putCode) -> id.setPutCode(Long.valueOf(putCode)));
 	}
 
 	@Override
