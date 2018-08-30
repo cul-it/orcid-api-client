@@ -137,7 +137,7 @@ public class WorkBuilder {
 		WorkTitle workTitle = new WorkTitle();
 		workTitle.setTitle(new Title(title));
 		if (subtitle != null) {
-			workTitle.setSubtitle(new Subtitle("An odyssey"));
+			workTitle.setSubtitle(new Subtitle(subtitle));
 		}
 		return workTitle;
 	}
@@ -189,10 +189,20 @@ public class WorkBuilder {
 
 			Contributor contributor = new Contributor();
 			contributor.setContributorAttributes(attributes);
-			contributor.setCreditName(new CreditName(creditName));
-			contributor.setContributorEmail(
-					new ContributorEmail(contributorEmail));
-			contributor.setContributorOrcid(new ContributorOrcid(orcidId));
+			if (creditName != null) {
+				contributor.setCreditName(new CreditName(creditName));
+			}
+			if (contributorEmail != null) {
+				contributor.setContributorEmail(
+						new ContributorEmail(contributorEmail));
+			}
+			if (orcidId != null) {
+				ContributorOrcid contributorOrcid = new ContributorOrcid();
+				contributorOrcid.setPath(orcidId);
+				contributorOrcid.setHost("orcid.org");
+				contributorOrcid.setUri("https://orcid.org/" + orcidId);
+				contributor.setContributorOrcid(contributorOrcid);
+			}
 			return contributor;
 		}
 	}

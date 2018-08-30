@@ -26,7 +26,7 @@ public class OrcidXmlUtil {
 			throws OrcidClientException {
 		try {
 			String packageName = clazz.getPackage().getName();
-			JAXBContext jaxbContext = JAXBContext.newInstance(packageName);
+			JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
 
 			Unmarshaller u = jaxbContext.createUnmarshaller();
 
