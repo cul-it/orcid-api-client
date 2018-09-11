@@ -38,7 +38,7 @@
             <td>{{work.title.title}}</td>
             <td>{{work.type}}</td>
             <td>{{work.publicationDate.year.value}}-{{work.publicationDate.month.value}}-{{work.publicationDate.day.value}}</td>
-            <td>{{work.externalIds.externalId[0].externalIdUrl}}</td>
+            <td>{{work.externalIdentifiers.externalIdentifier[0].url}}</td>
             <td>{{work.putCode}}</td>
           </tr>
         {% endfor %}
@@ -69,7 +69,7 @@
             <td>{{work.title.title}}</td>
             <td>{{work.type}}</td>
             <td>{{work.publicationDate.year.value}}-{{work.publicationDate.month.value}}-{{work.publicationDate.day.value}}</td>
-            <td>{{work.externalIds.externalId[0].externalIdUrl}}</td>
+            <td>{{work.externalIdentifiers.externalIdentifier[0].url}}</td>
             <td>{{work.putCode}}</td>
           </tr>
         {% endfor %}

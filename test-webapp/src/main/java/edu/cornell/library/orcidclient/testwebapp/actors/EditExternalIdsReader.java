@@ -7,12 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jtwig.JtwigModel;
+import org.orcid.jaxb.model.record_v2.PersonExternalIdentifier;
+import org.orcid.jaxb.model.record_v2.Record;
 
 import edu.cornell.library.orcidclient.actions.OrcidActionClient;
 import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.ExternalId;
-import edu.cornell.library.orcidclient.orcid_message_2_1.record.RecordElement;
 
 /**
  * Read the existing External IDs, in prep for editing.
@@ -28,9 +28,9 @@ public class EditExternalIdsReader extends AbstractActor {
 
 	public void exec() throws IOException, OrcidClientException {
 		AccessToken token = getTokenByTokenId(req.getParameter("token"));
-		RecordElement record = actions.createReadRecordAction().read(token);
-		List<ExternalId> externalIds = record.getPerson()
-				.getExternalIdentifiers().getExternalIdentifier();
+		Record record = actions.createReadRecordAction().read(token);
+		List<PersonExternalIdentifier> externalIds = record.getPerson()
+				.getExternalIdentifiers().getExternalIdentifiers();
 
 		render("/templates/editExternalIdsList.twig.html", //
 				JtwigModel.newModel() //

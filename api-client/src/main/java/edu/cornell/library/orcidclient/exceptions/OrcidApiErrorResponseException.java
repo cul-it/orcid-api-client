@@ -2,10 +2,10 @@ package edu.cornell.library.orcidclient.exceptions;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.orcid.jaxb.model.error_v2.OrcidError;
 
 import edu.cornell.library.orcidclient.http.HttpWrapper;
 import edu.cornell.library.orcidclient.http.HttpWrapper.HttpStatusCodeException;
-import edu.cornell.library.orcidclient.orcid_message_2_1.error.ErrorElement;
 import edu.cornell.library.orcidclient.util.OrcidXmlUtil;
 
 /**
@@ -27,8 +27,8 @@ public class OrcidApiErrorResponseException extends OrcidClientException {
 
 		String content = cause.getResponseContent();
 		try {
-			ErrorElement error = OrcidXmlUtil.unmarshall(content,
-					ErrorElement.class);
+			OrcidError error = OrcidXmlUtil.unmarshall(content,
+					OrcidError.class);
 			this.developerMessage = error.getDeveloperMessage();
 			this.errorCode = error.getErrorCode().intValue();
 		} catch (OrcidClientException e) {

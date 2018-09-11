@@ -3,22 +3,25 @@ package edu.cornell.library.orcidclient.elements;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.CountryElement;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.CreditName;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.ExternalIds;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.FuzzyDate;
-import edu.cornell.library.orcidclient.orcid_message_2_1.common.LanguageCode;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.Citation;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.CitationType;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.Contributor;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.ContributorAttributes;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.ContributorEmail;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.ContributorRole;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.ContributorSequence;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkContributors;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkElement;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkTitle;
-import edu.cornell.library.orcidclient.orcid_message_2_1.work.WorkType;
+import org.orcid.jaxb.model.common_v2.Contributor;
+import org.orcid.jaxb.model.common_v2.ContributorAttributes;
+import org.orcid.jaxb.model.common_v2.ContributorEmail;
+import org.orcid.jaxb.model.common_v2.ContributorOrcid;
+import org.orcid.jaxb.model.common_v2.ContributorRole;
+import org.orcid.jaxb.model.common_v2.Country;
+import org.orcid.jaxb.model.common_v2.CreditName;
+import org.orcid.jaxb.model.common_v2.Iso3166Country;
+import org.orcid.jaxb.model.common_v2.PublicationDate;
+import org.orcid.jaxb.model.common_v2.Subtitle;
+import org.orcid.jaxb.model.common_v2.Title;
+import org.orcid.jaxb.model.record_v2.Citation;
+import org.orcid.jaxb.model.record_v2.CitationType;
+import org.orcid.jaxb.model.record_v2.ExternalIDs;
+import org.orcid.jaxb.model.record_v2.SequenceType;
+import org.orcid.jaxb.model.record_v2.Work;
+import org.orcid.jaxb.model.record_v2.WorkContributors;
+import org.orcid.jaxb.model.record_v2.WorkTitle;
+import org.orcid.jaxb.model.record_v2.WorkType;
 
 /**
  * A conversational tool for building a WorkElement. The only required fields
@@ -30,7 +33,7 @@ public class WorkBuilder {
 	private String subtitle;
 	private int[] publicationDate;
 	private String shortDescription;
-	private LanguageCode languageCode;
+	private String languageCode;
 	private String country;
 	private String journalTitle;
 	private CitationBuilder citation;
@@ -57,7 +60,7 @@ public class WorkBuilder {
 		return this;
 	}
 
-	public WorkBuilder setLanguageCode(LanguageCode languageCode) {
+	public WorkBuilder setLanguageCode(String languageCode) {
 		this.languageCode = languageCode;
 		return this;
 	}
@@ -91,10 +94,10 @@ public class WorkBuilder {
 		return this;
 	}
 
-	public WorkElement build() {
-		WorkElement work = new WorkElement();
-		work.setType(workType);
-		work.setTitle(buildTitle());
+	public Work build() {
+		Work work = new Work();
+		work.setWorkType(workType);
+		work.setWorkTitle(buildTitle());
 
 		if (publicationDate != null) {
 			work.setPublicationDate(buildPublicationDate());
@@ -109,20 +112,22 @@ public class WorkBuilder {
 			work.setCountry(buildCountry());
 		}
 		if (journalTitle != null) {
-			work.setJournalTitle(journalTitle);
+			work.setJournalTitle(new Title(journalTitle));
 		}
 		if (citation != null) {
-			work.setCitation(citation.build());
+			work.setWorkCitation(citation.build());
 		}
 
-		work.setContributors(new WorkContributors());
+		work.setWorkContributors(new WorkContributors());
 		for (ContributorBuilder contributor : contributors) {
-			work.getContributors().getContributor().add(contributor.build());
+			work.getWorkContributors().getContributor()
+					.add(contributor.build());
 		}
 
-		work.setExternalIds(new ExternalIds());
+		work.setWorkExternalIdentifiers(new ExternalIDs());
 		for (ExternalIdBuilder externalId : externalIds) {
-			work.getExternalIds().getExternalId().add(externalId.build());
+			work.getWorkExternalIdentifiers().getExternalIdentifier()
+					.add(externalId.build());
 		}
 
 		return work;
@@ -130,21 +135,19 @@ public class WorkBuilder {
 
 	private WorkTitle buildTitle() {
 		WorkTitle workTitle = new WorkTitle();
-		workTitle.setTitle(title);
+		workTitle.setTitle(new Title(title));
 		if (subtitle != null) {
-			workTitle.setSubtitle("An odyssey");
+			workTitle.setSubtitle(new Subtitle(subtitle));
 		}
 		return workTitle;
 	}
 
-	private FuzzyDate buildPublicationDate() {
-		return new FuzzyDateBuilder(publicationDate).build();
+	private PublicationDate buildPublicationDate() {
+		return new PublicationDateBuilder(publicationDate).build();
 	}
 
-	private CountryElement buildCountry() {
-		CountryElement element = new CountryElement();
-		element.setValue(country);
-		return element;
+	private Country buildCountry() {
+		return new Country(Iso3166Country.fromValue(country));
 	}
 
 	// ----------------------------------------------------------------------
@@ -153,13 +156,13 @@ public class WorkBuilder {
 
 	public static class ContributorBuilder {
 		private final ContributorRole contributorRole;
-		private final ContributorSequence contributorSequence;
+		private final SequenceType contributorSequence;
 		private String creditName;
 		private String contributorEmail;
-		private OrcidIdBuilder orcidId;
+		private String orcidId;
 
 		public ContributorBuilder(ContributorRole contributorRole,
-				ContributorSequence contributorSequence) {
+				SequenceType contributorSequence) {
 			this.contributorRole = contributorRole;
 			this.contributorSequence = contributorSequence;
 		}
@@ -174,7 +177,7 @@ public class WorkBuilder {
 			return this;
 		}
 
-		public ContributorBuilder setOrcidId(OrcidIdBuilder orcidId) {
+		public ContributorBuilder setOrcidId(String orcidId) {
 			this.orcidId = orcidId;
 			return this;
 		}
@@ -184,17 +187,22 @@ public class WorkBuilder {
 			attributes.setContributorRole(contributorRole);
 			attributes.setContributorSequence(contributorSequence);
 
-			CreditName credit = new CreditName();
-			credit.setValue(creditName);
-
-			ContributorEmail email = new ContributorEmail();
-			email.setValue(contributorEmail);
-
 			Contributor contributor = new Contributor();
 			contributor.setContributorAttributes(attributes);
-			contributor.setCreditName(credit);
-			contributor.setContributorEmail(email);
-			contributor.setContributorOrcid(orcidId.build());
+			if (creditName != null) {
+				contributor.setCreditName(new CreditName(creditName));
+			}
+			if (contributorEmail != null) {
+				contributor.setContributorEmail(
+						new ContributorEmail(contributorEmail));
+			}
+			if (orcidId != null) {
+				ContributorOrcid contributorOrcid = new ContributorOrcid();
+				contributorOrcid.setPath(orcidId);
+				contributorOrcid.setHost("orcid.org");
+				contributorOrcid.setUri("https://orcid.org/" + orcidId);
+				contributor.setContributorOrcid(contributorOrcid);
+			}
 			return contributor;
 		}
 	}
@@ -210,8 +218,8 @@ public class WorkBuilder {
 
 		public Citation build() {
 			Citation citation = new Citation();
-			citation.setCitationType(type);
-			citation.setCitationValue(value);
+			citation.setWorkCitationType(type);
+			citation.setCitation(value);
 			return citation;
 		}
 	}

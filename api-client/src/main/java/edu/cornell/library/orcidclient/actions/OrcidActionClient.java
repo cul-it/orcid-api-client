@@ -1,7 +1,8 @@
 package edu.cornell.library.orcidclient.actions;
 
 import edu.cornell.library.orcidclient.actions.read.ReadRecordAction;
-import edu.cornell.library.orcidclient.actions.read.ReadWorksAction;
+import edu.cornell.library.orcidclient.actions.read.ReadWorkDetailsAction;
+import edu.cornell.library.orcidclient.actions.read.ReadWorksSummariesAction;
 import edu.cornell.library.orcidclient.auth.AccessToken;
 import edu.cornell.library.orcidclient.context.OrcidClientContext;
 import edu.cornell.library.orcidclient.exceptions.OrcidClientException;
@@ -35,11 +36,15 @@ public class OrcidActionClient {
 		return new ReadRecordAction(context, httpWrapper);
 	}
 
-	public ReadWorksAction createReadWorksAction() {
-		return new ReadWorksAction(context, httpWrapper);
+	public ReadWorksSummariesAction createReadWorksSummariesAction() {
+		return new ReadWorksSummariesAction(context, httpWrapper);
 	}
 
-	public ExternalIdsEditAction createEditExiternalIdsAction() {
+	public ReadWorkDetailsAction createReadWorkDetailsAction() {
+		return new ReadWorkDetailsAction(context, httpWrapper);
+	}
+
+	public ExternalIdsEditAction createEditExternalIdsAction() {
 		return new ExternalIdsEditAction(context, httpWrapper);
 	}
 
