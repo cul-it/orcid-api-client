@@ -3,6 +3,7 @@ package edu.cornell.library.orcidclient.auth;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -149,6 +150,34 @@ public class AccessToken {
 
 	public String toAuthHeader() {
 		return type + " " + token;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(jsonString, token, type, refreshToken, expiresIn,
+				scope, name, orcid);
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (other == null) {
+			return false;
+		}
+		if (this.getClass() != other.getClass()) {
+			return false;
+		}
+		AccessToken that = (AccessToken) other;
+		return Objects.equals(this.jsonString, that.jsonString)
+				&& Objects.equals(this.token, that.token)
+				&& Objects.equals(this.type, that.type)
+				&& Objects.equals(this.refreshToken, that.refreshToken)
+				&& Objects.equals(this.expiresIn, that.expiresIn)
+				&& Objects.equals(this.scope, that.scope)
+				&& Objects.equals(this.name, that.name)
+				&& Objects.equals(this.orcid, that.orcid);
 	}
 
 	@Override
