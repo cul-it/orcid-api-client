@@ -6,7 +6,16 @@
 	<description><![CDATA[
     ---------------------------------------------------------------------------
     
+    Produces the orcid-api-client artifact. 
+    
     ---------------------------------------------------------------------------
+
+    Note that the dependency on orcid-model is not satisfied by any public 
+    repository, so it must be installed in your local repository. The JAR file
+    containing this artificat is at lib/orcid-model-2.1.jar
+    
+    Also, orcid-model is required as a transitive dependency of any application
+    that uses the orcid-api-client.
 
     ---------------------------------------------------------------------------
     ]]></description>
@@ -19,13 +28,6 @@
 
 	<artifactId>orcid-api-client</artifactId>
 	<packaging>jar</packaging>
-
-	<repositories>
-		<repository>
-			<id>jaxb-repo</id>
-			<url>file://${project.basedir}/repo</url>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>

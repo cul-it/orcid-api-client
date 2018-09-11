@@ -4,47 +4,17 @@
 
 * [API Tutorials](https://members.orcid.org/api/tutorial)
 
-Sources JAXB binding techniques:
-
-* [JAXB bindings by example](https://coderleaf.wordpress.com/2016/11/15/jaxb-bindings-by-example/)
-* [Customizing JAXB Bindings](https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/doc/JAXBUsing4.html#wp148590)
-* [Using JAXB Data Binding](https://docs.oracle.com/middleware/11119/wls/WSGET/data_types.htm)
-
 # Structure
 
 Running `mvn install` will produce three artifacts in your repository:
 
 * The project artifact: `orcid-api-client-project`
-* 
 * The client artifact: `orcid-api-client`
 * The test webapp artifact: `orcid-api-client-test-webapp`
-* 
-
-# Using JAXB to compile the XML Schemas
-
-* Most of the schema files came from [here](https://github.com/ORCID/ORCID-Source/tree/master/orcid-model/src/main/resources/record_2.0)
-
-* The common schema file came from [here](https://github.com/ORCID/ORCID-Source/tree/master/orcid-model/src/main/resources/common_2.1)
-	* There was no choice about where to put `common-2.1.xsd`, since the other XSD files use a relative URL to reference it:
-	
-		```
-		<xs:import namespace="http://www.orcid.org/ns/common"
-		schemaLocation="../common_2.1/common-2.1.xsd" />
-		```
-
-* The JAXB bindings file `jaxb_bindings_customization.xjb` helps to control the way that the XSD is 
-compiled into Java classes.
-	* A package name is assigned for each schema file.
-	* Generated element types are given the `Element` suffix, in order to avoid name collisions.
-	* Property names on the `OrcidId` type are modified to remove a collision.
-
-## JAXB and the schemas
-
-* __*TBD*__
-* They come from here: [the record directory](https://github.com/ORCID/ORCID-Source/tree/master/orcid-model/src/main/resources/record_2.1) and [the common directory](https://github.com/ORCID/ORCID-Source/tree/master/orcid-model/src/main/resources/common_2.1)
 
 # Using ORCIDs JAXB JAR file
 ## Orcid provides a JAR file
+
 * They have created (somehow) a JAR file with JAXB-based classes. 
 	* [Read all about it.](https://github.com/ORCID/orcid-conversion-lib/blob/master/orcid-model)
 	* [Get the JAR file.](https://github.com/ORCID/orcid-conversion-lib/blob/master/orcid-model/orcid-model-2.1.jar)
@@ -52,40 +22,29 @@ compiled into Java classes.
 * Note that this one JAR file contains classes for several versions of the API
 	* The versions are distinguished by package names -- double-check your `import` statements!
 
-
 ## Installing the JAR into the project
+* Perhaps the best way would have been to install it in the local repo, 
+  and then use `maven-assembly-plugin` to include the classes in the distribution of `oric-api-client`.
+  I haven't taken the time to do this.
+  
+I Instead, the process that I have documented is how to install this JAR as an artifact in the 
+local repository. This doesn't handle the transitive dependency for the application that uses
+`orcid-api-client`, but the workaround is not difficult.
+
+## What did I do?
+
 * Got a lot of info from [this stackoverflow topic](https://stackoverflow.com/questions/364114/can-i-add-jars-to-maven-2-build-classpath-without-installing-them)
+
 * Deployed the JAR to the project:
 	* download the JAR to `[project-directory]/api-client/lib` 
-	* `cd` to a neutral directory (one that is not a maven project)
-	* run these commands (substituting the path to the project directory):
 
-```
-mvn install:install-file \
-  -DlocalRepositoryPath=[project-directory]/api-client/repo \
-  -Dfile=[project-directory]/api-client/lib/orcid-model-2.1.jar \
-  -DgroupId=org.orcid -DartifactId=orcid-model -Dversion=1.1.5-SNAPSHOT \
-  -DcreateChecksum=true -Dpackaging=jar
-```
+* Included instructions on installing this JAR to your local repository.
 
-So, on my machine, I ran these commands:
-
-```
-cd /Users/jeb228/Development/OrcidApiClient/projects
-mvn install:install-file \
-  -DlocalRepositoryPath=orcid-api-client/api-client/repo \
-  -Dfile=orcid-api-client/api-client/lib/orcid-model-2.1.jar \
-  -DgroupId=org.orcid -DartifactId=orcid-model -Dversion=1.1.5-SNAPSHOT \
-  -DcreateChecksum=true -Dpackaging=jar
-```
-
-Note that the original JAR file, `orcid-api-client/api-client/lib/orcid-model-2.1.jar`, 
+Note that the original JAR file, `[project-directory]/api-client/lib/orcid-model-2.1.jar`, 
 is not used after this.
 
 ## Creating the dependency
 * After doing the installation, I can create the dependency, as seen in `pom.xml`
-
-__*END TDB*__
 		
 # Running the test webapp
 * Might need to set up a tunnel.

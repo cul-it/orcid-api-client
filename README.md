@@ -11,11 +11,35 @@ This library provides Java classes that wrap that API, and make it easier to wri
 # Usage
 ## Include in your application
 
-### Obtain the JAXB-entity library from ORCID
-__*TBD*__
+### Get the code for orcid-api-client
 
-### Build the client classes from the repository
 * Clone the repository from [Github][Github repo]
+
+### Install ORCIDs class library
+
+The developers at ORCID have created a JAR file, with classes that convert 
+your data to and from the JSON or XML that the API requires or produces.
+
+The JAR file is not available on a public repository, so
+it must be installed in the local maven repository on your development machine,
+when you build the orcid-api-client project. 
+
+Since the JAR file is not packaged as part of the orcid-api-client, it must also be available 
+when you build your application.
+
+Use this command to install the JAR file:
+
+```
+mvn install:install-file \
+    -DgroupId=org.orcid -DartifactId=orcid-model \
+    -Dversion=1.1.5-SNAPSHOT -Dpackaging=jar \
+    -Dfile=[path-to-file]
+```
+
+Where `[path-to-file]` points to `api-client/lib/orcid-model-2.1.jar` 
+within your copy of the project code.
+
+### Build the client
 * From the top-level directory in the repo, run `mvn install`
 
 ### If your application is based on maven:
@@ -30,12 +54,13 @@ Include this dependency in your `pom.xml`
 ```
 
 ### If your application is not based on maven:
-The `mvn install` command created a JAR file here:
+The `mvn install` commands created a JAR files here:
 
 ```
 ~/.m2/repository/edu/cornell/library/orcid-api-client/1.0-SNAPSHOT/orcid-api-client-1.0-SNAPSHOT.jar
+~/.m2/repository/org/orcid/orcid-model/1.1.5-SNAPSHOT/orcid-model-1.1.5-SNAPSHOT.jar
 ```
-Copy the JAR file into your application.
+Copy these JAR files into your application.
 
 	
 ## Configuration
