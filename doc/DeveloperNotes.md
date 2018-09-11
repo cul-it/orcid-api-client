@@ -10,6 +10,16 @@ Sources JAXB binding techniques:
 * [Customizing JAXB Bindings](https://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.5/tutorial/doc/JAXBUsing4.html#wp148590)
 * [Using JAXB Data Binding](https://docs.oracle.com/middleware/11119/wls/WSGET/data_types.htm)
 
+# Structure
+
+Running `mvn install` will produce three artifacts in your repository:
+
+* The project artifact: `orcid-api-client-project`
+* 
+* The client artifact: `orcid-api-client`
+* The test webapp artifact: `orcid-api-client-test-webapp`
+* 
+
 # Using JAXB to compile the XML Schemas
 
 * Most of the schema files came from [here](https://github.com/ORCID/ORCID-Source/tree/master/orcid-model/src/main/resources/record_2.0)
@@ -28,10 +38,13 @@ compiled into Java classes.
 	* Generated element types are given the `Element` suffix, in order to avoid name collisions.
 	* Property names on the `OrcidId` type are modified to remove a collision.
 
+## JAXB and the schemas
+* __*TBD*__
+* They come from here: [the record directory](https://github.com/ORCID/ORCID-Source/tree/master/orcid-model/src/main/resources/record_2.1) and [the common directory](https://github.com/ORCID/ORCID-Source/tree/master/orcid-model/src/main/resources/common_2.1)
 		
 # Running the test webapp
 * Might need to set up a tunnel.
-	* If the credentials list a callback URL as "http://myhost", but the webapp runs at `htp://myhost:8080`, might need to set up a tunnel with something like this:
+	* If the credentials list a callback URL as "http://myhost", but the webapp runs at `http://myhost:8080`, might need to set up a tunnel with something like this:
 
 	```
 	sudo ssh jeb228@localhost -L 80:loalhost:8080
