@@ -49,7 +49,7 @@ Include this dependency in your `pom.xml`
 <dependency>
 	<groupId>edu.cornell.library</groupId>
 	<artifactId>orcid-api-client</artifactId>
-	<version>${project.version}</version>
+	<version>1.0</version>
 </dependency>
 ```
 
@@ -57,7 +57,7 @@ Include this dependency in your `pom.xml`
 The `mvn install` commands created a JAR files here:
 
 ```
-~/.m2/repository/edu/cornell/library/orcid-api-client/1.0-SNAPSHOT/orcid-api-client-1.0-SNAPSHOT.jar
+~/.m2/repository/edu/cornell/library/orcid-api-client/1.0/orcid-api-client-1.0.jar
 ~/.m2/repository/org/orcid/orcid-model/1.1.5-SNAPSHOT/orcid-model-1.1.5-SNAPSHOT.jar
 ```
 Copy these JAR files into your application.
@@ -154,6 +154,10 @@ Some relevant examples:
 ```
 
 # Status
+
+## Release
+
+Currently at 1.0.
 
 ## API coverage
 
